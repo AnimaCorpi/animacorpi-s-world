@@ -49,14 +49,7 @@ export default function Layout({ children, currentPageName }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
 
-  const checkUserProfileComplete = (userData) => {
-    const allowedPagesForIncompleteProfile = ["Registration", "Home", "Terms", "Guidelines", "Contact"];
-    if (userData && (!userData.username || !userData.birthdate) && !allowedPagesForIncompleteProfile.includes(currentPageName)) {
-      window.location.href = createPageUrl("Registration");
-      return false;
-    }
-    return true;
-  };
+  // No longer force redirect - users can browse as guests
 
   useEffect(() => {
     loadUserAndSettings();
@@ -73,8 +66,6 @@ export default function Layout({ children, currentPageName }) {
   const loadUserAndSettings = async () => {
     try {
       const userData = await User.me();
-      if (!checkUserProfileComplete(userData)) return;
-      
       setUser(userData);
       if (userData.theme_preferences) {
         setThemePrefs(prev => ({
@@ -83,9 +74,7 @@ export default function Layout({ children, currentPageName }) {
         }));
       }
     } catch (error) {
-        if (!publicPages.includes(currentPageName)) {
-            window.location.href = createPageUrl("Home");
-        }
+      // User not logged in - that's fine, they can browse as guest
       setUser(null);
     }
     loadSiteSettings();
