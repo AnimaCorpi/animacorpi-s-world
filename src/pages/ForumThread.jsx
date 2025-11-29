@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ForumThread } from "@/entities/ForumThread";
 import { ForumComment } from "@/entities/ForumComment";
@@ -62,12 +61,16 @@ export default function ForumThreadPage() {
 
       try {
         const userData = await User.me();
-        if (!userData.username || !userData.birthdate) {
-          window.location.href = createPageUrl("Registration");
-          return;
+        if (userData) {
+          if (!userData.username || !userData.birthdate) {
+            // User logged in but needs to complete registration
+            setUser({ ...userData, needsRegistration: true });
+          } else {
+            setUser(userData);
+          }
         }
-        setUser(userData);
       } catch (error) {
+        // User not logged in - can still view
         setUser(null);
       }
     } catch (error) {
@@ -280,7 +283,7 @@ export default function ForumThreadPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {user && !thread.locked ? (
+            {user && !user.needsRegistration && !thread.locked ? (
               <form onSubmit={handleSubmitComment} className="mb-6">
                 <div className="mb-4">
                   {replyingTo && (
@@ -319,10 +322,22 @@ export default function ForumThreadPage() {
                   {isSubmitting ? "Posting..." : "Post Comment"}
                 </Button>
               </form>
-            ) : !user ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">Sign in to join the discussion</p>
-                <Button onClick={() => User.login()}>Sign In</Button>
+            ) : !user || user.needsRegistration ? (
+              <div className="text-center py-8 bg-gray-50 rounded-lg">
+                <p className="text-gray-600 mb-4">
+                  {user?.needsRegistration 
+                    ? "Complete your profile to join the discussion" 
+                    : "Sign in to join the discussion"}
+                </p>
+                <Button onClick={() => {
+                  if (user?.needsRegistration) {
+                    window.location.href = createPageUrl("Registration");
+                  } else {
+                    User.login();
+                  }
+                }}>
+                  {user?.needsRegistration ? "Complete Profile" : "Sign In"}
+                </Button>
               </div>
             ) : thread.locked ? (
               <div className="text-center py-8">

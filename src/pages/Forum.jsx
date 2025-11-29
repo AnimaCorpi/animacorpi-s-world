@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ForumThread } from "@/entities/ForumThread";
 import { User } from "@/entities/User";
@@ -78,15 +77,19 @@ export default function Forum() {
 
       try {
         const userData = await User.me();
-        if (!userData.username || !userData.birthdate) {
-            window.location.href = createPageUrl("Registration");
-            return;
-        }
-        setUser(userData);
-        if (userData.role === 'admin' || calculateAge(userData.birthdate) >= 18) {
-          setShowNSFW(true);
+        if (userData) {
+          if (!userData.username || !userData.birthdate) {
+            // User is logged in but hasn't completed registration - redirect only if they try to post
+            setUser({ ...userData, needsRegistration: true });
+          } else {
+            setUser(userData);
+            if (userData.role === 'admin' || calculateAge(userData.birthdate) >= 18) {
+              setShowNSFW(true);
+            }
+          }
         }
       } catch (error) {
+        // User is not logged in - that's fine, they can still view
         setUser(null);
       }
     } catch (error) {
@@ -194,16 +197,22 @@ export default function Forum() {
             <p className="banner-text-secondary text-xl mb-8">
               {settings?.message || "Join our vibrant creative community and share your thoughts."}
             </p>
-            {user && (
-              <Button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3"
-                size="lg"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Start a Discussion
-              </Button>
-            )}
+            <Button
+              onClick={() => {
+                if (!user) {
+                  User.login();
+                } else if (user.needsRegistration) {
+                  window.location.href = createPageUrl("Registration");
+                } else {
+                  setShowCreateForm(true);
+                }
+              }}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3"
+              size="lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Start a Discussion
+            </Button>
           </div>
         </div>
       </section>
@@ -338,31 +347,25 @@ export default function Forum() {
                   : "Be the first to start a conversation!"
                 }
               </p>
-              {user && (
-                <Button
-                  onClick={() => setShowCreateForm(true)}
-                  className="bg-purple-500 hover:bg-purple-600"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Start a Discussion
-                </Button>
-              )}
+              <Button
+                onClick={() => {
+                  if (!user) {
+                    User.login();
+                  } else if (user.needsRegistration) {
+                    window.location.href = createPageUrl("Registration");
+                  } else {
+                    setShowCreateForm(true);
+                  }
+                }}
+                className="bg-purple-500 hover:bg-purple-600"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Start a Discussion
+              </Button>
             </div>
           )}
 
-          {!user && (
-            <Card className="mt-8">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-lg font-semibold mb-2">Join the Conversation</h3>
-                <p className="text-gray-600 mb-4">
-                  Sign in to create threads, comment, and connect with the community.
-                </p>
-                <Button onClick={() => User.login()}>
-                  Sign In to Participate
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+
         </div>
       </section>
     </div>
