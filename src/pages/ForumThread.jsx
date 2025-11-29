@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { ForumThread } from "@/entities/ForumThread";
 import { ForumComment } from "@/entities/ForumComment";
 import { User } from "@/entities/User";
@@ -60,14 +61,21 @@ export default function ForumThreadPage() {
       setComments(commentsData);
 
       try {
-        const userData = await User.me();
-        if (userData) {
-          if (!userData.username || !userData.birthdate) {
-            // User logged in but needs to complete registration
-            setUser({ ...userData, needsRegistration: true });
-          } else {
-            setUser(userData);
+        // Check if user is authenticated first without prompting login
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (isAuthenticated) {
+          const userData = await User.me();
+          if (userData) {
+            if (!userData.username || !userData.birthdate) {
+              // User logged in but needs to complete registration
+              setUser({ ...userData, needsRegistration: true });
+            } else {
+              setUser(userData);
+            }
           }
+        } else {
+          // User is browsing as guest - can still view
+          setUser(null);
         }
       } catch (error) {
         // User not logged in - can still view

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
 import { Notification } from "@/entities/Notification";
 import { SiteSettings } from "@/entities/SiteSettings";
@@ -65,13 +66,20 @@ export default function Layout({ children, currentPageName }) {
 
   const loadUserAndSettings = async () => {
     try {
-      const userData = await User.me();
-      setUser(userData);
-      if (userData.theme_preferences) {
-        setThemePrefs(prev => ({
-          ...prev,
-          ...userData.theme_preferences
-        }));
+      // Check if user is authenticated first without prompting login
+      const isAuthenticated = await base44.auth.isAuthenticated();
+      if (isAuthenticated) {
+        const userData = await User.me();
+        setUser(userData);
+        if (userData.theme_preferences) {
+          setThemePrefs(prev => ({
+            ...prev,
+            ...userData.theme_preferences
+          }));
+        }
+      } else {
+        // User is browsing as guest - that's fine
+        setUser(null);
       }
     } catch (error) {
       // User not logged in - that's fine, they can browse as guest

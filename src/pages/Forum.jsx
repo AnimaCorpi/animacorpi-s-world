@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { ForumThread } from "@/entities/ForumThread";
 import { User } from "@/entities/User";
 import { SiteSettings } from "@/entities/SiteSettings";
@@ -76,17 +77,24 @@ export default function Forum() {
       setAllTags(Array.from(tags).sort());
 
       try {
-        const userData = await User.me();
-        if (userData) {
-          if (!userData.username || !userData.birthdate) {
-            // User is logged in but hasn't completed registration - redirect only if they try to post
-            setUser({ ...userData, needsRegistration: true });
-          } else {
-            setUser(userData);
-            if (userData.role === 'admin' || calculateAge(userData.birthdate) >= 18) {
-              setShowNSFW(true);
+        // Check if user is authenticated first without prompting login
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (isAuthenticated) {
+          const userData = await User.me();
+          if (userData) {
+            if (!userData.username || !userData.birthdate) {
+              // User is logged in but hasn't completed registration - redirect only if they try to post
+              setUser({ ...userData, needsRegistration: true });
+            } else {
+              setUser(userData);
+              if (userData.role === 'admin' || calculateAge(userData.birthdate) >= 18) {
+                setShowNSFW(true);
+              }
             }
           }
+        } else {
+          // User is browsing as guest - that's fine
+          setUser(null);
         }
       } catch (error) {
         // User is not logged in - that's fine, they can still view

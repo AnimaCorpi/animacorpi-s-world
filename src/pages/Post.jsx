@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { Post } from "@/entities/Post";
 import { PostComment } from "@/entities/PostComment";
 import { PostReaction } from "@/entities/PostReaction";
@@ -88,8 +88,14 @@ export default function PostPage() {
       }
 
       try {
-        const userData = await User.me();
-        setUser(userData);
+        // Check if user is authenticated first without prompting login
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (isAuthenticated) {
+          const userData = await User.me();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
       } catch (error) {
         setUser(null);
       }
