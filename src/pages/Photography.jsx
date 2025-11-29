@@ -8,6 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 
+const stripHtmlTags = (html) => {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '');
+};
+
 export default function Photography() {
   const [posts, setPosts] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -100,7 +105,7 @@ export default function Photography() {
                     {post.title}
                   </h3>
                   <p className="text-gray-600 mb-4 line-clamp-3">
-                    {post.excerpt || post.content.substring(0, 150) + "..."}
+                    {stripHtmlTags(post.excerpt || post.content).substring(0, 150) + "..."}
                   </p>
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
