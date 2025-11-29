@@ -93,7 +93,7 @@ export default function ForumThreadPage() {
   };
 
   const canViewNSFW = () => {
-    if (!user) return false;
+    if (!user || user.needsRegistration) return false;
     return user.role === 'admin' || calculateAge(user.birthdate) >= 18;
   };
 

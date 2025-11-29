@@ -113,19 +113,23 @@ export default function Forum() {
   const filterThreads = () => {
     let filtered = threads;
 
-    if (user) {
+    // NSFW filtering - always hide for non-logged in users or users under 18
+    if (!user || user.needsRegistration) {
+      // Not logged in or incomplete registration - hide all NSFW
+      filtered = filtered.filter(thread => !thread.is_nsfw);
+    } else {
       const userAge = calculateAge(user.birthdate);
       const isAdmin = user.role === 'admin';
       
       if (isAdmin) {
         // Admin can see everything
       } else if (userAge < 18) {
+        // Under 18 - always hide NSFW
         filtered = filtered.filter(thread => !thread.is_nsfw);
       } else if (!showNSFW) {
+        // 18+ but toggle is off
         filtered = filtered.filter(thread => !thread.is_nsfw);
       }
-    } else {
-      filtered = filtered.filter(thread => !thread.is_nsfw);
     }
 
     if (searchTerm) {
@@ -247,7 +251,7 @@ export default function Forum() {
               </div>
             </div>
 
-            {user && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
+            {user && !user.needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="outline"
