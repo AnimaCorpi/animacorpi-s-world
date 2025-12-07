@@ -167,13 +167,7 @@ export default function Forum() {
   };
 
   const getAuthorDisplay = (thread) => {
-    if (thread.author_username) {
-      return thread.author_username;
-    }
-    if (user && thread.author_id === user.id) {
-      return user.username;
-    }
-    return 'Anonymous';
+    return thread.author_username || 'User';
   };
 
   if (isLoading) {

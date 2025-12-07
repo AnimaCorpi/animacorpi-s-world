@@ -106,13 +106,7 @@ export default function ForumThreadPage() {
   };
 
   const getAuthorDisplay = (item) => {
-    if (item && item.author_username) {
-      return item.author_username;
-    }
-    if (user && item && item.author_id === user.id) {
-      return user.username;
-    }
-    return 'Anonymous';
+    return item?.author_username || 'User';
   };
 
   const handleSubmitComment = async (e) => {

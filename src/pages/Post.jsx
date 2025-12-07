@@ -22,8 +22,6 @@ export default function PostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
-  const [usersMap, setUsersMap] = useState({}); // New state for usersMap
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
@@ -31,29 +29,6 @@ export default function PostPage() {
         loadPostData(postId);
     }
   }, [window.location.search]);
-
-  // New useEffect to fetch user data for comments
-  useEffect(() => {
-    if (comments.length > 0) {
-      const authorIds = [...new Set(comments.map(c => c.author_id))];
-      const newIds = authorIds.filter(id => id && !usersMap[id]); // Filter out null/undefined IDs and already fetched users
-      if (newIds.length > 0) {
-        const fetchUsers = async () => {
-          try {
-            const allUsers = await User.list(); // Fetch all users (consider optimizing for large datasets if needed)
-            const newUsersMap = allUsers.reduce((acc, u) => {
-              acc[u.id] = u;
-              return acc;
-            }, {});
-            setUsersMap(prev => ({...prev, ...newUsersMap}));
-          } catch (error) {
-            console.error("Error fetching user data for comments:", error);
-          }
-        };
-        fetchUsers();
-      }
-    }
-  }, [comments]); // Depend on comments state
 
   // Auto-refresh comments and reactions every 10 seconds when user is on the page
   useEffect(() => {
@@ -144,7 +119,8 @@ export default function PostPage() {
       await PostComment.create({
         post_id: post.id,
         content: newComment,
-        author_id: user.id
+        author_id: user.id,
+        author_username: user.username
       });
       setNewComment("");
       await loadCommentsAndReactions();
