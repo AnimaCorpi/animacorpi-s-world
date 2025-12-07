@@ -292,11 +292,10 @@ export default function PostPage() {
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <UserIcon className="w-5 h-5 text-purple-600" />
                   </div>
-                  <div className="flex-1 min-w-0"> {/* Added min-w-0 to prevent overflow issues */}
+                  <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        {/* Display username using usersMap */}
-                        <p className="font-semibold text-gray-800">@{usersMap[comment.author_id]?.username || '...'}</p>
+                        <p className="font-semibold text-gray-800">@{comment.author_username || 'User'}</p>
                         <p className="text-sm text-gray-500 mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>
