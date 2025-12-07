@@ -151,7 +151,7 @@ export default function Layout({ children, currentPageName }) {
     : { backgroundColor: themePrefs.background_color };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen" style={backgroundStyle}>
       <style>{`
         :root {
           --primary-pastel: #e879f9;
@@ -449,7 +449,6 @@ export default function Layout({ children, currentPageName }) {
 
       <main 
         className="flex-1 transition-colors duration-300"
-        style={backgroundStyle}
       >
         {children}
       </main>
