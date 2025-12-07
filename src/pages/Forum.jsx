@@ -42,6 +42,7 @@ export default function Forum() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState([]);
+  const [usersMap, setUsersMap] = useState({});
 
   useEffect(() => {
     loadData();
@@ -53,9 +54,10 @@ export default function Forum() {
 
   const loadData = async () => {
     try {
-      const [threadsData, settingsData] = await Promise.all([
+      const [threadsData, settingsData, allUsers] = await Promise.all([
         ForumThread.list("-created_date"),
-        SiteSettings.filter({ page: "forum" })
+        SiteSettings.filter({ page: "forum" }),
+        User.list()
       ]);
 
       setThreads(threadsData);
@@ -63,6 +65,13 @@ export default function Forum() {
         tagline: "Connect & Share",
         message: "Join our vibrant creative community and share your thoughts."
       });
+
+      // Create users map for quick lookup
+      const userMap = {};
+      allUsers.forEach(u => {
+        userMap[u.id] = u;
+      });
+      setUsersMap(userMap);
 
       const tags = new Set();
       threadsData.forEach(thread => {
@@ -167,7 +176,13 @@ export default function Forum() {
   };
 
   const getAuthorDisplay = (thread) => {
-    return thread.author_username || 'User';
+    if (thread.author_username) {
+      return thread.author_username;
+    }
+    if (usersMap[thread.author_id]) {
+      return usersMap[thread.author_id].username;
+    }
+    return 'User';
   };
 
   if (isLoading) {

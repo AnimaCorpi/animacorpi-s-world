@@ -22,6 +22,7 @@ export default function PostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
+  const [usersMap, setUsersMap] = useState({});
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
@@ -49,10 +50,11 @@ export default function PostPage() {
     }
 
     try {
-      const [postData, commentsData, reactionsData] = await Promise.all([
+      const [postData, commentsData, reactionsData, allUsers] = await Promise.all([
         Post.filter({ id: postId }),
         PostComment.filter({ post_id: postId }, "created_date"),
-        PostReaction.filter({ post_id: postId })
+        PostReaction.filter({ post_id: postId }),
+        User.list()
       ]);
 
       if (postData.length > 0) {
@@ -60,6 +62,13 @@ export default function PostPage() {
         setComments(commentsData);
         setReactions(reactionsData);
         loadNavigation(postData[0]);
+
+        // Create users map for quick lookup
+        const userMap = {};
+        allUsers.forEach(u => {
+          userMap[u.id] = u;
+        });
+        setUsersMap(userMap);
       }
 
       try {
@@ -295,7 +304,9 @@ export default function PostPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold text-gray-800">@{comment.author_username || 'User'}</p>
+                        <p className="font-semibold text-gray-800">
+                          @{comment.author_username || (usersMap[comment.author_id]?.username) || 'User'}
+                        </p>
                         <p className="text-sm text-gray-500 mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>

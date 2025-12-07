@@ -34,6 +34,7 @@ export default function ForumThreadPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [usersMap, setUsersMap] = useState({});
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -47,9 +48,10 @@ export default function ForumThreadPage() {
 
   const loadThreadData = async (threadId) => {
     try {
-      const [threadData, commentsData] = await Promise.all([
+      const [threadData, commentsData, allUsers] = await Promise.all([
         ForumThread.filter({ id: threadId }),
-        ForumComment.filter({ thread_id: threadId }, "created_date")
+        ForumComment.filter({ thread_id: threadId }, "created_date"),
+        User.list()
       ]);
 
       if (threadData.length === 0) {
@@ -59,6 +61,13 @@ export default function ForumThreadPage() {
 
       setThread(threadData[0]);
       setComments(commentsData);
+
+      // Create users map for quick lookup
+      const userMap = {};
+      allUsers.forEach(u => {
+        userMap[u.id] = u;
+      });
+      setUsersMap(userMap);
 
       try {
         // Check if user is authenticated first without prompting login
@@ -106,7 +115,13 @@ export default function ForumThreadPage() {
   };
 
   const getAuthorDisplay = (item) => {
-    return item?.author_username || 'User';
+    if (item?.author_username) {
+      return item.author_username;
+    }
+    if (item?.author_id && usersMap[item.author_id]) {
+      return usersMap[item.author_id].username;
+    }
+    return 'User';
   };
 
   const handleSubmitComment = async (e) => {
