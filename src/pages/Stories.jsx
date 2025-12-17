@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Book } from "@/entities/Book";
-import { SiteSettings } from "@/entities/SiteSettings";
+import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
@@ -18,8 +17,8 @@ export default function Stories() {
   const loadData = async () => {
     try {
       const [booksData, settingsData] = await Promise.all([
-        Book.filter({ published: true }, "order_index"),
-        SiteSettings.filter({ page: "stories" })
+        base44.entities.Book.filter({ published: true }, "order_index"),
+        base44.entities.SiteSettings.filter({ page: "stories" })
       ]);
       setBooks(booksData);
       setSettings(settingsData[0] || { 

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
-import { Bookmark } from "@/entities/Bookmark";
-import { User } from "@/entities/User";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,8 +40,8 @@ export default function Reader() {
 
     try {
       const [bookData, chaptersData] = await Promise.all([
-        Book.filter({ id: bookId, published: true }),
-        Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
+        base44.entities.Book.filter({ id: bookId, published: true }),
+        base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
       ]);
 
       if (bookData.length === 0) {
@@ -67,9 +64,9 @@ export default function Reader() {
 
       // Load user data and bookmark
       try {
-        const userData = await User.me();
+        const userData = await base44.auth.me();
         setUser(userData);
-        const userBookmarks = await Bookmark.filter({ 
+        const userBookmarks = await base44.entities.Bookmark.filter({ 
           user_id: userData.id, 
           book_id: bookId 
         });
@@ -93,12 +90,12 @@ export default function Reader() {
       const progress = Math.round(((currentChapterIndex + 1) / chapters.length) * 100);
 
       if (bookmark) {
-        await Bookmark.update(bookmark.id, {
+        await base44.entities.Bookmark.update(bookmark.id, {
           chapter_id: chapterId,
           progress_percentage: progress
         });
       } else {
-        const newBookmark = await Bookmark.create({
+        const newBookmark = await base44.entities.Bookmark.create({
           user_id: user.id,
           book_id: book.id,
           chapter_id: chapterId,
