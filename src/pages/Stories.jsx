@@ -58,6 +58,25 @@ export default function Stories() {
               <p className="banner-text-secondary text-xl md:text-2xl">
                 {settings?.message || "Dive into immersive stories and adventures crafted with love."}
               </p>
+              {/* TEMPORARY TEST BUTTON - DELETE AFTER VERIFICATION */}
+              <button 
+                onClick={() => {
+                  console.log('TEST: Attempting navigation to Home');
+                  navigate(createPageUrl('Home'));
+                }}
+                style={{
+                  marginTop: '20px',
+                  padding: '10px 20px',
+                  background: 'red',
+                  color: 'white',
+                  border: '2px solid white',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                TEST NAVIGATION (Click to verify routing)
+              </button>
             </div>
           </motion.div>
         </div>
