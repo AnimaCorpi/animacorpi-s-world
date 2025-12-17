@@ -73,7 +73,7 @@ export default function Stories() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={createPageUrl(`Reader?bookId=${book.id}`)} className="block card-hover">
+                <Link to={createPageUrl(`ChapterIndex?bookId=${book.id}`)} className="block card-hover">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
                     <div className="aspect-[3/4] overflow-hidden">
                       <img 

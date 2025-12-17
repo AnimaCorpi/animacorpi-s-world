@@ -165,10 +165,10 @@ export default function Reader() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link to={createPageUrl("Stories")}>
+            <Link to={createPageUrl(`ChapterIndex?bookId=${book.id}`)}>
               <Button variant="ghost" className="flex items-center">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Stories
+                Back to Chapters
               </Button>
             </Link>
             
@@ -275,9 +275,14 @@ export default function Reader() {
           ) : (
             <div className="text-center">
               <p className="text-gray-600 mb-4">You've reached the end of this story!</p>
-              <Link to={createPageUrl("Stories")}>
-                <Button variant="outline">Explore More Stories</Button>
-              </Link>
+              <div className="flex gap-2 justify-center">
+                <Link to={createPageUrl(`ChapterIndex?bookId=${book.id}`)}>
+                  <Button variant="outline">View Chapters</Button>
+                </Link>
+                <Link to={createPageUrl("Stories")}>
+                  <Button variant="outline">Explore More Stories</Button>
+                </Link>
+              </div>
             </div>
           )}
         </div>
