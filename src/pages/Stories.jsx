@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -58,25 +58,6 @@ export default function Stories() {
               <p className="banner-text-secondary text-xl md:text-2xl">
                 {settings?.message || "Dive into immersive stories and adventures crafted with love."}
               </p>
-              {/* TEMPORARY TEST BUTTON - DELETE AFTER VERIFICATION */}
-              <button 
-                onClick={() => {
-                  console.log('TEST: Attempting navigation to Home');
-                  navigate(createPageUrl('Home'));
-                }}
-                style={{
-                  marginTop: '20px',
-                  padding: '10px 20px',
-                  background: 'red',
-                  color: 'white',
-                  border: '2px solid white',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                TEST NAVIGATION (Click to verify routing)
-              </button>
             </div>
           </motion.div>
         </div>
@@ -91,11 +72,13 @@ export default function Stories() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(createPageUrl(`ChapterIndex?bookId=${book.id}`));
+                }}
+                className="cursor-pointer"
               >
-                <div 
-                  onClick={() => navigate(createPageUrl(`ChapterIndex?bookId=${book.id}`))}
-                  className="block card-hover cursor-pointer"
-                >
+                <div className="block card-hover">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
                     <div className="aspect-[3/4] overflow-hidden">
                       <img 
