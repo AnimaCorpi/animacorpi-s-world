@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 
 export default function Stories() {
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [settings, setSettings] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +73,10 @@ export default function Stories() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={createPageUrl(`ChapterIndex?bookId=${book.id}`)} className="block card-hover">
+                <div 
+                  onClick={() => navigate(createPageUrl(`ChapterIndex?bookId=${book.id}`))}
+                  className="block card-hover cursor-pointer"
+                >
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
                     <div className="aspect-[3/4] overflow-hidden">
                       <img 
@@ -93,7 +97,7 @@ export default function Stories() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               </motion.div>
             ))}
           </div>
