@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 export default function Stories() {
   const [books, setBooks] = useState([]);
@@ -89,9 +88,9 @@ export default function Stories() {
                       <p className="text-gray-600 mb-4 flex-grow text-sm leading-relaxed">
                         {book.description}
                       </p>
-                      <Button as="span" className="w-full mt-auto bg-purple-500 hover:bg-purple-600">
+                      <div className="w-full mt-auto bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg text-center font-medium transition-colors">
                         Start Reading
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </Link>
