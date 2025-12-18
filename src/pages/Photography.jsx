@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Post } from "@/entities/Post";
 import { SiteSettings } from "@/entities/SiteSettings";
 import { Link } from "react-router-dom";
@@ -39,8 +39,6 @@ export default function Photography() {
     setIsLoading(false);
   };
 
-  const memoizedPosts = useMemo(() => posts, [posts]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -76,7 +74,7 @@ export default function Photography() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {memoizedPosts.map((post, index) => (
+            {posts.map((post, index) => (
               <motion.article
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
