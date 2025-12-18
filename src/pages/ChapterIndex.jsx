@@ -29,22 +29,34 @@ export default function ChapterIndex() {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('bookId');
 
+    console.log('[ChapterIndex] Loading data with bookId:', bookId);
+    console.log('[ChapterIndex] Full URL:', window.location.href);
+    console.log('[ChapterIndex] Search params:', window.location.search);
+
     if (!bookId) {
+      console.error('[ChapterIndex] ERROR: No bookId in URL params - redirecting to Stories');
       window.location.href = createPageUrl("Stories");
       return;
     }
 
     try {
+      console.log('[ChapterIndex] Fetching book data for ID:', bookId);
+      
       const [bookData, chaptersData] = await Promise.all([
         base44.entities.Book.filter({ id: bookId, published: true }),
         base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
       ]);
 
+      console.log('[ChapterIndex] Book data received:', bookData);
+      console.log('[ChapterIndex] Chapters data received:', chaptersData);
+
       if (bookData.length === 0) {
+        console.error('[ChapterIndex] ERROR: No book found with ID:', bookId, '- redirecting to Stories');
         window.location.href = createPageUrl("Stories");
         return;
       }
 
+      console.log('[ChapterIndex] Successfully loaded book:', bookData[0]);
       setBook(bookData[0]);
       setChapters(chaptersData);
 
@@ -66,7 +78,13 @@ export default function ChapterIndex() {
         setUser(null);
       }
     } catch (error) {
-      console.error("Error loading chapter index:", error);
+      console.error('[ChapterIndex] CRITICAL ERROR loading data:', error);
+      console.error('[ChapterIndex] Error details:', {
+        message: error.message,
+        stack: error.stack,
+        bookId: urlParams.get('bookId')
+      });
+      // Don't redirect on error - show error state instead
     }
     setIsLoading(false);
   };
@@ -87,11 +105,14 @@ export default function ChapterIndex() {
     );
   }
 
-  if (!book) {
+  if (!book && !isLoading) {
+    console.log('[ChapterIndex] Rendering not found state');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Story Not Found</h1>
+          <p className="text-gray-600 mb-4">The requested story could not be loaded.</p>
+          <p className="text-sm text-gray-500 mb-6">Book ID: {new URLSearchParams(window.location.search).get('bookId')}</p>
           <Link to={createPageUrl("Stories")}>
             <Button>Return to Stories</Button>
           </Link>
