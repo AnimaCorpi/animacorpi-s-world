@@ -16,7 +16,6 @@ import Guidelines from './pages/Guidelines';
 import Search from './pages/Search';
 import AdminMessage from './pages/AdminMessage';
 import Contact from './pages/Contact';
-import ChapterIndex from './pages/ChapterIndex';
 import __Layout from './Layout.jsx';
 
 
@@ -39,7 +38,6 @@ export const PAGES = {
     "Search": Search,
     "AdminMessage": AdminMessage,
     "Contact": Contact,
-    "ChapterIndex": ChapterIndex,
 }
 
 export const pagesConfig = {
