@@ -73,15 +73,8 @@ export default function Stories() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Link 
-                  to={createPageUrl(`ChapterIndex?bookId=${book.id}`)}
+                  to={createPageUrl(`Reader?bookId=${book.id}`)}
                   className="block card-hover"
-                  onClick={(e) => {
-                    console.log('[Stories] Book clicked:', {
-                      id: book.id,
-                      title: book.title,
-                      targetUrl: createPageUrl(`ChapterIndex?bookId=${book.id}`)
-                    });
-                  }}
                 >
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
                     <div className="aspect-[3/4] overflow-hidden">
