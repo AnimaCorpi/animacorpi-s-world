@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { Book } from "@/entities/Book";
+import { SiteSettings } from "@/entities/SiteSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function Stories() {
   const [books, setBooks] = useState([]);
@@ -16,8 +18,8 @@ export default function Stories() {
   const loadData = async () => {
     try {
       const [booksData, settingsData] = await Promise.all([
-        base44.entities.Book.filter({ published: true }, "order_index"),
-        base44.entities.SiteSettings.filter({ page: "stories" })
+        Book.filter({ published: true }, "order_index"),
+        SiteSettings.filter({ page: "stories" })
       ]);
       setBooks(booksData);
       setSettings(settingsData[0] || { 
@@ -43,57 +45,43 @@ export default function Stories() {
 
   return (
     <div className="min-h-screen">
-      <section className="banner-transparent py-20 px-4 sm:px-6 lg:px-8">
+      {/* Hero Section */}
+      <section className="pastel-gradient py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="banner-text-container">
-              <h1 className="banner-text text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                {settings?.tagline || "Stories from the Heart"}
-              </h1>
-              <p className="banner-text-secondary text-xl md:text-2xl">
-                {settings?.message || "Dive into immersive stories and adventures crafted with love."}
-              </p>
-            </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} >
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+              {settings?.tagline || "Stories from the Heart"}
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600">
+              {settings?.message || "Dive into immersive stories and adventures crafted with love."}
+            </p>
           </motion.div>
         </div>
       </section>
 
+      {/* Books Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {books.map((book, index) => (
-              <motion.div
-                key={book.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Link 
-                  to={createPageUrl(`Reader?bookId=${book.id}`)}
-                  className="block card-hover"
-                >
+              <motion.div key={book.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.1 }} >
+                <Link to={createPageUrl(`Reader?bookId=${book.id}`)} className="block card-hover">
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
                     <div className="aspect-[3/4] overflow-hidden">
-                      <img 
-                        src={book.cover_image_url || 'https://placehold.co/600x800/f3e8ff/a855f7?text=Book+Cover'} 
-                        alt={book.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+                      <img src={book.cover_image_url || 'https://placehold.co/600x800/f3e8ff/a855f7?text=Book+Cover'} 
+                           alt={book.title} 
+                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     </div>
                     <div className="p-6 flex-grow flex flex-col">
-                      <h3 className="text-xl font-bold text-gray-800 mb-3">
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">
                         {book.title}
                       </h3>
-                      <p className="text-gray-600 mb-4 flex-grow text-sm leading-relaxed">
+                      <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
                         {book.description}
                       </p>
-                      <div className="w-full mt-auto bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg text-center font-medium transition-colors">
+                      <Button as="span" className="w-full mt-auto bg-purple-500 hover:bg-purple-600">
                         Start Reading
-                      </div>
+                      </Button>
                     </div>
                   </div>
                 </Link>
