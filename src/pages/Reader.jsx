@@ -28,6 +28,8 @@ export default function Reader() {
   const contentRef = useRef(null);
 
   useEffect(() => {
+    console.log('Reader: Component mounted, URL:', window.location.href);
+    console.log('Reader: Search params:', window.location.search);
     loadReaderData();
   }, []);
 
@@ -47,15 +49,22 @@ export default function Reader() {
   }, [currentChapter]);
 
   const loadReaderData = async () => {
+    console.log('Reader: loadReaderData called');
+    console.log('Reader: window.location.href =', window.location.href);
+    console.log('Reader: window.location.search =', window.location.search);
+    
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('bookId');
     const chapterId = urlParams.get('chapterId');
 
-    console.log('Reader: Loading bookId:', bookId);
+    console.log('Reader: Parsed bookId:', bookId, 'chapterId:', chapterId);
+    console.log('Reader: All URL params:', Array.from(urlParams.entries()));
 
     if (!bookId) {
-      console.log('Reader: No bookId found, redirecting to Stories');
-      window.location.href = createPageUrl("Stories");
+      console.error('Reader: No bookId found in URL - cannot load story');
+      console.error('Reader: This should not happen - check navigation');
+      // Don't redirect immediately - show error state instead
+      setIsLoading(false);
       return;
     }
 
@@ -209,7 +218,15 @@ export default function Reader() {
   if (!book || !currentChapter) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Story Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          {!book ? "Story Not Found or Failed to Load" : "No Chapters Available"}
+        </h1>
+        <p className="text-gray-600 mb-4">
+          Current URL: {window.location.href}
+        </p>
+        <p className="text-sm text-gray-500 mb-6">
+          Check browser console for detailed logs
+        </p>
         <Link to={createPageUrl("Stories")}>
           <Button>Return to Stories</Button>
         </Link>
