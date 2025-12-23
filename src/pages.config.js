@@ -1,43 +1,43 @@
-import Home from './pages/Home';
 import Admin from './pages/Admin';
-import Registration from './pages/Registration';
-import Stories from './pages/Stories';
-import Reader from './pages/Reader';
-import Forum from './pages/Forum';
-import Profile from './pages/Profile';
-import Thoughts from './pages/Thoughts';
+import AdminMessage from './pages/AdminMessage';
 import Artwork from './pages/Artwork';
+import Contact from './pages/Contact';
+import Forum from './pages/Forum';
+import ForumThread from './pages/ForumThread';
+import Guidelines from './pages/Guidelines';
+import Home from './pages/Home';
+import Notifications from './pages/Notifications';
 import Photography from './pages/Photography';
 import Post from './pages/Post';
-import Notifications from './pages/Notifications';
-import ForumThread from './pages/ForumThread';
-import Terms from './pages/Terms';
-import Guidelines from './pages/Guidelines';
+import Profile from './pages/Profile';
+import Reader from './pages/Reader';
+import Registration from './pages/Registration';
 import Search from './pages/Search';
-import AdminMessage from './pages/AdminMessage';
-import Contact from './pages/Contact';
+import Stories from './pages/Stories';
+import Terms from './pages/Terms';
+import Thoughts from './pages/Thoughts';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
     "Admin": Admin,
-    "Registration": Registration,
-    "Stories": Stories,
-    "Reader": Reader,
-    "Forum": Forum,
-    "Profile": Profile,
-    "Thoughts": Thoughts,
+    "AdminMessage": AdminMessage,
     "Artwork": Artwork,
+    "Contact": Contact,
+    "Forum": Forum,
+    "ForumThread": ForumThread,
+    "Guidelines": Guidelines,
+    "Home": Home,
+    "Notifications": Notifications,
     "Photography": Photography,
     "Post": Post,
-    "Notifications": Notifications,
-    "ForumThread": ForumThread,
-    "Terms": Terms,
-    "Guidelines": Guidelines,
+    "Profile": Profile,
+    "Reader": Reader,
+    "Registration": Registration,
     "Search": Search,
-    "AdminMessage": AdminMessage,
-    "Contact": Contact,
+    "Stories": Stories,
+    "Terms": Terms,
+    "Thoughts": Thoughts,
 }
 
 export const pagesConfig = {
