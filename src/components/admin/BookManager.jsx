@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Book } from "@/entities/Book";
 import { Chapter } from "@/entities/Chapter";
@@ -391,11 +390,24 @@ Anamaria`
 
           <div>
             <Label htmlFor="chapter-content">Content</Label>
-            <ReactQuill
-              value={chapterFormData.content}
-              onChange={(content) => setChapterFormData(prev => ({ ...prev, content }))}
-              style={{ height: "400px", marginBottom: "50px" }}
-            />
+            <div className="mt-2">
+              <ReactQuill
+                theme="snow"
+                value={chapterFormData.content}
+                onChange={(content) => setChapterFormData(prev => ({ ...prev, content }))}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    ['link'],
+                    ['clean']
+                  ]
+                }}
+                style={{ height: "400px", marginBottom: "50px" }}
+              />
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
