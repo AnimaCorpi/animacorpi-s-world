@@ -51,18 +51,31 @@ export default function Reader() {
     const bookId = urlParams.get('bookId');
     const chapterId = urlParams.get('chapterId');
 
+    console.log('Reader: Loading bookId:', bookId);
+
     if (!bookId) {
+      console.log('Reader: No bookId found, redirecting to Stories');
       window.location.href = createPageUrl("Stories");
       return;
     }
 
     try {
+      console.log('Reader: Fetching book and chapters...');
       const [bookData, chaptersData] = await Promise.all([
-        base44.entities.Book.filter({ id: bookId, published: true }),
-        base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
+        base44.entities.Book.filter({ id: bookId, published: true }).catch(err => {
+          console.error('Failed to load book:', err);
+          return [];
+        }),
+        base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number").catch(err => {
+          console.error('Failed to load chapters:', err);
+          return [];
+        })
       ]);
 
+      console.log('Reader: Loaded book:', bookData.length, 'chapters:', chaptersData.length);
+
       if (bookData.length === 0) {
+        console.log('Reader: Book not found, redirecting to Stories');
         window.location.href = createPageUrl("Stories");
         return;
       }
@@ -78,17 +91,24 @@ export default function Reader() {
         chapter = chaptersData[0];
       }
       setCurrentChapter(chapter);
+      console.log('Reader: Current chapter set:', chapter?.title);
 
+      // Load user and bookmarks separately - don't let this block the reader
       try {
         const userData = await base44.auth.me();
         setUser(userData);
-        const userBookmarks = await base44.entities.Bookmark.filter({ user_id: userData.id, book_id: bookId });
-        if (userBookmarks.length > 0) setBookmark(userBookmarks[0]);
-      } catch (error) {
+        try {
+          const userBookmarks = await base44.entities.Bookmark.filter({ user_id: userData.id, book_id: bookId });
+          if (userBookmarks.length > 0) setBookmark(userBookmarks[0]);
+        } catch (bookmarkError) {
+          console.log('Reader: Could not load bookmarks:', bookmarkError);
+        }
+      } catch (authError) {
+        console.log('Reader: User not authenticated');
         setUser(null);
       }
     } catch (error) {
-      console.error("Error loading reader data:", error);
+      console.error("Reader: Critical error loading data:", error);
     }
     setIsLoading(false);
   };

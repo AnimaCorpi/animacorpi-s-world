@@ -78,7 +78,7 @@ export default function Stories() {
                     <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
                       {book.description}
                     </p>
-                    <Link to={createPageUrl(`Reader?bookId=${book.id}`)}>
+                    <Link to={createPageUrl(`Reader?bookId=${book.id}`)} onClick={() => console.log('Navigating to Reader with bookId:', book.id)}>
                       <Button className="w-full mt-auto bg-purple-500 hover:bg-purple-600">
                         Start Reading
                       </Button>
