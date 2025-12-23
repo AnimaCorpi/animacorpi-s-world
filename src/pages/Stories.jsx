@@ -65,26 +65,26 @@ export default function Stories() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {books.map((book, index) => (
               <motion.div key={book.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.1 }} >
-                <Link to={createPageUrl(`Reader?bookId=${book.id}`)} className="block card-hover">
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col">
-                    <div className="aspect-[3/4] overflow-hidden">
-                      <img src={book.cover_image_url || 'https://placehold.co/600x800/f3e8ff/a855f7?text=Book+Cover'} 
-                           alt={book.title} 
-                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                    </div>
-                    <div className="p-6 flex-grow flex flex-col">
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">
-                        {book.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
-                        {book.description}
-                      </p>
-                      <Button as="span" className="w-full mt-auto bg-purple-500 hover:bg-purple-600">
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 h-full flex flex-col card-hover">
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img src={book.cover_image_url || 'https://placehold.co/600x800/f3e8ff/a855f7?text=Book+Cover'} 
+                         alt={book.title} 
+                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  </div>
+                  <div className="p-6 flex-grow flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      {book.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+                      {book.description}
+                    </p>
+                    <Link to={createPageUrl(`Reader?bookId=${book.id}`)}>
+                      <Button className="w-full mt-auto bg-purple-500 hover:bg-purple-600">
                         Start Reading
                       </Button>
-                    </div>
+                    </Link>
                   </div>
-                </Link>
+                </div>
               </motion.div>
             ))}
           </div>
