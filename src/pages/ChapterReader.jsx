@@ -27,7 +27,7 @@ export default function ChapterReader() {
     if (bookId && chapterId) {
       loadChapterData(bookId, chapterId);
     }
-  }, [window.location.search]);
+  }, []);
 
   useEffect(() => {
     if (!chapter || !user || hasRestoredScroll.current) return;
@@ -123,9 +123,12 @@ export default function ChapterReader() {
         } catch (error) {
           setUser(null);
         }
+      } else {
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error loading chapter:", error);
+      setIsLoading(false);
     }
     setIsLoading(false);
   };
