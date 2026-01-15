@@ -14,6 +14,9 @@ import Registration from './pages/Registration';
 import Search from './pages/Search';
 import Terms from './pages/Terms';
 import Thoughts from './pages/Thoughts';
+import Stories from './pages/Stories';
+import BookDetail from './pages/BookDetail';
+import ChapterReader from './pages/ChapterReader';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +37,9 @@ export const PAGES = {
     "Search": Search,
     "Terms": Terms,
     "Thoughts": Thoughts,
+    "Stories": Stories,
+    "BookDetail": BookDetail,
+    "ChapterReader": ChapterReader,
 }
 
 export const pagesConfig = {
