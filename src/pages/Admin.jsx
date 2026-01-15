@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User } from "@/entities/User";
 import { Post } from "@/entities/Post";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
 import { SiteSettings } from "@/entities/SiteSettings";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
@@ -11,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Settings, 
   FileText, 
-  BookOpen, 
   Users, 
   Eye,
   Image,
@@ -20,7 +17,6 @@ import {
   Flag
 } from "lucide-react";
 import PostManager from "../components/admin/PostManager";
-import BookManager from "../components/admin/BookManager";
 import SiteSettingsManager from "../components/admin/SiteSettingsManager";
 import UserManager from "../components/admin/UserManager";
 import BackgroundManager from "../components/admin/BackgroundManager";
@@ -31,9 +27,7 @@ export default function Admin() {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({
     posts: 0,
-    books: 0,
-    users: 0,
-    chapters: 0
+    users: 0
   });
 
   useEffect(() => {
@@ -56,18 +50,14 @@ export default function Admin() {
 
   const loadStats = async () => {
     try {
-      const [posts, books, users, chapters] = await Promise.all([
+      const [posts, users] = await Promise.all([
         Post.list(),
-        Book.list(),
-        User.list(),
-        Chapter.list()
+        User.list()
       ]);
       
       setStats({
         posts: posts.length,
-        books: books.length,
-        users: users.length,
-        chapters: chapters.length
+        users: users.length
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -108,7 +98,7 @@ export default function Admin() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -117,30 +107,6 @@ export default function Admin() {
                   <p className="text-2xl font-bold text-gray-900">{stats.posts}</p>
                 </div>
                 <FileText className="w-8 h-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Books</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.books}</p>
-                </div>
-                <BookOpen className="w-8 h-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Chapters</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.chapters}</p>
-                </div>
-                <BookOpen className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -168,9 +134,8 @@ export default function Admin() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-7">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="posts">Posts</TabsTrigger>
-                <TabsTrigger value="books">Books & Stories</TabsTrigger>
                 <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
                 <TabsTrigger value="settings">Site Settings</TabsTrigger>
                 <TabsTrigger value="users">Users</TabsTrigger>
@@ -180,10 +145,6 @@ export default function Admin() {
               
               <TabsContent value="posts" className="mt-6">
                 <PostManager onStatsUpdate={loadStats} />
-              </TabsContent>
-              
-              <TabsContent value="books" className="mt-6">
-                <BookManager onStatsUpdate={loadStats} />
               </TabsContent>
               
               <TabsContent value="backgrounds" className="mt-6">
