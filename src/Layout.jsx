@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Stories", "Post", "Reader", "Terms", "Guidelines", "Search", "Forum", "ForumThread", "Registration", "Contact"];
+const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Post", "Terms", "Guidelines", "Search", "Forum", "ForumThread", "Registration", "Contact"];
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -137,7 +137,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Thoughts", path: "Thoughts", icon: PenTool },
     { name: "Artwork", path: "Artwork", icon: PenTool },
     { name: "Photography", path: "Photography", icon: Camera },
-    { name: "Stories", path: "Stories", icon: BookOpen },
     { name: "Forum", path: "Forum", icon: MessageSquare },
   ];
 

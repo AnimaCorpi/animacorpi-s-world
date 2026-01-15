@@ -10,7 +10,6 @@ import Notifications from './pages/Notifications';
 import Photography from './pages/Photography';
 import Post from './pages/Post';
 import Profile from './pages/Profile';
-import Reader from './pages/Reader';
 import Registration from './pages/Registration';
 import Search from './pages/Search';
 import Terms from './pages/Terms';
@@ -31,7 +30,6 @@ export const PAGES = {
     "Photography": Photography,
     "Post": Post,
     "Profile": Profile,
-    "Reader": Reader,
     "Registration": Registration,
     "Search": Search,
     "Terms": Terms,
