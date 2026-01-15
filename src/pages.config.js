@@ -13,7 +13,6 @@ import Profile from './pages/Profile';
 import Reader from './pages/Reader';
 import Registration from './pages/Registration';
 import Search from './pages/Search';
-import Stories from './pages/Stories';
 import Terms from './pages/Terms';
 import Thoughts from './pages/Thoughts';
 import __Layout from './Layout.jsx';
@@ -35,7 +34,6 @@ export const PAGES = {
     "Reader": Reader,
     "Registration": Registration,
     "Search": Search,
-    "Stories": Stories,
     "Terms": Terms,
     "Thoughts": Thoughts,
 }
