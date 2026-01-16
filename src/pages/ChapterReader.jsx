@@ -90,11 +90,17 @@ export default function ChapterReader() {
 
   const loadChapterData = async (bookId, chapterId) => {
     try {
+      console.log("Loading chapter with bookId:", bookId, "chapterId:", chapterId);
+      
       const [bookData, chapterData, chaptersData] = await Promise.all([
         base44.entities.Book.filter({ id: bookId }),
         base44.entities.Chapter.filter({ id: chapterId }),
         base44.entities.Chapter.filter({ book_id: bookId }, "chapter_number")
       ]);
+
+      console.log("Book data:", bookData);
+      console.log("Chapter data:", chapterData);
+      console.log("All chapters:", chaptersData);
 
       if (bookData.length > 0 && chapterData.length > 0) {
         setBook(bookData[0]);
@@ -110,6 +116,8 @@ export default function ChapterReader() {
         } catch (error) {
           console.log("User not authenticated");
         }
+      } else {
+        console.error("No book or chapter found - bookData:", bookData.length, "chapterData:", chapterData.length);
       }
     } catch (error) {
       console.error("Error loading chapter:", error);
