@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Book } from "@/entities/Book";
-import { SiteSettings } from "@/entities/SiteSettings";
+import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
 
 export default function Stories() {
   const [books, setBooks] = useState([]);
@@ -24,8 +22,8 @@ export default function Stories() {
   const loadData = async () => {
     try {
       const [booksData, settingsData] = await Promise.all([
-        Book.filter({ published: true }, "order_index"),
-        SiteSettings.filter({ page: "stories" })
+        base44.entities.Book.filter({ published: true }, "order_index"),
+        base44.entities.SiteSettings.filter({ page: "stories" })
       ]);
       
       setBooks(booksData);
@@ -44,12 +42,13 @@ export default function Stories() {
           }
         }
       } catch (error) {
-        setUser(null);
+        console.log("User not authenticated");
       }
     } catch (error) {
       console.error("Error loading stories:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const calculateAge = (birthdate) => {

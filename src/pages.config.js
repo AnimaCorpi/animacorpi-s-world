@@ -1,6 +1,8 @@
 import Admin from './pages/Admin';
 import AdminMessage from './pages/AdminMessage';
 import Artwork from './pages/Artwork';
+import BookDetail from './pages/BookDetail';
+import ChapterReader from './pages/ChapterReader';
 import Contact from './pages/Contact';
 import Forum from './pages/Forum';
 import ForumThread from './pages/ForumThread';
@@ -12,11 +14,9 @@ import Post from './pages/Post';
 import Profile from './pages/Profile';
 import Registration from './pages/Registration';
 import Search from './pages/Search';
+import Stories from './pages/Stories';
 import Terms from './pages/Terms';
 import Thoughts from './pages/Thoughts';
-import Stories from './pages/Stories';
-import BookDetail from './pages/BookDetail';
-import ChapterReader from './pages/ChapterReader';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +24,8 @@ export const PAGES = {
     "Admin": Admin,
     "AdminMessage": AdminMessage,
     "Artwork": Artwork,
+    "BookDetail": BookDetail,
+    "ChapterReader": ChapterReader,
     "Contact": Contact,
     "Forum": Forum,
     "ForumThread": ForumThread,
@@ -35,11 +37,9 @@ export const PAGES = {
     "Profile": Profile,
     "Registration": Registration,
     "Search": Search,
+    "Stories": Stories,
     "Terms": Terms,
     "Thoughts": Thoughts,
-    "Stories": Stories,
-    "BookDetail": BookDetail,
-    "ChapterReader": ChapterReader,
 }
 
 export const pagesConfig = {

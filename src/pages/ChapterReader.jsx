@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
-import { Bookmark } from "@/entities/Bookmark";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -14,7 +11,6 @@ export default function ChapterReader() {
   const [chapter, setChapter] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [user, setUser] = useState(null);
-  const [bookmark, setBookmark] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const contentRef = useRef(null);
   const hasRestoredScroll = useRef(false);
@@ -26,15 +22,17 @@ export default function ChapterReader() {
     
     if (bookId && chapterId) {
       loadChapterData(bookId, chapterId);
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (!chapter || !user || hasRestoredScroll.current) return;
+    if (!chapter || !user || !book || hasRestoredScroll.current) return;
 
     const restoreScrollPosition = async () => {
       try {
-        const bookmarks = await Bookmark.filter({ 
+        const bookmarks = await base44.entities.Bookmark.filter({ 
           user_id: user.id, 
           book_id: book.id,
           chapter_id: chapter.id 
@@ -54,24 +52,24 @@ export default function ChapterReader() {
   }, [chapter, user, book]);
 
   useEffect(() => {
-    if (!chapter || !user) return;
+    if (!chapter || !user || !book) return;
 
     const saveScrollProgress = throttle(async () => {
       const scrollPercentage = (window.scrollY / document.documentElement.scrollHeight) * 100;
       
       try {
-        const existingBookmarks = await Bookmark.filter({ 
+        const existingBookmarks = await base44.entities.Bookmark.filter({ 
           user_id: user.id, 
           book_id: book.id 
         });
 
         if (existingBookmarks.length > 0) {
-          await Bookmark.update(existingBookmarks[0].id, {
+          await base44.entities.Bookmark.update(existingBookmarks[0].id, {
             chapter_id: chapter.id,
             progress_percentage: scrollPercentage
           });
         } else {
-          await Bookmark.create({
+          await base44.entities.Bookmark.create({
             user_id: user.id,
             book_id: book.id,
             chapter_id: chapter.id,
@@ -91,14 +89,11 @@ export default function ChapterReader() {
   }, [chapter, user, book]);
 
   const loadChapterData = async (bookId, chapterId) => {
-    setIsLoading(true);
-    hasRestoredScroll.current = false;
-
     try {
       const [bookData, chapterData, chaptersData] = await Promise.all([
-        Book.filter({ id: bookId }),
-        Chapter.filter({ id: chapterId }),
-        Chapter.filter({ book_id: bookId }, "chapter_number")
+        base44.entities.Book.filter({ id: bookId }),
+        base44.entities.Chapter.filter({ id: chapterId }),
+        base44.entities.Chapter.filter({ book_id: bookId }, "chapter_number")
       ]);
 
       if (bookData.length > 0 && chapterData.length > 0) {
@@ -111,26 +106,16 @@ export default function ChapterReader() {
           if (isAuthenticated) {
             const userData = await base44.auth.me();
             setUser(userData);
-
-            const bookmarks = await Bookmark.filter({ 
-              user_id: userData.id, 
-              book_id: bookId 
-            });
-            if (bookmarks.length > 0) {
-              setBookmark(bookmarks[0]);
-            }
           }
         } catch (error) {
-          setUser(null);
+          console.log("User not authenticated");
         }
-      } else {
-        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error loading chapter:", error);
+    } finally {
       setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const getCurrentChapterIndex = () => {

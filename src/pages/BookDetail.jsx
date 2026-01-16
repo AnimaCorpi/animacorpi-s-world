@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
-import { Bookmark } from "@/entities/Bookmark";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -22,15 +19,16 @@ export default function BookDetail() {
     const bookId = urlParams.get('id');
     if (bookId) {
       loadBookData(bookId);
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
   const loadBookData = async (bookId) => {
-    setIsLoading(true);
     try {
       const [bookData, chaptersData] = await Promise.all([
-        Book.filter({ id: bookId }),
-        Chapter.filter({ book_id: bookId }, "chapter_number")
+        base44.entities.Book.filter({ id: bookId }),
+        base44.entities.Chapter.filter({ book_id: bookId }, "chapter_number")
       ]);
 
       if (bookData.length > 0) {
@@ -43,19 +41,23 @@ export default function BookDetail() {
             const userData = await base44.auth.me();
             setUser(userData);
             
-            const bookmarks = await Bookmark.filter({ user_id: userData.id, book_id: bookId });
+            const bookmarks = await base44.entities.Bookmark.filter({ 
+              user_id: userData.id, 
+              book_id: bookId 
+            });
             if (bookmarks.length > 0) {
               setBookmark(bookmarks[0]);
             }
           }
         } catch (error) {
-          setUser(null);
+          console.log("User not authenticated");
         }
       }
     } catch (error) {
       console.error("Error loading book:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleStartReading = () => {
