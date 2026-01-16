@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/entities/User";
-import { Post } from "@/entities/Post";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
-import { SiteSettings } from "@/entities/SiteSettings";
+import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +39,7 @@ export default function Admin() {
 
   const checkAdminAccess = async () => {
     try {
-      const userData = await User.me();
+      const userData = await base44.auth.me();
       if (userData.role !== 'admin') {
         window.location.href = createPageUrl("Home");
         return;
@@ -57,10 +53,10 @@ export default function Admin() {
   const loadStats = async () => {
     try {
       const [posts, books, chapters, users] = await Promise.all([
-        Post.list(),
-        Book.list(),
-        Chapter.list(),
-        User.list()
+        base44.entities.Post.list(),
+        base44.entities.Book.list(),
+        base44.entities.Chapter.list(),
+        base44.entities.User.list()
       ]);
       
       setStats({

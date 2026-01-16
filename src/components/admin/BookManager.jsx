@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Book } from "@/entities/Book";
-import { Chapter } from "@/entities/Chapter";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +54,7 @@ export default function BookManager({ onStatsUpdate }) {
 
   const loadBooks = async () => {
     try {
-      const booksData = await Book.list("order_index");
+      const booksData = await base44.entities.Book.list("order_index");
       setBooks(booksData);
       if (onStatsUpdate) onStatsUpdate();
     } catch (error) {
@@ -66,7 +64,7 @@ export default function BookManager({ onStatsUpdate }) {
 
   const loadChapters = async (bookId) => {
     try {
-      const chaptersData = await Chapter.filter({ book_id: bookId }, "chapter_number");
+      const chaptersData = await base44.entities.Chapter.filter({ book_id: bookId }, "chapter_number");
       setChapters(chaptersData);
     } catch (error) {
       console.error("Error loading chapters:", error);
@@ -77,10 +75,10 @@ export default function BookManager({ onStatsUpdate }) {
     e.preventDefault();
     try {
       if (selectedBook) {
-        await Book.update(selectedBook.id, bookForm);
+        await base44.entities.Book.update(selectedBook.id, bookForm);
         showAlert("Book updated successfully!", "success");
       } else {
-        await Book.create(bookForm);
+        await base44.entities.Book.create(bookForm);
         showAlert("Book created successfully!", "success");
       }
       resetBookForm();
@@ -94,10 +92,10 @@ export default function BookManager({ onStatsUpdate }) {
     e.preventDefault();
     try {
       if (editingChapter) {
-        await Chapter.update(editingChapter.id, chapterForm);
+        await base44.entities.Chapter.update(editingChapter.id, chapterForm);
         showAlert("Chapter updated successfully!", "success");
       } else {
-        await Chapter.create({
+        await base44.entities.Chapter.create({
           ...chapterForm,
           book_id: expandedBook
         });
@@ -113,9 +111,9 @@ export default function BookManager({ onStatsUpdate }) {
   const handleDeleteBook = async (bookId) => {
     if (!confirm("Delete this book and all its chapters?")) return;
     try {
-      const bookChapters = await Chapter.filter({ book_id: bookId });
-      await Promise.all(bookChapters.map(ch => Chapter.delete(ch.id)));
-      await Book.delete(bookId);
+      const bookChapters = await base44.entities.Chapter.filter({ book_id: bookId });
+      await Promise.all(bookChapters.map(ch => base44.entities.Chapter.delete(ch.id)));
+      await base44.entities.Book.delete(bookId);
       showAlert("Book deleted successfully!", "success");
       loadBooks();
     } catch (error) {
@@ -126,7 +124,7 @@ export default function BookManager({ onStatsUpdate }) {
   const handleDeleteChapter = async (chapterId) => {
     if (!confirm("Delete this chapter?")) return;
     try {
-      await Chapter.delete(chapterId);
+      await base44.entities.Chapter.delete(chapterId);
       showAlert("Chapter deleted successfully!", "success");
       loadChapters(expandedBook);
     } catch (error) {
@@ -219,7 +217,7 @@ export default function BookManager({ onStatsUpdate }) {
     try {
       await Promise.all(
         reorderedChapters.map((chapter, index) =>
-          Chapter.update(chapter.id, { chapter_number: index + 1 })
+          base44.entities.Chapter.update(chapter.id, { chapter_number: index + 1 })
         )
       );
       showAlert("Chapters reordered successfully!", "success");
