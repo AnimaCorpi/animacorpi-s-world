@@ -21,11 +21,13 @@ export default function ChapterReader() {
     const chapterId = urlParams.get('chapterId');
     
     if (bookId && chapterId) {
+      hasRestoredScroll.current = false;
+      setIsLoading(true);
       loadChapterData(bookId, chapterId);
     } else {
       setIsLoading(false);
     }
-  }, []);
+  }, [window.location.search]);
 
   useEffect(() => {
     if (!chapter || !user || !book || hasRestoredScroll.current) return;
@@ -193,21 +195,28 @@ export default function ChapterReader() {
         <div className="mt-16 pt-8 border-t border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             {previousChapter ? (
-              <Link to={createPageUrl(`ChapterReader?bookId=${book.id}&chapterId=${previousChapter.id}`)} className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Previous Chapter
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  window.location.href = createPageUrl(`ChapterReader?bookId=${book.id}&chapterId=${previousChapter.id}`);
+                }}
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Previous Chapter
+              </Button>
             ) : <div className="w-full sm:w-auto"></div>}
 
             {nextChapter ? (
-              <Link to={createPageUrl(`ChapterReader?bookId=${book.id}&chapterId=${nextChapter.id}`)} className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  Next Chapter
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
+              <Button 
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                onClick={() => {
+                  window.location.href = createPageUrl(`ChapterReader?bookId=${book.id}&chapterId=${nextChapter.id}`);
+                }}
+              >
+                Next Chapter
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
             ) : (
               <Link to={createPageUrl(`BookDetail?id=${book.id}`)} className="w-full sm:w-auto">
                 <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
