@@ -132,7 +132,7 @@ export default function Stories() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={createPageUrl(`Reader?bookId=${book.id}`)}>
+                <Link to={createPageUrl(`Reader?bookid=${book.id}`)}>
                   <Card className="card-hover overflow-hidden h-full">
                     {book.cover_image_url && (
                       <div className="aspect-[2/3] overflow-hidden bg-gray-100">

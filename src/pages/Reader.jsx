@@ -15,7 +15,7 @@ export default function Reader() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const bookId = urlParams.get('bookId');
+    const bookId = urlParams.get('bookid');
     
     if (bookId) {
       loadBookData(bookId);
@@ -113,7 +113,7 @@ export default function Reader() {
   const navigateToChapter = (chapter) => {
     setCurrentChapter(chapter);
     window.scrollTo(0, 0);
-    window.history.pushState({}, '', createPageUrl(`Reader?bookId=${book.id}&chapterId=${chapter.id}`));
+    window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
 
   const getCurrentChapterIndex = () => {
