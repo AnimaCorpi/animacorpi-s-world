@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { User } from "@/entities/User";
-import { Notification } from "@/entities/Notification";
-import { SiteSettings } from "@/entities/SiteSettings";
 import {
   PenTool,
   Camera,
@@ -69,7 +66,7 @@ export default function Layout({ children, currentPageName }) {
       // Check if user is authenticated first without prompting login
       const isAuthenticated = await base44.auth.isAuthenticated();
       if (isAuthenticated) {
-        const userData = await User.me();
+        const userData = await base44.auth.me();
         setUser(userData);
         if (userData.theme_preferences) {
           setThemePrefs(prev => ({
@@ -91,7 +88,7 @@ export default function Layout({ children, currentPageName }) {
   const loadNotificationCount = async () => {
     if (!user) return;
     try {
-      const notifications = await Notification.filter({ user_id: user.id, read: false });
+      const notifications = await base44.entities.Notification.filter({ user_id: user.id, read: false });
       setNotificationCount(notifications.length);
     } catch (error) {
       console.error("Error loading notification count:", error);
@@ -101,8 +98,8 @@ export default function Layout({ children, currentPageName }) {
   const loadSiteSettings = async () => {
     try {
       const [footerData, nameData] = await Promise.all([
-        SiteSettings.filter({ page: "footer" }),
-        SiteSettings.filter({ page: "site_name" })
+        base44.entities.SiteSettings.filter({ page: "footer" }),
+        base44.entities.SiteSettings.filter({ page: "site_name" })
       ]);
 
       if (footerData.length > 0) {
@@ -117,9 +114,8 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = async () => {
-    await User.logout();
+    await base44.auth.logout();
     setUser(null);
-    window.location.href = "/";
   };
   
   const handleSearch = (e) => {
@@ -375,7 +371,7 @@ export default function Layout({ children, currentPageName }) {
                 </DropdownMenu>
               ) : (
                 <Button
-                  onClick={() => User.login()}
+                  onClick={() => base44.auth.redirectToLogin()}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200"
                 >
                   Sign In
