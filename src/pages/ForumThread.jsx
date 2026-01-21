@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { ForumThread } from "@/entities/ForumThread";
-import { ForumComment } from "@/entities/ForumComment";
-import { User } from "@/entities/User";
-import { Report } from "@/entities/Report";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,9 +45,9 @@ export default function ForumThreadPage() {
   const loadThreadData = async (threadId) => {
     try {
       const [threadData, commentsData, allUsers] = await Promise.all([
-        ForumThread.filter({ id: threadId }),
-        ForumComment.filter({ thread_id: threadId }, "created_date"),
-        User.list()
+        base44.entities.ForumThread.filter({ id: threadId }),
+        base44.entities.ForumComment.filter({ thread_id: threadId }, "created_date"),
+        base44.entities.User.list()
       ]);
 
       if (threadData.length === 0) {
@@ -73,7 +69,7 @@ export default function ForumThreadPage() {
         // Check if user is authenticated first without prompting login
         const isAuthenticated = await base44.auth.isAuthenticated();
         if (isAuthenticated) {
-          const userData = await User.me();
+          const userData = await base44.auth.me();
           if (userData) {
             if (!userData.username || !userData.birthdate) {
               // User logged in but needs to complete registration
@@ -140,12 +136,12 @@ export default function ForumThreadPage() {
         parent_comment_id: replyingTo || ""
       };
 
-      await ForumComment.create(commentData);
+      await base44.entities.ForumComment.create(commentData);
       
       setNewComment("");
       setReplyingTo(null);
       
-      const updatedComments = await ForumComment.filter({ thread_id: thread.id }, "created_date");
+      const updatedComments = await base44.entities.ForumComment.filter({ thread_id: thread.id }, "created_date");
       setComments(updatedComments);
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -350,7 +346,7 @@ export default function ForumThreadPage() {
                   if (user?.needsRegistration) {
                     window.location.href = createPageUrl("Registration");
                   } else {
-                    User.login();
+                    base44.auth.redirectToLogin();
                   }
                 }}>
                   {user?.needsRegistration ? "Complete Profile" : "Sign In"}

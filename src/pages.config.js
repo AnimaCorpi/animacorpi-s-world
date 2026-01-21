@@ -10,12 +10,12 @@ import Notifications from './pages/Notifications';
 import Photography from './pages/Photography';
 import Post from './pages/Post';
 import Profile from './pages/Profile';
+import Reader from './pages/Reader';
 import Registration from './pages/Registration';
 import Search from './pages/Search';
 import Stories from './pages/Stories';
 import Terms from './pages/Terms';
 import Thoughts from './pages/Thoughts';
-import Reader from './pages/Reader';
 import __Layout from './Layout.jsx';
 
 
@@ -32,12 +32,12 @@ export const PAGES = {
     "Photography": Photography,
     "Post": Post,
     "Profile": Profile,
+    "Reader": Reader,
     "Registration": Registration,
     "Search": Search,
     "Stories": Stories,
     "Terms": Terms,
     "Thoughts": Thoughts,
-    "Reader": Reader,
 }
 
 export const pagesConfig = {

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/entities/User";
-import { Notification } from "@/entities/Notification";
-import { SendEmail } from "@/integrations/Core";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,7 +22,7 @@ export default function Registration() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await User.me();
+        const userData = await base44.auth.me();
         setUser(userData);
         
         if (userData.username && userData.birthdate) {
@@ -88,12 +86,12 @@ export default function Registration() {
         birthdate: formData.birthdate,
       };
 
-      await User.updateMyUserData(updateData);
+      await base44.auth.updateMe(updateData);
       
       // Send welcome email only if this is first time completing registration
       if (!user.username) {
         try {
-          await SendEmail({
+          await base44.integrations.Core.SendEmail({
             to: user.email,
             subject: "Welcome to Anamaria's World!",
             body: `Hi ${formData.first_name},
@@ -108,9 +106,9 @@ Your username: ${formData.username}
 Visit your account: ${window.location.origin}`
           });
 
-          const admins = await User.filter({ role: 'admin' });
+          const admins = await base44.entities.User.filter({ role: 'admin' });
           for (const admin of admins) {
-            await Notification.create({
+            await base44.entities.Notification.create({
               user_id: admin.id,
               type: "admin_message",
               title: "New User Registration",

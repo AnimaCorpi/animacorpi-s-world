@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { ForumThread } from "@/entities/ForumThread";
-import { User } from "@/entities/User";
-import { SiteSettings } from "@/entities/SiteSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -55,9 +52,9 @@ export default function Forum() {
   const loadData = async () => {
     try {
       const [threadsData, settingsData, allUsers] = await Promise.all([
-        ForumThread.list("-created_date"),
-        SiteSettings.filter({ page: "forum" }),
-        User.list()
+        base44.entities.ForumThread.list("-created_date"),
+        base44.entities.SiteSettings.filter({ page: "forum" }),
+        base44.entities.User.list()
       ]);
 
       setThreads(threadsData);
@@ -89,7 +86,7 @@ export default function Forum() {
         // Check if user is authenticated first without prompting login
         const isAuthenticated = await base44.auth.isAuthenticated();
         if (isAuthenticated) {
-          const userData = await User.me();
+          const userData = await base44.auth.me();
           if (userData) {
             if (!userData.username || !userData.birthdate) {
               // User is logged in but hasn't completed registration - redirect only if they try to post
@@ -221,7 +218,7 @@ export default function Forum() {
             <Button
               onClick={() => {
                 if (!user) {
-                  User.login();
+                  base44.auth.redirectToLogin();
                 } else if (user.needsRegistration) {
                   window.location.href = createPageUrl("Registration");
                 } else {
@@ -371,7 +368,7 @@ export default function Forum() {
               <Button
                 onClick={() => {
                   if (!user) {
-                    User.login();
+                    base44.auth.redirectToLogin();
                   } else if (user.needsRegistration) {
                     window.location.href = createPageUrl("Registration");
                   } else {
