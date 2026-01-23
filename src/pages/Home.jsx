@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Post } from "@/entities/Post";
-import { SiteSettings } from "@/entities/SiteSettings";
+import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Calendar, Tag, ArrowRight, Filter } from "lucide-react";
@@ -35,8 +33,8 @@ export default function Home() {
   const loadData = async () => {
     try {
       const [postsData, settingsData] = await Promise.all([
-        Post.filter({ published: true }, "-created_date"),
-        SiteSettings.filter({ page: "home" })
+        base44.entities.Post.filter({ published: true }, "-created_date"),
+        base44.entities.SiteSettings.filter({ page: "home" })
       ]);
       setPosts(postsData);
       setSettings(settingsData[0] || { tagline: "Welcome to My Creative World", message: "Explore thoughts, artwork, photography, and stories from my heart." });
