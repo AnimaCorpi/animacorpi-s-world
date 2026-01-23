@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Post } from "@/entities/Post";
-import { PostComment } from "@/entities/PostComment";
-import { PostReaction } from "@/entities/PostReaction";
-import { User } from "@/entities/User";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,10 +47,10 @@ export default function PostPage() {
 
     try {
       const [postData, commentsData, reactionsData, allUsers] = await Promise.all([
-        Post.filter({ id: postId }),
-        PostComment.filter({ post_id: postId }, "created_date"),
-        PostReaction.filter({ post_id: postId }),
-        User.list()
+        base44.entities.Post.filter({ id: postId }),
+        base44.entities.PostComment.filter({ post_id: postId }, "created_date"),
+        base44.entities.PostReaction.filter({ post_id: postId }),
+        base44.entities.User.list()
       ]);
 
       if (postData.length > 0) {
@@ -75,7 +71,7 @@ export default function PostPage() {
         // Check if user is authenticated first without prompting login
         const isAuthenticated = await base44.auth.isAuthenticated();
         if (isAuthenticated) {
-          const userData = await User.me();
+          const userData = await base44.auth.me();
           setUser(userData);
         } else {
           setUser(null);
@@ -95,8 +91,8 @@ export default function PostPage() {
     
     try {
       const [commentsData, reactionsData] = await Promise.all([
-        PostComment.filter({ post_id: post.id }, "created_date"),
-        PostReaction.filter({ post_id: post.id })
+        base44.entities.PostComment.filter({ post_id: post.id }, "created_date"),
+        base44.entities.PostReaction.filter({ post_id: post.id })
       ]);
       setComments(commentsData);
       setReactions(reactionsData);
@@ -107,7 +103,7 @@ export default function PostPage() {
 
   const loadNavigation = async (currentPost) => {
     try {
-      const allPosts = await Post.filter({ published: true, category: currentPost.category }, "-created_date");
+      const allPosts = await base44.entities.Post.filter({ published: true, category: currentPost.category }, "-created_date");
       const currentIndex = allPosts.findIndex(p => p.id === currentPost.id);
       
       setNavigation({
@@ -125,7 +121,7 @@ export default function PostPage() {
     
     setIsSubmitting(true);
     try {
-      await PostComment.create({
+      await base44.entities.PostComment.create({
         post_id: post.id,
         content: newComment,
         author_id: user.id,
@@ -149,9 +145,9 @@ export default function PostPage() {
     const existingReaction = reactions.find(r => r.created_by === user.email); 
     try {
       if (existingReaction) {
-        await PostReaction.delete(existingReaction.id);
+        await base44.entities.PostReaction.delete(existingReaction.id);
       } else {
-        await PostReaction.create({
+        await base44.entities.PostReaction.create({
           post_id: post.id,
           user_id: user.id,
           emoji: '❤️'
@@ -167,7 +163,7 @@ export default function PostPage() {
   const handleDeleteComment = async (commentId) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
     try {
-      await PostComment.delete(commentId);
+      await base44.entities.PostComment.delete(commentId);
       await loadCommentsAndReactions();
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -290,7 +286,7 @@ export default function PostPage() {
             ) : (
               <div className="text-center mb-8 p-4 bg-gray-100 rounded-lg">
                 <p>
-                  <button onClick={() => User.login()} className="text-purple-600 font-semibold">Sign in</button> to leave a comment.
+                  <button onClick={() => base44.auth.redirectToLogin()} className="text-purple-600 font-semibold">Sign in</button> to leave a comment.
                 </p>
               </div>
             )}
