@@ -1,7 +1,5 @@
-
 import React, { useState } from "react";
-import { ForumThread } from "@/entities/ForumThread";
-import { UploadFile } from "@/integrations/Core";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -97,7 +95,7 @@ export default function ForumThreadForm({ user, canCreateNSFW, onSuccess, onCanc
 
     setUploadingImage(true);
     try {
-      const { file_url } = await UploadFile({ file });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, image_url: file_url }));
     } catch (error) {
       setError("Failed to upload image. Please try again.");
@@ -156,7 +154,7 @@ export default function ForumThreadForm({ user, canCreateNSFW, onSuccess, onCanc
         author_username: user.username
       };
 
-      await ForumThread.create(threadData);
+      await base44.entities.ForumThread.create(threadData);
       onSuccess();
     } catch (error) {
       setError("Failed to create thread. Please try again.");
