@@ -293,7 +293,7 @@ export default function PostPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-gray-800">
-                          @{comment.author_username || (usersMap[comment.author_id]?.username) || 'User'}
+                          @{comment.author_username || 'User'}
                         </p>
                         <p className="text-sm text-gray-500 mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
