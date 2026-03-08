@@ -46,11 +46,10 @@ export default function PostPage() {
     }
 
     try {
-      const [postData, commentsData, reactionsData, allUsers] = await Promise.all([
+      const [postData, commentsData, reactionsData] = await Promise.all([
         base44.entities.Post.filter({ id: postId }),
         base44.entities.PostComment.filter({ post_id: postId }, "created_date"),
-        base44.entities.PostReaction.filter({ post_id: postId }),
-        base44.entities.User.list()
+        base44.entities.PostReaction.filter({ post_id: postId })
       ]);
 
       if (postData.length > 0) {
@@ -58,13 +57,6 @@ export default function PostPage() {
         setComments(commentsData);
         setReactions(reactionsData);
         loadNavigation(postData[0]);
-
-        // Create users map for quick lookup
-        const userMap = {};
-        allUsers.forEach(u => {
-          userMap[u.id] = u;
-        });
-        setUsersMap(userMap);
       }
 
       try {
