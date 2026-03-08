@@ -27,11 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUser } from "../components/UserContext";
 
 export default function Forum() {
+  const user = useUser();
   const [threads, setThreads] = useState([]);
   const [filteredThreads, setFilteredThreads] = useState([]);
-  const [user, setUser] = useState(null);
   const [settings, setSettings] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
@@ -41,9 +42,25 @@ export default function Forum() {
   const [allTags, setAllTags] = useState([]);
   const [usersMap, setUsersMap] = useState({});
 
+  // Derived state - no separate auth fetch needed, user comes from Layout context
+  const needsRegistration = user && (!user.username || !user.birthdate);
+
   useEffect(() => {
     loadData();
   }, []);
+
+  // Update NSFW visibility whenever user changes
+  useEffect(() => {
+    if (user && !needsRegistration) {
+      if (user.role === 'admin' || calculateAge(user.birthdate) >= 18) {
+        setShowNSFW(true);
+      } else {
+        setShowNSFW(false);
+      }
+    } else {
+      setShowNSFW(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     filterThreads();
@@ -63,49 +80,19 @@ export default function Forum() {
         message: "Join our vibrant creative community and share your thoughts."
       });
 
-      // Create users map for quick lookup
       const userMap = {};
-      allUsers.forEach(u => {
-        userMap[u.id] = u;
-      });
+      allUsers.forEach(u => { userMap[u.id] = u; });
       setUsersMap(userMap);
 
       const tags = new Set();
       threadsData.forEach(thread => {
         if (thread.tags && Array.isArray(thread.tags)) {
           thread.tags.forEach(tag => {
-            if (tag && tag.trim()) {
-              tags.add(tag.trim());
-            }
+            if (tag && tag.trim()) tags.add(tag.trim());
           });
         }
       });
       setAllTags(Array.from(tags).sort());
-
-      try {
-        // Check if user is authenticated first without prompting login
-        const isAuthenticated = await base44.auth.isAuthenticated();
-        if (isAuthenticated) {
-          const userData = await base44.auth.me();
-          if (userData) {
-            if (!userData.username || !userData.birthdate) {
-              // User is logged in but hasn't completed registration - redirect only if they try to post
-              setUser({ ...userData, needsRegistration: true });
-            } else {
-              setUser(userData);
-              if (userData.role === 'admin' || calculateAge(userData.birthdate) >= 18) {
-                setShowNSFW(true);
-              }
-            }
-          }
-        } else {
-          // User is browsing as guest - that's fine
-          setUser(null);
-        }
-      } catch (error) {
-        // User is not logged in - that's fine, they can still view
-        setUser(null);
-      }
     } catch (error) {
       console.error("Error loading forum data:", error);
     }
@@ -127,21 +114,15 @@ export default function Forum() {
   const filterThreads = () => {
     let filtered = threads;
 
-    // NSFW filtering - always hide for non-logged in users or users under 18
-    if (!user || user.needsRegistration) {
-      // Not logged in or incomplete registration - hide all NSFW
+    if (!user || needsRegistration) {
+      // Guest or incomplete profile: hide all NSFW
       filtered = filtered.filter(thread => !thread.is_nsfw);
     } else {
       const userAge = calculateAge(user.birthdate);
       const isAdmin = user.role === 'admin';
-      
-      if (isAdmin) {
-        // Admin can see everything
-      } else if (userAge < 18) {
-        // Under 18 - always hide NSFW
+      if (!isAdmin && userAge < 18) {
         filtered = filtered.filter(thread => !thread.is_nsfw);
-      } else if (!showNSFW) {
-        // 18+ but toggle is off
+      } else if (!isAdmin && !showNSFW) {
         filtered = filtered.filter(thread => !thread.is_nsfw);
       }
     }
@@ -169,17 +150,23 @@ export default function Forum() {
   };
 
   const canCreateNSFW = () => {
-    return user && (user.role === 'admin' || calculateAge(user.birthdate) >= 18);
+    return user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18);
   };
 
   const getAuthorDisplay = (thread) => {
-    if (thread.author_username) {
-      return thread.author_username;
-    }
-    if (usersMap[thread.author_id]) {
-      return usersMap[thread.author_id].username;
-    }
+    if (thread.author_username) return thread.author_username;
+    if (usersMap[thread.author_id]) return usersMap[thread.author_id].username;
     return 'User';
+  };
+
+  const handleStartDiscussion = () => {
+    if (!user) {
+      base44.auth.redirectToLogin();
+    } else if (needsRegistration) {
+      window.location.href = createPageUrl("Registration");
+    } else {
+      setShowCreateForm(true);
+    }
   };
 
   if (isLoading) {
@@ -216,15 +203,7 @@ export default function Forum() {
               {settings?.message || "Join our vibrant creative community and share your thoughts."}
             </p>
             <Button
-              onClick={() => {
-                if (!user) {
-                  base44.auth.redirectToLogin();
-                } else if (user.needsRegistration) {
-                  window.location.href = createPageUrl("Registration");
-                } else {
-                  setShowCreateForm(true);
-                }
-              }}
+              onClick={handleStartDiscussion}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3"
               size="lg"
             >
@@ -265,7 +244,7 @@ export default function Forum() {
               </div>
             </div>
 
-            {user && !user.needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
+            {user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="outline"
@@ -294,20 +273,16 @@ export default function Forum() {
                           {thread.title}
                         </Link>
                         {thread.is_nsfw && (
-                          <Badge variant="destructive" className="text-xs">
-                            NSFW
-                          </Badge>
+                          <Badge variant="destructive" className="text-xs">NSFW</Badge>
                         )}
                         {thread.locked && (
                           <Badge variant="outline" className="text-xs flex items-center">
-                            <Lock className="w-3 h-3 mr-1" />
-                            Locked
+                            <Lock className="w-3 h-3 mr-1" />Locked
                           </Badge>
                         )}
                         {thread.image_url && (
                           <Badge variant="outline" className="text-xs flex items-center">
-                            <ImageIcon className="w-3 h-3 mr-1" />
-                            Image
+                            <ImageIcon className="w-3 h-3 mr-1" />Image
                           </Badge>
                         )}
                       </div>
@@ -365,25 +340,12 @@ export default function Forum() {
                   : "Be the first to start a conversation!"
                 }
               </p>
-              <Button
-                onClick={() => {
-                  if (!user) {
-                    base44.auth.redirectToLogin();
-                  } else if (user.needsRegistration) {
-                    window.location.href = createPageUrl("Registration");
-                  } else {
-                    setShowCreateForm(true);
-                  }
-                }}
-                className="bg-purple-500 hover:bg-purple-600"
-              >
+              <Button onClick={handleStartDiscussion} className="bg-purple-500 hover:bg-purple-600">
                 <Plus className="w-4 h-4 mr-2" />
                 Start a Discussion
               </Button>
             </div>
           )}
-
-
         </div>
       </section>
     </div>

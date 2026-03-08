@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UserContext } from "./components/UserContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,23 +64,35 @@ export default function Layout({ children, currentPageName }) {
 
   const loadUserAndSettings = async () => {
     try {
-      // Check if user is authenticated first without prompting login
       const isAuthenticated = await base44.auth.isAuthenticated();
       if (isAuthenticated) {
-        const userData = await base44.auth.me();
-        setUser(userData);
-        if (userData.theme_preferences) {
-          setThemePrefs(prev => ({
-            ...prev,
-            ...userData.theme_preferences
-          }));
+        try {
+          const userData = await base44.auth.me();
+          setUser(userData);
+          if (userData?.theme_preferences) {
+            setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
+          }
+        } catch (meError) {
+          // isAuthenticated() returned true but me() failed — likely a transient error.
+          // Retry once after 1 second before giving up.
+          console.warn("Could not fetch user details, retrying...", meError.message);
+          setTimeout(async () => {
+            try {
+              const userData = await base44.auth.me();
+              setUser(userData);
+              if (userData?.theme_preferences) {
+                setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
+              }
+            } catch {
+              setUser(null);
+            }
+          }, 1000);
         }
       } else {
-        // User is browsing as guest - that's fine
         setUser(null);
       }
     } catch (error) {
-      // User not logged in - that's fine, they can browse as guest
+      console.error("Error checking auth status:", error.message);
       setUser(null);
     }
     loadSiteSettings();
@@ -446,7 +459,9 @@ export default function Layout({ children, currentPageName }) {
       <main 
         className="flex-1 transition-colors duration-300"
       >
-        {children}
+        <UserContext.Provider value={user}>
+          {children}
+        </UserContext.Provider>
       </main>
 
       <footer

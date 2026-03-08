@@ -36,7 +36,12 @@ export default function Home() {
         base44.entities.Post.filter({ published: true }, "-created_date"),
         base44.entities.SiteSettings.filter({ page: "home" })
       ]);
-      setPosts(postsData);
+      // Exclude posts scheduled for a future publish_at date
+      const now = new Date();
+      const visiblePosts = postsData.filter(post =>
+        !post.publish_at || new Date(post.publish_at) <= now
+      );
+      setPosts(visiblePosts);
       setSettings(settingsData[0] || { tagline: "Welcome to My Creative World", message: "Explore thoughts, artwork, photography, and stories from my heart." });
     } catch (error) {
       console.error("Error loading data:", error);
