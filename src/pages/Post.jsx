@@ -18,7 +18,7 @@ export default function PostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
-  const [usersMap, setUsersMap] = useState({});
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');

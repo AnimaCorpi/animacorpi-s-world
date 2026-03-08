@@ -40,7 +40,7 @@ export default function Forum() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState([]);
-  const [usersMap, setUsersMap] = useState({});
+
 
   // Derived state - no separate auth fetch needed, user comes from Layout context
   const needsRegistration = user && (!user.username || !user.birthdate);
