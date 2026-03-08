@@ -68,10 +68,9 @@ export default function Forum() {
 
   const loadData = async () => {
     try {
-      const [threadsData, settingsData, allUsers] = await Promise.all([
+      const [threadsData, settingsData] = await Promise.all([
         base44.entities.ForumThread.list("-created_date"),
-        base44.entities.SiteSettings.filter({ page: "forum" }),
-        base44.entities.User.list()
+        base44.entities.SiteSettings.filter({ page: "forum" })
       ]);
 
       setThreads(threadsData);
@@ -79,10 +78,6 @@ export default function Forum() {
         tagline: "Connect & Share",
         message: "Join our vibrant creative community and share your thoughts."
       });
-
-      const userMap = {};
-      allUsers.forEach(u => { userMap[u.id] = u; });
-      setUsersMap(userMap);
 
       const tags = new Set();
       threadsData.forEach(thread => {
@@ -154,9 +149,7 @@ export default function Forum() {
   };
 
   const getAuthorDisplay = (thread) => {
-    if (thread.author_username) return thread.author_username;
-    if (usersMap[thread.author_id]) return usersMap[thread.author_id].username;
-    return 'User';
+    return thread.author_username || 'User';
   };
 
   const handleStartDiscussion = () => {
