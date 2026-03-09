@@ -153,6 +153,19 @@ export default function Forum() {
     return thread.author_username || 'User';
   };
 
+  const handleDeleteThread = async (e, threadId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this discussion?")) return;
+    try {
+      await base44.entities.ForumThread.delete(threadId);
+      loadData();
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+      alert("Failed to delete discussion. Please try again.");
+    }
+  };
+
   const handleStartDiscussion = () => {
     if (!user) {
       base44.auth.redirectToLogin();
