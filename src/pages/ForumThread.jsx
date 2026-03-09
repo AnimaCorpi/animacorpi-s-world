@@ -262,15 +262,28 @@ export default function ForumThreadPage() {
                   </div>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleReport("thread", thread.id)}
-                className="flex items-center"
-              >
-                <Flag className="w-4 h-4 mr-1" />
-                Report
-              </Button>
+              <div className="flex items-center space-x-2">
+                {(user?.role === 'admin' || thread.author_id === user?.id) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={handleDeleteThread}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleReport("thread", thread.id)}
+                  className="flex items-center"
+                >
+                  <Flag className="w-4 h-4 mr-1" />
+                  Report
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
