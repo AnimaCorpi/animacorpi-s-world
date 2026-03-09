@@ -299,12 +299,11 @@ export default function PostPage() {
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>
                       </div>
-                      {/* Show delete button only if user is admin */}
-                      {isAdmin && (
+                      {(isAdmin || comment.author_id === user?.id) && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-700 p-1" // Added padding to button
+                          className="text-red-500 hover:text-red-700 p-1"
                           onClick={() => handleDeleteComment(comment.id)}
                           aria-label="Delete comment"
                         >

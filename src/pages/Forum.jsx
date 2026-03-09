@@ -14,7 +14,8 @@ import {
   User as UserIcon,
   Lock,
   Image as ImageIcon,
-  Filter
+  Filter,
+  Trash2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
