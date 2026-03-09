@@ -44,10 +44,9 @@ export default function ForumThreadPage() {
 
   const loadThreadData = async (threadId) => {
     try {
-      const [threadData, commentsData, allUsers] = await Promise.all([
+      const [threadData, commentsData] = await Promise.all([
         base44.entities.ForumThread.filter({ id: threadId }),
-        base44.entities.ForumComment.filter({ thread_id: threadId }, "created_date"),
-        base44.entities.User.list()
+        base44.entities.ForumComment.filter({ thread_id: threadId }, "created_date")
       ]);
 
       if (threadData.length === 0) {
@@ -57,13 +56,6 @@ export default function ForumThreadPage() {
 
       setThread(threadData[0]);
       setComments(commentsData);
-
-      // Create users map for quick lookup
-      const userMap = {};
-      allUsers.forEach(u => {
-        userMap[u.id] = u;
-      });
-      setUsersMap(userMap);
 
       try {
         // Check if user is authenticated first without prompting login
