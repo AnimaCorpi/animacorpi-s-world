@@ -438,14 +438,26 @@ export default function ForumThreadPage() {
                               {format(new Date(reply.created_date), "MMM d, h:mm a")}
                             </span>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleReport("comment", reply.id)}
-                            className="p-1"
-                          >
-                            <Flag className="w-3 h-3" />
-                          </Button>
+                          <div className="flex items-center space-x-1">
+                            {(user?.role === 'admin' || reply.author_id === user?.id || thread.author_id === user?.id) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500 hover:text-red-700 p-1"
+                                onClick={() => handleDeleteComment(reply.id)}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleReport("comment", reply.id)}
+                              className="p-1"
+                            >
+                              <Flag className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                         <p className="text-gray-700 text-sm">{reply.content}</p>
                       </div>
