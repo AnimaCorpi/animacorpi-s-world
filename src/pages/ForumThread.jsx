@@ -403,6 +403,16 @@ export default function ForumThreadPage() {
                           Reply
                         </Button>
                       )}
+                      {(user?.role === 'admin' || comment.author_id === user?.id || thread.author_id === user?.id) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 p-1"
+                          onClick={() => handleDeleteComment(comment.id)}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
