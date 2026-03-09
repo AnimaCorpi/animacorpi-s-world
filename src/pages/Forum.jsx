@@ -279,6 +279,17 @@ export default function Forum() {
                         >
                           {thread.title}
                         </Link>
+                        {(user?.role === 'admin' || thread.author_id === user?.id) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 p-1 h-auto"
+                            onClick={(e) => handleDeleteThread(e, thread.id)}
+                            aria-label="Delete thread"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                         {thread.is_nsfw && (
                           <Badge variant="destructive" className="text-xs">NSFW</Badge>
                         )}

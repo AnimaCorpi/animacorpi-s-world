@@ -141,6 +141,29 @@ export default function ForumThreadPage() {
     setShowReportForm({ type, id });
   };
 
+  const handleDeleteThread = async () => {
+    if (!confirm("Are you sure you want to delete this discussion?")) return;
+    try {
+      await base44.entities.ForumThread.delete(thread.id);
+      window.location.href = createPageUrl("Forum");
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+      setError("Failed to delete discussion. Please try again.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+    try {
+      await base44.entities.ForumComment.delete(commentId);
+      const updatedComments = await base44.entities.ForumComment.filter({ thread_id: thread.id }, "created_date");
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      setError("Failed to delete comment. Please try again.");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
