@@ -30,7 +30,7 @@ export default function ForumThreadPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [usersMap, setUsersMap] = useState({});
+
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
