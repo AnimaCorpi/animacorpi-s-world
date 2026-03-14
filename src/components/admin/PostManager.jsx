@@ -268,30 +268,30 @@ export default function PostManager({ onStatsUpdate }) {
       <div className="grid gap-4">
         {posts.map((post) => (
           <Card key={post.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h4 className="font-semibold">{post.title}</h4>
-                    <Badge variant={post.published ? "default" : "secondary"}>
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-wrap sm:flex-nowrap gap-4 justify-between items-start">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-start gap-2 mb-2 sm:items-center">
+                    <h4 className="font-semibold break-words">{post.title}</h4>
+                    <Badge variant={post.published ? "default" : "secondary"} className="shrink-0">
                       {post.published ? "Published" : "Draft"}
                     </Badge>
-                    <Badge variant="outline">{post.category}</Badge>
+                    <Badge variant="outline" className="shrink-0">{post.category}</Badge>
                     {post.publish_at && new Date(post.publish_at) > new Date() && (
-                      <Badge variant="outline" className="flex items-center gap-1">
+                      <Badge variant="outline" className="flex items-center gap-1 shrink-0">
                         <Clock className="w-3 h-3" />
                         Scheduled for {format(new Date(post.publish_at), "MMM d, h:mm a")}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-gray-600 mb-2 break-words">
                     {post.excerpt || post.content.substring(0, 100).replace(/<[^>]*>/g, '') + "..."}
                   </p>
                   <p className="text-xs text-gray-500">
                     Created: {format(new Date(post.created_date), "MMM d, yyyy")}
                   </p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex gap-2 shrink-0">
                   <Button variant="outline" size="sm" onClick={() => handleEdit(post)}>
                     <Edit className="w-4 h-4" />
                   </Button>
