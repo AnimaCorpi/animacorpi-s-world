@@ -89,17 +89,18 @@ export default function Admin() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600 mt-1">Manage your creative platform</p>
           </div>
           <Button
             onClick={handlePreviewMode}
-            className="flex items-center space-x-2 bg-green-600 hover:bg-green-700"
+            className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 w-full sm:w-auto"
           >
             <Eye className="w-4 h-4" />
-            <span>Preview as Public User</span>
+            <span className="hidden sm:inline">Preview as Public User</span>
+            <span className="sm:hidden">Preview</span>
           </Button>
         </div>
 
@@ -164,7 +165,7 @@ export default function Admin() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-7">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1">
                 <TabsTrigger value="posts">Posts</TabsTrigger>
                 <TabsTrigger value="books">Books & Stories</TabsTrigger>
                 <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
