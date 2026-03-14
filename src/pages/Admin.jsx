@@ -165,14 +165,35 @@ export default function Admin() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1">
-                <TabsTrigger value="posts">Posts</TabsTrigger>
-                <TabsTrigger value="books">Books & Stories</TabsTrigger>
-                <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
-                <TabsTrigger value="settings">Site Settings</TabsTrigger>
-                <TabsTrigger value="users">Users</TabsTrigger>
-                <TabsTrigger value="messaging">Messaging</TabsTrigger>
-                <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 p-2">
+                <TabsTrigger value="posts" className="flex items-center justify-center space-x-2">
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">Posts</span>
+                </TabsTrigger>
+                <TabsTrigger value="books" className="flex items-center justify-center space-x-2">
+                  <BookOpen className="w-4 h-4" />
+                  <span className="hidden sm:inline">Books</span>
+                </TabsTrigger>
+                <TabsTrigger value="backgrounds" className="flex items-center justify-center space-x-2">
+                  <Image className="w-4 h-4" />
+                  <span className="hidden sm:inline">Backgrounds</span>
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="flex items-center justify-center space-x-2">
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Settings</span>
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center justify-center space-x-2">
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Users</span>
+                </TabsTrigger>
+                <TabsTrigger value="messaging" className="flex items-center justify-center space-x-2">
+                  <Send className="w-4 h-4" />
+                  <span className="hidden sm:inline">Messaging</span>
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="flex items-center justify-center space-x-2">
+                  <Flag className="w-4 h-4" />
+                  <span className="hidden sm:inline">Reports</span>
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="posts" className="mt-6">
