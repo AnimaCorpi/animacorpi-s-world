@@ -160,7 +160,7 @@ export default function Layout({ children, currentPageName }) {
     : { backgroundColor: themePrefs.background_color };
 
   return (
-    <div className="flex flex-col min-h-screen" style={backgroundStyle}>
+    <div className="flex flex-col min-h-screen overflow-x-hidden" style={backgroundStyle}>
       <style>{`
         :root {
           --primary-pastel: #e879f9;
