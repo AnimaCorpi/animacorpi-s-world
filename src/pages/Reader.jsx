@@ -3,7 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, List } from "lucide-react";
 import { throttle } from "lodash";
 
 export default function Reader() {
@@ -159,14 +160,33 @@ export default function Reader() {
     <div className="min-h-screen bg-gray-50">
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link to={createPageUrl("Stories")} className="flex items-center text-purple-600 hover:text-purple-800">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Stories
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <Link to={createPageUrl(`ChapterList?bookid=${book.id}`)} className="flex items-center text-purple-600 hover:text-purple-800">
+              <List className="w-4 h-4 mr-2" />
+              Chapter List
             </Link>
-            <div className="flex items-center text-sm text-gray-600">
-              <BookOpen className="w-4 h-4 mr-2" />
-              {book.title} - Chapter {currentIndex + 1} of {chapters.length}
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center text-sm text-gray-600 shrink-0">
+                <BookOpen className="w-4 h-4 mr-2" />
+                Chapter {currentIndex + 1} of {chapters.length}
+              </div>
+              
+              <Select value={currentChapter.id} onValueChange={(chapterId) => {
+                const chapter = chapters.find(ch => ch.id === chapterId);
+                if (chapter) navigateToChapter(chapter);
+              }}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {chapters.map((chapter) => (
+                    <SelectItem key={chapter.id} value={chapter.id}>
+                      Ch. {chapter.chapter_number}: {chapter.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
