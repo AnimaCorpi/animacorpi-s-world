@@ -125,11 +125,11 @@ export default function PostManager({ onStatsUpdate }) {
   if (isEditing) {
     return (
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <h3 className="text-lg font-semibold">
             {editingPost ? "Edit Post" : "Create New Post"}
           </h3>
-          <Button variant="outline" onClick={() => setIsEditing(false)}>
+          <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full sm:w-auto">
             <X className="w-4 h-4 mr-2" />
             Cancel
           </Button>
@@ -257,9 +257,9 @@ export default function PostManager({ onStatsUpdate }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <h3 className="text-lg font-semibold">Posts Management</h3>
-        <Button onClick={handleNew}>
+        <Button onClick={handleNew} className="w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           New Post
         </Button>
