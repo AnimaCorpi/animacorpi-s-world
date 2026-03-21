@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,17 +26,26 @@ import ReportManager from "../components/admin/ReportManager";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({
-    posts: 0,
-    books: 0,
-    chapters: 0,
-    users: 0
-  });
-
   useEffect(() => {
     checkAdminAccess();
-    loadStats();
   }, []);
+
+  const { data: statsData, refetch: refetchStats } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: async () => {
+      const [posts, books, chapters, users] = await Promise.all([
+        base44.entities.Post.list(),
+        base44.entities.Book.list(),
+        base44.entities.Chapter.list(),
+        base44.entities.User.list()
+      ]);
+      return { posts: posts.length, books: books.length, chapters: chapters.length, users: users.length };
+    },
+    enabled: !!user,
+    staleTime: 60_000,
+  });
+
+  const stats = statsData ?? { posts: 0, books: 0, chapters: 0, users: 0 };
 
   const checkAdminAccess = async () => {
     try {
@@ -50,25 +60,7 @@ export default function Admin() {
     }
   };
 
-  const loadStats = async () => {
-    try {
-      const [posts, books, chapters, users] = await Promise.all([
-        base44.entities.Post.list(),
-        base44.entities.Book.list(),
-        base44.entities.Chapter.list(),
-        base44.entities.User.list()
-      ]);
-      
-      setStats({
-        posts: posts.length,
-        books: books.length,
-        chapters: chapters.length,
-        users: users.length
-      });
-    } catch (error) {
-      console.error("Error loading stats:", error);
-    }
-  };
+  const loadStats = () => refetchStats();
 
   const handlePreviewMode = () => {
     window.open(window.location.origin, '_blank');
