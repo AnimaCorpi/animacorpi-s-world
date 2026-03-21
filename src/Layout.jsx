@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import BottomTabBar from "./components/BottomTabBar";
 
 const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Stories", "BookDetail", "ChapterReader", "Post", "Terms", "Guidelines", "Search", "Forum", "ForumThread", "Registration", "Contact"];
 
