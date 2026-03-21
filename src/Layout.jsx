@@ -275,7 +275,7 @@ export default function Layout({ children, currentPageName }) {
 
       <header
         className={`sticky top-0 z-50 transition-colors duration-300 ${
-          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-purple-100/50'
+          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 bg-background/80'
         }`}
         style={themePrefs.transparent_banners ? {} : { backgroundColor: `${themePrefs.taskbar_color}20` }}
       >
@@ -472,7 +472,7 @@ export default function Layout({ children, currentPageName }) {
 
       <footer
         className={`transition-colors duration-300 ${
-          themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-purple-100 bg-white/80 backdrop-blur-sm'
+          themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-border bg-background/80 backdrop-blur-sm'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
