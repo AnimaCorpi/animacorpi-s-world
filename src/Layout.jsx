@@ -465,6 +465,8 @@ export default function Layout({ children, currentPageName }) {
         </UserContext.Provider>
       </main>
 
+      <BottomTabBar taskbarColor={themePrefs.taskbar_color} />
+
       <footer
         className={`transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-purple-100 bg-white/80 backdrop-blur-sm'
