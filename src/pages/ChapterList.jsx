@@ -7,61 +7,42 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, PlayCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ChapterList() {
-  const [book, setBook] = useState(null);
-  const [chapters, setChapters] = useState([]);
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookId = urlParams.get('bookid');
+
   const [user, setUser] = useState(null);
-  const [bookmark, setBookmark] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const bookId = urlParams.get('bookid');
-    
-    if (bookId) {
-      loadBookData(bookId);
-    } else {
-      setIsLoading(false);
-    }
+    base44.auth.isAuthenticated().then(async (ok) => {
+      if (ok) setUser(await base44.auth.me());
+    }).catch(() => {});
   }, []);
 
-  const loadBookData = async (bookId) => {
-    try {
-      const [bookData, chaptersData] = await Promise.all([
-        base44.entities.Book.filter({ id: bookId }),
-        base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
-      ]);
+  const { data: bookData, isLoading: loadingBook } = useQuery({
+    queryKey: ['Book', 'list', { id: bookId }],
+    queryFn: () => base44.entities.Book.filter({ id: bookId }),
+    enabled: !!bookId,
+  });
 
-      if (bookData.length > 0) {
-        setBook(bookData[0]);
-        setChapters(chaptersData);
+  const { data: chaptersData, isLoading: loadingChapters } = useQuery({
+    queryKey: ['Chapter', 'list', { book_id: bookId, published: true }],
+    queryFn: () => base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number"),
+    enabled: !!bookId,
+  });
 
-        try {
-          const isAuthenticated = await base44.auth.isAuthenticated();
-          if (isAuthenticated) {
-            const userData = await base44.auth.me();
-            setUser(userData);
-            
-            const bookmarks = await base44.entities.Bookmark.filter({ 
-              user_id: userData.id, 
-              book_id: bookId 
-            });
+  const { data: bookmarksData } = useQuery({
+    queryKey: ['Bookmark', 'list', { book_id: bookId, user_id: user?.id }],
+    queryFn: () => base44.entities.Bookmark.filter({ user_id: user.id, book_id: bookId }),
+    enabled: !!user?.id && !!bookId,
+  });
 
-            if (bookmarks.length > 0) {
-              setBookmark(bookmarks[0]);
-            }
-          }
-        } catch (error) {
-          console.log("User not authenticated");
-        }
-      }
-    } catch (error) {
-      console.error("Error loading book:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const book = bookData?.[0] ?? null;
+  const chapters = chaptersData ?? [];
+  const bookmark = bookmarksData?.[0] ?? null;
+  const isLoading = loadingBook || loadingChapters;
 
   if (isLoading) {
     return (
