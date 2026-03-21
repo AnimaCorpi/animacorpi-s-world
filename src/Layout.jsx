@@ -327,6 +327,8 @@ export default function Layout({ children, currentPageName }) {
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} />
               </form>
 
+              <ThemeToggle />
+
               {user && (
                 <Link to={createPageUrl("Notifications")} className="relative">
                   <Button variant="ghost" size="sm" className="relative p-2">
