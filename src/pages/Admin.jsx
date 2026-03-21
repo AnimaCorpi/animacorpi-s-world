@@ -26,6 +26,7 @@ import ReportManager from "../components/admin/ReportManager";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
+  const [adminReady, setAdminReady] = useState(false);
   useEffect(() => {
     checkAdminAccess();
   }, []);
@@ -41,7 +42,7 @@ export default function Admin() {
       ]);
       return { posts: posts.length, books: books.length, chapters: chapters.length, users: users.length };
     },
-    enabled: !!user,
+    enabled: adminReady,
     staleTime: 60_000,
   });
 
@@ -55,6 +56,7 @@ export default function Admin() {
         return;
       }
       setUser(userData);
+      setAdminReady(true);
     } catch (error) {
       window.location.href = createPageUrl("Home");
     }
