@@ -303,10 +303,10 @@ export default function Layout({ children, currentPageName }) {
                   to={createPageUrl(item.path)}
                   className={`nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
                     isActive(item.path)
-                      ? 'bg-purple-100 text-purple-700'
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
                       : themePrefs.transparent_banners
                         ? 'banner-text-secondary hover:text-white hover:bg-white/10'
-                        : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                        : 'text-foreground/70 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -425,10 +425,10 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setIsMenuOpen(false)}
                     className={`nav-link px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-3 ${
                       isActive(item.path)
-                        ? 'bg-purple-100 text-purple-700'
+                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
                         : themePrefs.transparent_banners
                           ? 'banner-text-secondary hover:text-white hover:bg-white/10'
-                          : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                          : 'text-foreground/70 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
