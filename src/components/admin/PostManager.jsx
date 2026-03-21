@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Post } from "@/entities/Post";
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
 import { UploadFile } from "@/integrations/Core";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { format } from "date-fns";
 import ReactQuill from 'react-quill';
 
 export default function PostManager({ onStatsUpdate }) {
-  const [posts, setPosts] = useState([]);
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,21 +27,42 @@ export default function PostManager({ onStatsUpdate }) {
     published: true,
     publish_at: ""
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ['Post', 'list'],
+    queryFn: () => base44.entities.Post.list("-created_date"),
+  });
 
-  const loadPosts = async () => {
-    try {
-      const data = await Post.list("-created_date");
-      setPosts(data);
-    } catch (error) {
-      console.error("Error loading posts:", error);
-    }
-  };
+  const saveMutation = useMutation({
+    mutationFn: (postData) => editingPost
+      ? base44.entities.Post.update(editingPost.id, postData)
+      : base44.entities.Post.create(postData),
+    onMutate: async (postData) => {
+      await queryClient.cancelQueries({ queryKey: ['Post'] });
+      const prev = queryClient.getQueryData(['Post', 'list']);
+      queryClient.setQueryData(['Post', 'list'], (old = []) => {
+        if (editingPost) return old.map(p => p.id === editingPost.id ? { ...p, ...postData } : p);
+        return [{ id: `opt-${Date.now()}`, ...postData }, ...old];
+      });
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => queryClient.setQueryData(['Post', 'list'], ctx.prev),
+    onSettled: () => { queryClient.invalidateQueries({ queryKey: ['Post'] }); onStatsUpdate?.(); },
+    onSuccess: () => { setIsEditing(false); setEditingPost(null); },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (postId) => base44.entities.Post.delete(postId),
+    onMutate: async (postId) => {
+      await queryClient.cancelQueries({ queryKey: ['Post'] });
+      const prev = queryClient.getQueryData(['Post', 'list']);
+      queryClient.setQueryData(['Post', 'list'], (old = []) => old.filter(p => p.id !== postId));
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => queryClient.setQueryData(['Post', 'list'], ctx.prev),
+    onSettled: () => { queryClient.invalidateQueries({ queryKey: ['Post'] }); onStatsUpdate?.(); },
+  });
 
   const handleEdit = (post) => {
     setEditingPost(post);
@@ -72,40 +94,18 @@ export default function PostManager({ onStatsUpdate }) {
     setIsEditing(true);
   };
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const postData = {
-        ...formData,
-        tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
-        publish_at: formData.publish_at ? new Date(formData.publish_at).toISOString() : null
-      };
-
-      if (editingPost) {
-        await Post.update(editingPost.id, postData);
-      } else {
-        await Post.create(postData);
-      }
-
-      setIsEditing(false);
-      loadPosts();
-      onStatsUpdate?.();
-    } catch (error) {
-      console.error("Error saving post:", error);
-    }
-    setIsLoading(false);
+  const handleSave = () => {
+    const postData = {
+      ...formData,
+      tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
+      publish_at: formData.publish_at ? new Date(formData.publish_at).toISOString() : null
+    };
+    saveMutation.mutate(postData);
   };
 
-  const handleDelete = async (postId) => {
+  const handleDelete = (postId) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
-    
-    try {
-      await Post.delete(postId);
-      loadPosts();
-      onStatsUpdate?.();
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
+    deleteMutation.mutate(postId);
   };
 
   const handleImageUpload = async (e) => {
