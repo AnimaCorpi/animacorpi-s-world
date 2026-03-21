@@ -246,9 +246,9 @@ export default function PostManager({ onStatsUpdate }) {
             </div>
           </div>
 
-          <Button onClick={handleSave} disabled={isLoading || !formData.title || !formData.content}>
+          <Button onClick={handleSave} disabled={saveMutation.isPending || !formData.title || !formData.content}>
             <Save className="w-4 h-4 mr-2" />
-            {isLoading ? "Saving..." : "Save Post"}
+            {saveMutation.isPending ? "Saving..." : "Save Post"}
           </Button>
         </div>
       </div>
