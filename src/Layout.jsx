@@ -292,7 +292,7 @@ export default function Layout({ children, currentPageName }) {
                 <button
                   onClick={handleBack}
                   aria-label="Go back"
-                  className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`flex items-center justify-center w-11 h-11 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     themePrefs.transparent_banners
                       ? 'text-white hover:bg-white/10'
                       : 'text-foreground/70 hover:bg-accent hover:text-foreground'
