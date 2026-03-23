@@ -83,7 +83,15 @@ export default function Home() {
     );
   }
 
+  const categories = [
+    { value: "all", label: "All" },
+    { value: "thoughts", label: "💭 Thoughts" },
+    { value: "artwork", label: "🎨 Artwork" },
+    { value: "photography", label: "📸 Photography" },
+  ];
+
   return (
+    <PullToRefresh onRefresh={loadData}>
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="banner-transparent py-20 px-4 sm:px-6 lg:px-8">
