@@ -28,6 +28,8 @@ export default function BottomTabBar({ taskbarColor }) {
           <Link
             key={tab.name}
             to={createPageUrl(tab.path)}
+            aria-label={tab.label}
+            aria-current={active ? "page" : undefined}
             className="flex flex-col items-center justify-center flex-1 py-2 gap-0.5 select-none"
             style={{ WebkitTapHighlightColor: "transparent" }}
           >

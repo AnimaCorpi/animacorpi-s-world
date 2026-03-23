@@ -2,13 +2,24 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored) return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
+// "auto" means follow system, "light"/"dark" means user override
+function getInitialTheme() {
+  const stored = localStorage.getItem("theme");
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
+function getInitialMode() {
+  const stored = localStorage.getItem("theme");
+  if (stored === "light" || stored === "dark") return "manual";
+  return "auto";
+}
+
+export function ThemeProvider({ children }) {
+  const [theme, setThemeState] = useState(getInitialTheme);
+  const [mode, setMode] = useState(getInitialMode); // "auto" | "manual"
+
+  // Apply dark class to <html>
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
@@ -16,23 +27,38 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Also listen to system preference changes
+  // Listen to system preference changes — always apply when in auto mode
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored) return; // user has explicit preference
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e) => setTheme(e.matches ? "dark" : "light");
+    const handler = (e) => {
+      if (mode === "auto") {
+        setThemeState(e.matches ? "dark" : "light");
+      }
+    };
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
-  }, []);
+  }, [mode]);
 
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setThemeState(next);
+    setMode("manual");
+    localStorage.setItem("theme", next);
+  };
+
+  // Reset to following system automatically
+  const resetToAuto = () => {
+    localStorage.removeItem("theme");
+    setMode("auto");
+    setThemeState(
+      window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    );
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, resetToAuto, isAuto: mode === "auto" }}>
       {children}
     </ThemeContext.Provider>
   );
