@@ -291,20 +291,36 @@ export default function Layout({ children, currentPageName }) {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link
-              to={createPageUrl("Home")}
-              className={`flex items-center space-x-3 text-2xl font-bold transition-colors duration-200 ${
-                themePrefs.transparent_banners ? 'banner-text hover:text-purple-200' : 'text-gray-800 hover:text-purple-600'
-              }`}
-            >
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                style={{ backgroundColor: themePrefs.taskbar_color }}
+            <div className="flex items-center gap-2">
+              {!isRootPage && (
+                <button
+                  onClick={handleBack}
+                  aria-label="Go back"
+                  className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    themePrefs.transparent_banners
+                      ? 'text-white hover:bg-white/10'
+                      : 'text-foreground/70 hover:bg-accent hover:text-foreground'
+                  }`}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              )}
+              <Link
+                to={createPageUrl("Home")}
+                aria-label={`${siteName} — go home`}
+                className={`flex items-center space-x-3 text-2xl font-bold transition-colors duration-200 ${
+                  themePrefs.transparent_banners ? 'banner-text hover:text-purple-200' : 'text-gray-800 hover:text-purple-600'
+                }`}
               >
-                {siteName.charAt(0).toUpperCase()}
-              </div>
-              <span className="hidden sm:block">{siteName}</span>
-            </Link>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                  style={{ backgroundColor: themePrefs.taskbar_color }}
+                >
+                  {siteName.charAt(0).toUpperCase()}
+                </div>
+                <span className="hidden sm:block">{siteName}</span>
+              </Link>
+            </div>
 
             <nav className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => (
