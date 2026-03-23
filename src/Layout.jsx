@@ -144,6 +144,16 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
   const isActive = (pageName) => location.pathname === createPageUrl(pageName);
 
+  // Show back button on any non-root page
+  const isRootPage = location.pathname === "/" || location.pathname === createPageUrl("Home");
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   const navItems = [
     { name: "Thoughts", path: "Thoughts", icon: PenTool },
     { name: "Artwork", path: "Artwork", icon: PenTool },
