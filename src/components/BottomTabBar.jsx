@@ -19,7 +19,7 @@ export default function BottomTabBar({ taskbarColor }) {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-border bg-background"
+      className="fixed bottom-0 left-0 right-0 z-[100] flex md:hidden border-t border-border bg-background"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {tabs.map((tab) => {
@@ -34,7 +34,7 @@ export default function BottomTabBar({ taskbarColor }) {
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             <tab.icon
-              className="w-5 h-5"
+              className="w-6 h-6"
               style={{ color: active ? taskbarColor || "#e879f9" : "#9ca3af" }}
             />
             <span
