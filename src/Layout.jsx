@@ -10,8 +10,6 @@ import {
   Settings,
   LogOut,
   User as UserIcon,
-  Menu,
-  X,
   Search,
   Bell,
   ArrowLeft
