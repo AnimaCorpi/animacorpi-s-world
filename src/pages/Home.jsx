@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Calendar, Tag, ArrowRight, Filter } from "lucide-react";
+import { Calendar, Tag, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
