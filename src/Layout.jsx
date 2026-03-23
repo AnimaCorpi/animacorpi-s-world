@@ -418,16 +418,7 @@ export default function Layout({ children, currentPageName }) {
                 </Button>
               )}
 
-              <Button
-                variant="ghost"
-                className="md:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={isMenuOpen}
-                aria-controls="mobile-nav"
-              >
-                {isMenuOpen ? <X className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : ''}`} /> : <Menu className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : ''}`} />}
-              </Button>
+
             </div>
           </div>
 
