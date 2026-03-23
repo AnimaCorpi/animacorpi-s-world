@@ -24,13 +24,12 @@ export default function Home() {
     filterPosts();
   }, [posts, selectedCategory]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [postsData, settingsData] = await Promise.all([
         base44.entities.Post.filter({ published: true }, "-created_date"),
         base44.entities.SiteSettings.filter({ page: "home" })
       ]);
-      // Exclude posts scheduled for a future publish_at date
       const now = new Date();
       const visiblePosts = postsData.filter(post =>
         !post.publish_at || new Date(post.publish_at) <= now
@@ -41,7 +40,7 @@ export default function Home() {
       console.error("Error loading data:", error);
     }
     setIsLoading(false);
-  };
+  }, []);
 
   const filterPosts = () => {
     if (selectedCategory === "all") {
