@@ -251,5 +251,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </PullToRefresh>
   );
 }
