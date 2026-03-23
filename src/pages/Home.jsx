@@ -140,19 +140,21 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-gray-800 mb-2">Latest Posts</h2>
               <p className="text-gray-600">Discover my latest creative expressions</p>
             </div>
-            <div className="flex items-center space-x-2 mt-4 md:mt-0">
-              <Filter className="w-5 h-5 text-gray-500" />
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="thoughts">💭 Thoughts</SelectItem>
-                  <SelectItem value="artwork">🎨 Artwork</SelectItem>
-                  <SelectItem value="photography">📸 Photography</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-2 mt-4 md:mt-0 flex-wrap">
+              {categories.map(cat => (
+                <button
+                  key={cat.value}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  aria-pressed={selectedCategory === cat.value}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] min-w-[44px] ${
+                    selectedCategory === cat.value
+                      ? "bg-purple-600 text-white shadow-md"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-purple-300 hover:text-purple-600"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
             </div>
           </div>
 
