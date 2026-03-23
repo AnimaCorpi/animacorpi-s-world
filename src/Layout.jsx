@@ -342,25 +342,26 @@ export default function Layout({ children, currentPageName }) {
             </nav>
 
             <div className="flex items-center space-x-3">
-              <form onSubmit={handleSearch} className="relative hidden lg:block">
+              <form onSubmit={handleSearch} className="relative hidden lg:block" role="search">
                 <Input
                   type="search"
                   placeholder="Search posts..."
                   className="pl-10 h-9 w-48"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search posts"
                 />
-                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} />
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} aria-hidden="true" />
               </form>
 
               <ThemeToggle />
 
               {user && (
-                <Link to={createPageUrl("Notifications")} className="relative">
-                  <Button variant="ghost" size="sm" className="relative p-2">
+                <Link to={createPageUrl("Notifications")} className="relative" aria-label={`Notifications${notificationCount > 0 ? `, ${notificationCount} unread` : ''}`}>
+                  <Button variant="ghost" size="sm" className="relative p-2" tabIndex={-1} aria-hidden="true">
                     <Bell className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : 'text-gray-600'}`} />
                     {notificationCount > 0 && (
-                      <span className="notification-badge">
+                      <span className="notification-badge" aria-hidden="true">
                         {notificationCount > 99 ? '99+' : notificationCount}
                       </span>
                     )}
@@ -425,6 +426,9 @@ export default function Layout({ children, currentPageName }) {
                 variant="ghost"
                 className="md:hidden"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMenuOpen}
+                aria-controls="mobile-nav"
               >
                 {isMenuOpen ? <X className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : ''}`} /> : <Menu className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : ''}`} />}
               </Button>
@@ -432,7 +436,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {isMenuOpen && (
-            <div className={`md:hidden ${themePrefs.transparent_banners ? 'border-t border-white/20' : 'border-t border-purple-100'} py-4`}>
+            <div id="mobile-nav" className={`md:hidden ${themePrefs.transparent_banners ? 'border-t border-white/20' : 'border-t border-purple-100'} py-4`}>
               <nav className="flex flex-col space-y-2">
                 <form onSubmit={handleSearch} className="relative mb-2 lg:hidden">
                   <Input
