@@ -438,15 +438,16 @@ export default function Layout({ children, currentPageName }) {
           {isMenuOpen && (
             <div id="mobile-nav" className={`md:hidden ${themePrefs.transparent_banners ? 'border-t border-white/20' : 'border-t border-purple-100'} py-4`}>
               <nav className="flex flex-col space-y-2">
-                <form onSubmit={handleSearch} className="relative mb-2 lg:hidden">
+                <form onSubmit={handleSearch} className="relative mb-2 lg:hidden" role="search">
                   <Input
                     type="search"
                     placeholder="Search posts..."
                     className="pl-10 h-10 w-full"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Search posts"
                   />
-                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} />
+                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} aria-hidden="true" />
                 </form>
                 {navItems.map((item) => (
                   <Link
