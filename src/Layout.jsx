@@ -34,7 +34,6 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [siteName, setSiteName] = useState("Anamaria's World");
   const [footerSettings, setFooterSettings] = useState({
     footer_text: "© 2024 Anamaria's World. A space for creativity and connection.",
@@ -137,7 +136,6 @@ export default function Layout({ children, currentPageName }) {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(createPageUrl(`Search?q=${searchQuery.trim()}`));
-      setIsMenuOpen(false);
     }
   };
 
