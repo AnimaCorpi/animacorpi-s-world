@@ -47,7 +47,7 @@ export default function Thoughts() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading thoughts...</p>
+          <p className="text-gray-600 dark:text-muted-foreground">Loading thoughts...</p>
         </div>
       </div>
     );
@@ -63,10 +63,10 @@ export default function Thoughts() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-foreground mb-6 leading-tight">
               {settings?.tagline || "Thoughts & Reflections"}
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-muted-foreground mb-8 leading-relaxed">
               {settings?.message || "Personal reflections and musings from my creative journey."}
             </p>
           </motion.div>

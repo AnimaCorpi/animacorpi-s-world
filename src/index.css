@@ -33,6 +33,20 @@ button, a, [role="button"], label {
   to { transform: rotate(360deg); }
 }
 
+/* Banner text — readable in both light and dark mode */
+.banner-text {
+  color: #1f2937;
+}
+.dark .banner-text {
+  color: hsl(var(--foreground));
+}
+.banner-text-secondary {
+  color: #4b5563;
+}
+.dark .banner-text-secondary {
+  color: hsl(var(--muted-foreground));
+}
+
 /* Bottom tab bar — normal flow in flex column layout */
 .bottom-tab-bar {
   flex-shrink: 0;
