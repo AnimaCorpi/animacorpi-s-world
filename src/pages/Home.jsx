@@ -133,12 +133,12 @@ export default function Home() {
       </section>
 
       {/* Filter Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-background/50">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">Latest Posts</h2>
-              <p className="text-gray-600">Discover my latest creative expressions</p>
+              <h2 className="text-3xl font-bold text-gray-800 dark:text-foreground mb-2">Latest Posts</h2>
+              <p className="text-gray-600 dark:text-muted-foreground">Discover my latest creative expressions</p>
             </div>
             <div className="flex items-center gap-2 mt-4 md:mt-0 flex-wrap">
               {categories.map(cat => (
@@ -149,7 +149,7 @@ export default function Home() {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] min-w-[44px] ${
                     selectedCategory === cat.value
                       ? "bg-purple-600 text-white shadow-md"
-                      : "bg-white text-gray-600 border border-gray-200 hover:border-purple-300 hover:text-purple-600"
+                      : "bg-white dark:bg-card text-gray-600 dark:text-muted-foreground border border-gray-200 dark:border-border hover:border-purple-300 hover:text-purple-600"
                   }`}
                 >
                   {cat.label}
@@ -166,7 +166,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100"
+                className="card-hover bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:border-border"
               >
                 {post.image_url && (
                   <div className="aspect-video overflow-hidden">
@@ -182,15 +182,15 @@ export default function Home() {
                     <Badge className={`${getCategoryColor(post.category)} border`}>
                       {getCategoryIcon(post.category)} {post.category}
                     </Badge>
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                       <Calendar className="w-4 h-4 mr-1" />
                       {format(new Date(post.created_date), "MMM d, yyyy")}
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-foreground mb-3 line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">
+                  <p className="text-gray-600 dark:text-muted-foreground mb-4 line-clamp-3">
                     {post.excerpt || stripHtmlTags(post.content).substring(0, 150) + "..."}
                   </p>
                   {post.tags && post.tags.length > 0 && (
@@ -198,7 +198,7 @@ export default function Home() {
                       {post.tags.slice(0, 3).map((tag, tagIndex) => (
                         <span
                           key={tagIndex}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground"
                         >
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}
@@ -221,8 +221,8 @@ export default function Home() {
           {filteredPosts.length === 0 && (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">🎨</div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">No posts yet</h3>
-              <p className="text-gray-600">
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">No posts yet</h3>
+              <p className="text-gray-600 dark:text-muted-foreground">
                 {selectedCategory === "all" 
                   ? "Check back soon for new creative content!"
                   : `No ${selectedCategory} posts available yet.`
