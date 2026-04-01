@@ -81,7 +81,7 @@ export default function Stories() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading stories...</p>
+          <p className="text-muted-foreground">Loading stories...</p>
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ export default function Stories() {
                 <Link to={createPageUrl(`ChapterList?bookid=${book.id}`)}>
                   <Card className="card-hover overflow-hidden h-full">
                     {book.cover_image_url && (
-                      <div className="aspect-[2/3] overflow-hidden bg-gray-100">
+                      <div className="aspect-[2/3] overflow-hidden bg-muted">
                         <img 
                           src={book.cover_image_url} 
                           alt={book.title}
@@ -145,7 +145,7 @@ export default function Stories() {
                     )}
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="text-xl font-bold text-gray-800 line-clamp-2 flex-1">
+                        <h3 className="text-xl font-bold text-foreground line-clamp-2 flex-1">
                           {book.title}
                         </h3>
                         {book.is_nsfw && (
@@ -154,7 +154,7 @@ export default function Stories() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-gray-600 line-clamp-4 mb-4">
+                      <p className="text-muted-foreground line-clamp-4 mb-4">
                         {book.description}
                       </p>
                       <div className="flex items-center text-purple-600 font-medium">
@@ -170,9 +170,9 @@ export default function Stories() {
 
           {filteredBooks.length === 0 && (
             <div className="text-center py-16">
-              <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">No Stories Yet</h3>
-              <p className="text-gray-600">Check back soon for new adventures!</p>
+              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">No Stories Yet</h3>
+              <p className="text-muted-foreground">Check back soon for new adventures!</p>
             </div>
           )}
         </div>
