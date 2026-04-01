@@ -65,7 +65,15 @@ export default function Profile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
-    loadUserData();
+    const checkAuth = async () => {
+      const isAuthenticated = await base44.auth.isAuthenticated();
+      if (!isAuthenticated) {
+        base44.auth.redirectToLogin();
+        return;
+      }
+      loadUserData();
+    };
+    checkAuth();
   }, []);
 
   const loadUserData = async () => {
