@@ -181,7 +181,7 @@ export default function Forum() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading forum...</p>
+          <p className="text-muted-foreground">Loading forum...</p>
         </div>
       </div>
     );
@@ -226,7 +226,7 @@ export default function Forum() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search discussions..."
                   value={searchTerm}
@@ -236,7 +236,7 @@ export default function Forum() {
               </div>
               
               <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-gray-500" />
+                <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={selectedTag} onValueChange={setSelectedTag}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Filter by tag" />
@@ -275,7 +275,7 @@ export default function Forum() {
                       <div className="flex items-center space-x-2 mb-2 flex-wrap">
                         <Link 
                           to={createPageUrl(`ForumThread?id=${thread.id}`)}
-                          className="text-xl font-semibold text-gray-800 hover:text-purple-600 transition-colors"
+                          className="text-xl font-semibold text-foreground hover:text-purple-600 transition-colors"
                         >
                           {thread.title}
                         </Link>
@@ -305,12 +305,12 @@ export default function Forum() {
                         )}
                       </div>
                       
-                      <p className="text-gray-600 mb-3 line-clamp-2">
+                      <p className="text-muted-foreground mb-3 line-clamp-2">
                         {thread.content.substring(0, 200).replace(/<[^>]*>/g, '')}...
                       </p>
                       
                       <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                           <div className="flex items-center">
                             <UserIcon className="w-4 h-4 mr-1" />
                             @{getAuthorDisplay(thread)}
@@ -350,9 +350,9 @@ export default function Forum() {
 
           {filteredThreads.length === 0 && (
             <div className="text-center py-16">
-              <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">No Discussions Found</h3>
-              <p className="text-gray-600 mb-6">
+              <MessageSquare className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">No Discussions Found</h3>
+              <p className="text-muted-foreground mb-6">
                 {searchTerm || selectedTag !== "all" 
                   ? "Try adjusting your search or filters."
                   : "Be the first to start a conversation!"
