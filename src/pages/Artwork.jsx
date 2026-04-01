@@ -82,13 +82,15 @@ export default function Artwork() {
                 className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100"
               >
                 {post.image_url && (
-                  <div className="aspect-video overflow-hidden">
-                    <img 
-                      src={post.image_url} 
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
+                  <Link to={createPageUrl(`Post?id=${post.id}`)}>
+                    <div className="aspect-video overflow-hidden">
+                      <img 
+                        src={post.image_url} 
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                  </Link>
                 )}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
