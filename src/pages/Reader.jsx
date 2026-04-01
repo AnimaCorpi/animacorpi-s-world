@@ -5,6 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, List } from "lucide-react";
+import ReactionButton from "../components/ReactionButton";
 import { throttle } from "lodash";
 
 export default function Reader() {
@@ -205,6 +206,10 @@ export default function Reader() {
         />
 
         <div className="mt-16 pt-8 border-t border-gray-200">
+          <div className="flex items-center mb-6">
+            <ReactionButton contentId={currentChapter.id} contentType="chapter" user={user} />
+            <span className="text-sm text-gray-500 ml-1">Like this chapter</span>
+          </div>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             {previousChapter ? (
               <Button 

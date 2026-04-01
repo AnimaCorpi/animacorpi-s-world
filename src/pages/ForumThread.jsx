@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 import ReportForm from "../components/forum/ReportForm";
+import ReactionButton from "../components/ReactionButton";
 
 export default function ForumThreadPage() {
   const [thread, setThread] = useState(null);
@@ -340,6 +341,10 @@ export default function ForumThreadPage() {
                 ))}
               </div>
             )}
+            <div className="mt-4 pt-4 border-t border-border flex items-center">
+              <ReactionButton contentId={thread.id} contentType="thread" user={user} />
+              <span className="text-sm text-muted-foreground ml-1">Like this thread</span>
+            </div>
           </CardContent>
         </Card>
 

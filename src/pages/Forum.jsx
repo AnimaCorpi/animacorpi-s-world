@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 import ForumThreadForm from "../components/forum/ForumThreadForm";
+import ReactionButton from "../components/ReactionButton";
 import {
   Select,
   SelectContent,
@@ -319,6 +320,7 @@ export default function Forum() {
                             <Clock className="w-4 h-4 mr-1" />
                             {format(new Date(thread.created_date), "MMM d, yyyy")}
                           </div>
+                          <ReactionButton contentId={thread.id} contentType="thread" user={user} />
                         </div>
                         
                         {thread.tags && thread.tags.length > 0 && (

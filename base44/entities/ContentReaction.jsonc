@@ -1,0 +1,27 @@
+{
+  "name": "ContentReaction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user who reacted"
+    },
+    "content_id": {
+      "type": "string",
+      "description": "ID of the thread or chapter"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "thread",
+        "chapter"
+      ],
+      "description": "Type of content being reacted to"
+    }
+  },
+  "required": [
+    "user_id",
+    "content_id",
+    "content_type"
+  ]
+}
