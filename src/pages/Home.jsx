@@ -102,10 +102,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <div className="banner-text-container">
-              <h1 className="banner-text text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900 dark:text-foreground">
                 {settings?.tagline || "Welcome to My Creative World"}
               </h1>
-              <p className="banner-text-secondary text-xl md:text-2xl mb-8 leading-relaxed">
+              <p className="text-xl md:text-2xl mb-8 leading-relaxed text-gray-700 dark:text-muted-foreground">
                 {settings?.message || "Explore thoughts, artwork, photography, and stories from my heart."}
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -121,7 +121,7 @@ export default function Home() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
+                    className="border-2 border-purple-300 dark:border-purple-500 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
                   >
                     📚 Read Stories
                   </Button>
