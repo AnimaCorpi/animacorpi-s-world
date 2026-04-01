@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Home, BookOpen, MessageSquare, User as UserIcon, Settings } from "lucide-react";
@@ -27,11 +28,10 @@ export default function BottomTabBar({ taskbarColor, user }) {
     return location.pathname === `/${tab.path}` || location.pathname === createPageUrl(tab.path);
   };
 
-  return (
+  const nav = (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[200] flex border-t border-border bg-background overflow-hidden"
-      style={{ top: 'auto', paddingBottom: 'env(safe-area-inset-bottom)' }}
-
+      className="fixed bottom-0 left-0 right-0 flex border-t border-border bg-background overflow-hidden"
+      style={{ top: 'auto', zIndex: 9999, paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {tabs.map((tab) => {
         const active = isActive(tab);
@@ -59,4 +59,6 @@ export default function BottomTabBar({ taskbarColor, user }) {
       })}
     </nav>
   );
+
+  return createPortal(nav, document.body);
 }
