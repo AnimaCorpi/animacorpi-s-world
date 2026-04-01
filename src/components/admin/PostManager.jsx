@@ -29,6 +29,11 @@ export default function PostManager({ onStatsUpdate }) {
   });
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ['Post', 'list'],
+    queryFn: () => base44.entities.Post.list("-created_date"),
+  });
+
   const pinnedPosts = posts
     .filter(p => p.pinned)
     .sort((a, b) => (a.pin_order ?? 0) - (b.pin_order ?? 0));
@@ -57,11 +62,6 @@ export default function PostManager({ onStatsUpdate }) {
     ]);
     queryClient.invalidateQueries({ queryKey: ['Post'] });
   };
-
-  const { data: posts = [], isLoading } = useQuery({
-    queryKey: ['Post', 'list'],
-    queryFn: () => base44.entities.Post.list("-created_date"),
-  });
 
   const saveMutation = useMutation({
     mutationFn: (postData) => editingPost
