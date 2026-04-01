@@ -14,7 +14,9 @@ import {
   Send,
   AlertTriangle,
   Lock,
-  Trash2
+  Trash2,
+  Bookmark,
+  BookmarkCheck
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -31,6 +33,8 @@ export default function ForumThreadPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState(null);
 
 
   useEffect(() => {
@@ -65,18 +69,21 @@ export default function ForumThreadPage() {
           const userData = await base44.auth.me();
           if (userData) {
             if (!userData.username || !userData.birthdate) {
-              // User logged in but needs to complete registration
               setUser({ ...userData, needsRegistration: true });
             } else {
               setUser(userData);
+              // Check if already bookmarked
+              const existing = await base44.entities.ForumBookmark.filter({ user_id: userData.id, thread_id: threadId });
+              if (existing.length > 0) {
+                setIsBookmarked(true);
+                setBookmarkId(existing[0].id);
+              }
             }
           }
         } else {
-          // User is browsing as guest - can still view
           setUser(null);
         }
       } catch (error) {
-        // User not logged in - can still view
         setUser(null);
       }
     } catch (error) {
@@ -139,6 +146,19 @@ export default function ForumThreadPage() {
 
   const handleReport = (type, id) => {
     setShowReportForm({ type, id });
+  };
+
+  const handleToggleBookmark = async () => {
+    if (!user) return;
+    if (isBookmarked && bookmarkId) {
+      await base44.entities.ForumBookmark.delete(bookmarkId);
+      setIsBookmarked(false);
+      setBookmarkId(null);
+    } else {
+      const bm = await base44.entities.ForumBookmark.create({ user_id: user.id, thread_id: thread.id });
+      setIsBookmarked(true);
+      setBookmarkId(bm.id);
+    }
   };
 
   const handleDeleteThread = async () => {
@@ -263,6 +283,18 @@ export default function ForumThreadPage() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                {user && !user.needsRegistration && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleToggleBookmark}
+                    className={isBookmarked ? "text-purple-600" : "text-muted-foreground"}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark this thread"}
+                  >
+                    {isBookmarked ? <BookmarkCheck className="w-4 h-4 mr-1" /> : <Bookmark className="w-4 h-4 mr-1" />}
+                    {isBookmarked ? "Saved" : "Save"}
+                  </Button>
+                )}
                 {(user?.role === 'admin' || thread.author_id === user?.id) && (
                   <Button
                     variant="ghost"

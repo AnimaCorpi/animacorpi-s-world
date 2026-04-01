@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
 import { BackgroundImage } from "@/entities/BackgroundImage";
 import { ForumThread } from "@/entities/ForumThread";
@@ -22,7 +22,8 @@ import {
   Mail,
   Phone,
   Upload,
-  Check
+  Check,
+  Bookmark
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -31,6 +32,7 @@ import { createPageUrl } from "@/utils";
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [userThreads, setUserThreads] = useState([]);
+  const [savedThreads, setSavedThreads] = useState([]);
   const [backgroundImages, setBackgroundImages] = useState([]);
   const [profileData, setProfileData] = useState({
     username: "",
@@ -100,11 +102,18 @@ export default function Profile() {
         }
       });
 
-      const threads = await ForumThread.filter({ author_id: userData.id }, "-created_date");
+      const [threads, bookmarks, backgrounds] = await Promise.all([
+        ForumThread.filter({ author_id: userData.id }, "-created_date"),
+        base44.entities.ForumBookmark.filter({ user_id: userData.id }, "-created_date"),
+        BackgroundImage.filter({ active: true })
+      ]);
       setUserThreads(threads);
-
-      const backgrounds = await BackgroundImage.filter({ active: true });
       setBackgroundImages(backgrounds);
+
+      if (bookmarks.length > 0) {
+        const saved = await Promise.all(bookmarks.map(b => base44.entities.ForumThread.filter({ id: b.thread_id })));
+        setSavedThreads(saved.flat());
+      }
     } catch (error) {
       console.error("Error loading user data:", error);
     }
@@ -257,11 +266,12 @@ export default function Profile() {
         )}
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="activity">My Activity</TabsTrigger>
+            <TabsTrigger value="saved">Saved</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
@@ -761,6 +771,49 @@ export default function Profile() {
                       <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                       <h3 className="text-lg font-semibold text-gray-600 mb-2">No Forum Activity</h3>
                       <p className="text-gray-500">You haven't created any forum threads yet.</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="saved">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Bookmark className="w-5 h-5" />
+                  <span>Saved Threads</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {savedThreads.map((thread) => (
+                    <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} key={thread.id}>
+                      <div className="border rounded-lg p-4 hover:bg-accent transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">{thread.title}</h3>
+                            <p className="text-muted-foreground mt-1 line-clamp-2">
+                              {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
+                            </p>
+                            <div className="flex items-center mt-2 text-sm text-muted-foreground">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {format(new Date(thread.created_date), "MMM d, yyyy")}
+                            </div>
+                          </div>
+                          {thread.is_nsfw && (
+                            <Badge variant="destructive" className="ml-4">NSFW</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                  {savedThreads.length === 0 && (
+                    <div className="text-center py-8">
+                      <Bookmark className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Saved Threads</h3>
+                      <p className="text-muted-foreground">Bookmark forum threads to find them here easily.</p>
                     </div>
                   )}
                 </div>
