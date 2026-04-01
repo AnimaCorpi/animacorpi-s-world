@@ -29,7 +29,7 @@ export default function BottomTabBar({ taskbarColor, user }) {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[100] flex xl:hidden border-t border-border bg-background overflow-hidden"
+      className="fixed bottom-0 left-0 right-0 z-[100] flex border-t border-border bg-background overflow-hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {tabs.map((tab) => {

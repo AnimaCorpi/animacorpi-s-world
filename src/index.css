@@ -27,11 +27,9 @@ button, a, [role="button"], label {
   min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
 }
 
-/* Bottom padding so content isn't hidden behind the tab bar on mobile/tablet */
-@media (max-width: 1279px) {
-  main > * {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom));
-  }
+/* Bottom padding so content isn't hidden behind the tab bar — always shown */
+main > * {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 @keyframes spin {
