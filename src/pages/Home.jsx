@@ -27,12 +27,12 @@ export default function Home() {
   const loadData = useCallback(async () => {
     try {
       const [postsData, settingsData] = await Promise.all([
-        base44.entities.Post.filter({ published: true }, "-created_date"),
-        base44.entities.SiteSettings.filter({ page: "home" })
-      ]);
+      base44.entities.Post.filter({ published: true }, "-created_date"),
+      base44.entities.SiteSettings.filter({ page: "home" })]
+      );
       const now = new Date();
-      const visiblePosts = postsData.filter(post =>
-        !post.publish_at || new Date(post.publish_at) <= now
+      const visiblePosts = postsData.filter((post) =>
+      !post.publish_at || new Date(post.publish_at) <= now
       );
       setPosts(visiblePosts);
       setSettings(settingsData[0] || { tagline: "Welcome to My Creative World", message: "Explore thoughts, artwork, photography, and stories from my heart." });
@@ -46,7 +46,7 @@ export default function Home() {
     if (selectedCategory === "all") {
       setFilteredPosts(posts);
     } else {
-      setFilteredPosts(posts.filter(post => post.category === selectedCategory));
+      setFilteredPosts(posts.filter((post) => post.category === selectedCategory));
     }
   };
 
@@ -62,7 +62,7 @@ export default function Home() {
   const getCategoryIcon = (category) => {
     const icons = {
       thoughts: "💭",
-      artwork: "🎨", 
+      artwork: "🎨",
       photography: "📸"
     };
     return icons[category] || "📝";
@@ -79,50 +79,50 @@ export default function Home() {
           <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading creative content...</p>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   const categories = [
-    { value: "all", label: "All" },
-    { value: "thoughts", label: "💭 Thoughts" },
-    { value: "artwork", label: "🎨 Artwork" },
-    { value: "photography", label: "📸 Photography" },
-  ];
+  { value: "all", label: "All" },
+  { value: "thoughts", label: "💭 Thoughts" },
+  { value: "artwork", label: "🎨 Artwork" },
+  { value: "photography", label: "📸 Photography" }];
+
 
   return (
     <PullToRefresh onRefresh={loadData}>
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="banner-transparent py-20 px-4 sm:px-6 lg:px-8">
+      <section className="text-[#151414] px-4 py-20 banner-transparent sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}>
+              
             <div className="banner-text-container">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900 dark:text-foreground">
+              <h1 className="banner-text text-4xl md:text-6xl font-bold mb-6 leading-tight">
                 {settings?.tagline || "Welcome to My Creative World"}
               </h1>
-              <p className="text-xl md:text-2xl mb-8 leading-relaxed text-gray-700 dark:text-foreground/80">
+              <p className="banner-text-secondary text-xl md:text-2xl mb-8 leading-relaxed">
                 {settings?.message || "Explore thoughts, artwork, photography, and stories from my heart."}
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link to={createPageUrl("Thoughts")}>
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
-                  >
+                  <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105">
+                      
                     💭 Explore Thoughts
                   </Button>
                 </Link>
                 <Link to={createPageUrl("Stories")}>
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="border-2 border-purple-300 dark:border-purple-500 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
-                  >
+                  <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105">
+                      
                     📚 Read Stories
                   </Button>
                 </Link>
@@ -141,42 +141,42 @@ export default function Home() {
               <p className="text-gray-600 dark:text-muted-foreground">Discover my latest creative expressions</p>
             </div>
             <div className="flex items-center gap-2 mt-4 md:mt-0 flex-wrap">
-              {categories.map(cat => (
+              {categories.map((cat) =>
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
                   aria-pressed={selectedCategory === cat.value}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] min-w-[44px] ${
-                    selectedCategory === cat.value
-                      ? "bg-purple-600 text-white shadow-md"
-                      : "bg-white dark:bg-card text-gray-600 dark:text-muted-foreground border border-gray-200 dark:border-border hover:border-purple-300 hover:text-purple-600"
-                  }`}
-                >
+                  selectedCategory === cat.value ?
+                  "bg-purple-600 text-white shadow-md" :
+                  "bg-white dark:bg-card text-gray-600 dark:text-muted-foreground border border-gray-200 dark:border-border hover:border-purple-300 hover:text-purple-600"}`
+                  }>
+                  
                   {cat.label}
                 </button>
-              ))}
+                )}
             </div>
           </div>
 
           {/* Posts Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post, index) => (
+            {filteredPosts.map((post, index) =>
               <motion.article
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card-hover bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:border-border"
-              >
-                {post.image_url && (
-                  <div className="aspect-video overflow-hidden">
-                    <img 
-                      src={post.image_url} 
-                      alt={post.title}
-                      className="w-full h-full object-contain"
-                    />
+                className="card-hover bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:border-border">
+                
+                {post.image_url &&
+                <div className="aspect-video overflow-hidden">
+                    <img
+                    src={post.image_url}
+                    alt={post.title}
+                    className="w-full h-full object-contain" />
+                  
                   </div>
-                )}
+                }
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
                     <Badge className={`${getCategoryColor(post.category)} border`}>
@@ -193,43 +193,43 @@ export default function Home() {
                   <p className="text-gray-600 dark:text-muted-foreground mb-4 line-clamp-3">
                     {post.excerpt || stripHtmlTags(post.content).substring(0, 150) + "..."}
                   </p>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground"
-                        >
+                  {post.tags && post.tags.length > 0 &&
+                  <div className="flex flex-wrap gap-2 mb-4">
+                      {post.tags.slice(0, 3).map((tag, tagIndex) =>
+                    <span
+                      key={tagIndex}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground">
+                      
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}
                         </span>
-                      ))}
+                    )}
                     </div>
-                  )}
-                  <Link 
+                  }
+                  <Link
                     to={createPageUrl(`Post?id=${post.id}`)}
-                    className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200"
-                  >
+                    className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200">
+                    
                     Read More
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Link>
                 </div>
               </motion.article>
-            ))}
+              )}
           </div>
 
-          {filteredPosts.length === 0 && (
+          {filteredPosts.length === 0 &&
             <div className="text-center py-16">
               <div className="text-6xl mb-4">🎨</div>
               <h3 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">No posts yet</h3>
               <p className="text-gray-600 dark:text-muted-foreground">
-                {selectedCategory === "all" 
-                  ? "Check back soon for new creative content!"
-                  : `No ${selectedCategory} posts available yet.`
+                {selectedCategory === "all" ?
+                "Check back soon for new creative content!" :
+                `No ${selectedCategory} posts available yet.`
                 }
               </p>
             </div>
-          )}
+            }
         </div>
       </section>
 
@@ -241,16 +241,16 @@ export default function Home() {
             Connect with a community of creative souls and share your own story
           </p>
           <Link to={createPageUrl("Forum")}>
-            <Button 
-              size="lg"
-              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
-            >
+            <Button
+                size="lg"
+                className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+                
               Join Our Forum
             </Button>
           </Link>
         </div>
       </section>
     </div>
-    </PullToRefresh>
-  );
+    </PullToRefresh>);
+
 }
