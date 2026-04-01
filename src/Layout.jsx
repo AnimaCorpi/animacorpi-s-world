@@ -168,117 +168,7 @@ export default function Layout({ children, currentPageName }) {
     : { backgroundColor: themePrefs.background_color };
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden" style={backgroundStyle}>
-      <style>{`
-        :root {
-          --primary-pastel: #e879f9;
-          --secondary-pastel: #a855f7;
-          --accent-mint: #6ee7b7;
-          --accent-peach: #fbbf24;
-          --accent-sky: #60a5fa;
-          --soft-lavender: #e879f9;
-          --background-cream: #fef7ff;
-          --text-dark: #1f2937;
-          --text-light: #6b7280;
-          --banner-bg: ${themePrefs.transparent_banners ? 'transparent' : 'linear-gradient(135deg, #fef7ff 0%, #f3e8ff 50%, #ede9fe 100%)'};
-          --banner-backdrop: ${themePrefs.transparent_banners ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
-        }
-        
-        .pastel-gradient {
-          background: var(--banner-bg);
-          ${themePrefs.transparent_banners ? 'backdrop-filter: blur(10px);' : ''}
-        }
-        
-        .banner-transparent {
-          background: ${themePrefs.transparent_banners ? 'rgba(255, 255, 255, 0.1)' : 'linear-gradient(135deg, #fef7ff 0%, #f3e8ff 50%, #ede9fe 100%)'};
-          ${themePrefs.transparent_banners ? 'backdrop-filter: blur(10px);' : ''}
-          ${themePrefs.transparent_banners ? 'border: 1px solid rgba(255, 255, 255, 0.2);' : ''}
-        }
-
-        .banner-text-container {
-          ${themePrefs.transparent_banners ? `
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 2.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-          ` : 'padding: 2rem;'}
-        }
-        
-        .nav-link {
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .nav-link::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(232, 121, 249, 0.1), transparent);
-          transition: left 0.5s;
-        }
-        
-        .nav-link:hover::before {
-          left: 100%;
-        }
-        
-        .card-hover {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card-hover:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .smooth-scroll {
-          scroll-behavior: smooth;
-        }
-
-        .notification-badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          background: #ef4444;
-          color: white;
-          border-radius: 50%;
-          width: 18px;
-          height: 18px;
-          font-size: 10px;
-          font-weight: bold;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 1;
-        }
-
-        ${themePrefs.transparent_banners ? `
-          .banner-text {
-            text-shadow: 
-              4px 4px 8px rgba(0, 0, 0, 0.9),
-              2px 2px 4px rgba(0, 0, 0, 0.8),
-              1px 1px 2px rgba(0, 0, 0, 0.7);
-            color: white !important;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-          }
-          .banner-text-secondary {
-            color: rgba(255, 255, 255, 0.95) !important;
-            text-shadow: 
-              3px 3px 6px rgba(0, 0, 0, 0.8),
-              2px 2px 4px rgba(0, 0, 0, 0.7),
-              1px 1px 2px rgba(0, 0, 0, 0.6);
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          }
-        ` : ''}
-      `}</style>
-
+    <div className="fixed inset-0 flex flex-col overflow-hidden" style={backgroundStyle}>
       <header
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 bg-background/80'
@@ -426,9 +316,7 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </header>
 
-      <main 
-        className="flex-1 transition-colors duration-300"
-      >
+      <main className="flex-1 overflow-y-auto transition-colors duration-300">
         <UserContext.Provider value={user}>
           {children}
         </UserContext.Provider>
@@ -437,7 +325,7 @@ export default function Layout({ children, currentPageName }) {
       <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />
 
       <footer
-        className={`transition-colors duration-300 ${
+        className={`shrink-0 transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-border bg-background/80 backdrop-blur-sm'
         }`}
       >
@@ -448,40 +336,20 @@ export default function Layout({ children, currentPageName }) {
                 {footerSettings.footer_text}
               </p>
               <div className="flex justify-center md:justify-start space-x-4 mt-2">
-                <Link to={createPageUrl("Terms")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>
-                  Terms of Service
-                </Link>
-                <Link to={createPageUrl("Guidelines")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>
-                  Community Guidelines
-                </Link>
-                <Link to={createPageUrl("Contact")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>
-                  Contact
-                </Link>
+                <Link to={createPageUrl("Terms")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>Terms of Service</Link>
+                <Link to={createPageUrl("Guidelines")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>Community Guidelines</Link>
+                <Link to={createPageUrl("Contact")} className={`text-sm ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-500'} hover:text-purple-600`}>Contact</Link>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               {footerSettings.instagram_url && (
-                <a
-                  href={footerSettings.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`hover:text-pink-500 transition-colors duration-200 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`}
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919-4.919-1.266-.058-1.644-.07-4.85-.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                  </svg>
+                <a href={footerSettings.instagram_url} target="_blank" rel="noopener noreferrer" className={`hover:text-pink-500 transition-colors duration-200 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`}>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919-4.919-1.266-.058-1.644-.07-4.85-.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 </a>
               )}
               {footerSettings.linkedin_url && (
-                <a
-                  href={footerSettings.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`hover:text-blue-500 transition-colors duration-200 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`}
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
+                <a href={footerSettings.linkedin_url} target="_blank" rel="noopener noreferrer" className={`hover:text-blue-500 transition-colors duration-200 ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`}>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                 </a>
               )}
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -6,7 +6,6 @@ import { Home, BookOpen, MessageSquare, User as UserIcon, Settings } from "lucid
 
 export default function BottomTabBar({ taskbarColor, user }) {
   const location = useLocation();
-  const prevPathRef = useRef(location.pathname);
 
   const isAdmin = user?.role === 'admin';
 
@@ -28,8 +27,8 @@ export default function BottomTabBar({ taskbarColor, user }) {
     return location.pathname === `/${tab.path}` || location.pathname === createPageUrl(tab.path);
   };
 
-  const nav = (
-    <nav className="bottom-tab-bar flex border-t border-border bg-background">
+  return (
+    <nav className="bottom-tab-bar flex border-t border-border bg-background shrink-0">
       {tabs.map((tab) => {
         const active = isActive(tab);
         return (
@@ -56,6 +55,4 @@ export default function BottomTabBar({ taskbarColor, user }) {
       })}
     </nav>
   );
-
-  return createPortal(nav, document.body);
 }
