@@ -17,12 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserContext } from "./components/UserContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
 import ThemeToggle from "./components/ThemeToggle";
 
@@ -46,6 +41,8 @@ export default function Layout({ children, currentPageName }) {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   // No longer force redirect - users can browse as guests
 
@@ -138,6 +135,9 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const isAdmin = user?.role === 'admin';
+
+  const handleMenuToggle = () => setMenuOpen(prev => !prev);
+  const closeMenu = () => setMenuOpen(false);
   const isActive = (pageName) => location.pathname === createPageUrl(pageName);
 
   // Show back button on any non-root page
@@ -256,49 +256,58 @@ export default function Layout({ children, currentPageName }) {
               )}
             
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className={`flex items-center space-x-2 ${themePrefs.transparent_banners ? 'text-white' : ''}`}>
-                      {user.avatar_url ? (
-                        <img
-                          src={user.avatar_url}
-                          alt="Profile"
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                          style={{ backgroundColor: themePrefs.taskbar_color }}
-                        >
-                          {user.username?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className={`hidden sm:block text-sm font-medium ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-800 dark:text-foreground'}`}>
-                        {user.username}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-48 z-[100]">
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl("Profile")} className="flex items-center">
-                        <UserIcon className="w-4 h-4 mr-2" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl("Admin")} className="flex items-center">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Admin Dashboard
-                        </Link>
-                      </DropdownMenuItem>
+                <div className="relative" ref={menuRef}>
+                  <button
+                    onClick={handleMenuToggle}
+                    className={`flex items-center space-x-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors ${themePrefs.transparent_banners ? 'text-white' : ''}`}
+                  >
+                    {user.avatar_url ? (
+                      <img src={user.avatar_url} alt="Profile" className="w-8 h-8 rounded-full object-cover" />
+                    ) : (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                        style={{ backgroundColor: themePrefs.taskbar_color }}
+                      >
+                        {user.username?.charAt(0).toUpperCase()}
+                      </div>
                     )}
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    <span className={`hidden sm:block text-sm font-medium ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-800 dark:text-foreground'}`}>
+                      {user.username}
+                    </span>
+                  </button>
+                  {menuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-[90]" onClick={closeMenu} />
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-lg shadow-lg z-[100] py-1">
+                        <Link
+                          to={createPageUrl("Profile")}
+                          onClick={closeMenu}
+                          className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                        >
+                          <UserIcon className="w-4 h-4 mr-2" />
+                          Profile
+                        </Link>
+                        {isAdmin && (
+                          <Link
+                            to={createPageUrl("Admin")}
+                            onClick={closeMenu}
+                            className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                          >
+                            <Settings className="w-4 h-4 mr-2" />
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => { closeMenu(); handleLogout(); }}
+                          className="flex items-center w-full px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               ) : (
                 <Button
                   onClick={() => base44.auth.redirectToLogin()}
