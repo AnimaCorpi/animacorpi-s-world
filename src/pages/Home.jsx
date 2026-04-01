@@ -94,7 +94,7 @@ export default function Home() {
     <PullToRefresh onRefresh={loadData}>
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-transparent text-[#151414] px-4 py-20 banner-transparent sm:px-6 lg:px-8">
+      <section className="banner-transparent py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
               initial={{ opacity: 0, y: 20 }}
