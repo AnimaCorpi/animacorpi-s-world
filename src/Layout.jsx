@@ -278,7 +278,7 @@ export default function Layout({ children, currentPageName }) {
                       </span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-48 z-[100]">
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl("Profile")} className="flex items-center">
                         <UserIcon className="w-4 h-4 mr-2" />
