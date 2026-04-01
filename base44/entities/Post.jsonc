@@ -1,0 +1,63 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "thoughts",
+        "artwork",
+        "photography"
+      ],
+      "description": "Post category"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Featured image URL"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short excerpt for preview"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Post tags"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether post is published"
+    },
+    "publish_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled date and time for publishing"
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether post is pinned to top of its section"
+    },
+    "pin_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Order among pinned posts (lower = higher)"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "category"
+  ]
+}

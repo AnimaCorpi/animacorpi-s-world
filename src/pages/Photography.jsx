@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Calendar, Tag, ArrowRight } from "lucide-react";
+import { Calendar, Tag, ArrowRight, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
@@ -27,7 +27,11 @@ export default function Photography() {
         base44.entities.Post.filter({ published: true, category: "photography" }, "-created_date"),
         base44.entities.SiteSettings.filter({ page: "photography" })
       ]);
-      setPosts(postsData);
+      const sorted = [
+        ...postsData.filter(p => p.pinned).sort((a, b) => (a.pin_order ?? 0) - (b.pin_order ?? 0)),
+        ...postsData.filter(p => !p.pinned)
+      ];
+      setPosts(sorted);
       setSettings(settingsData[0] || { 
         tagline: "Captured Moments", 
         message: "Visual stories through the lens of my camera." 
@@ -94,9 +98,16 @@ export default function Photography() {
                 )}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
                     <Badge className="bg-blue-100 text-blue-700 border border-blue-200">
                       📸 Photography
                     </Badge>
+                    {post.pinned && (
+                      <Badge className="bg-purple-50 text-purple-500 border border-purple-200 flex items-center gap-1 text-xs">
+                        <Pin className="w-3 h-3" /> Pinned
+                      </Badge>
+                    )}
+                  </div>
                     <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                       <Calendar className="w-4 h-4 mr-1" />
                       {format(new Date(post.created_date), "MMM d, yyyy")}

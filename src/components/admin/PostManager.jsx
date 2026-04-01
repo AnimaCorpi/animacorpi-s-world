@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Save, X, Upload, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Clock, Pin, PinOff, ArrowUp, ArrowDown } from "lucide-react";
 import { format } from "date-fns";
 import ReactQuill from 'react-quill';
 
@@ -28,6 +28,35 @@ export default function PostManager({ onStatsUpdate }) {
     publish_at: ""
   });
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  const pinnedPosts = posts
+    .filter(p => p.pinned)
+    .sort((a, b) => (a.pin_order ?? 0) - (b.pin_order ?? 0));
+
+  const handleTogglePin = async (post) => {
+    if (!post.pinned) {
+      const maxOrder = pinnedPosts.length > 0
+        ? Math.max(...pinnedPosts.map(p => p.pin_order ?? 0))
+        : -1;
+      await base44.entities.Post.update(post.id, { pinned: true, pin_order: maxOrder + 1 });
+    } else {
+      await base44.entities.Post.update(post.id, { pinned: false, pin_order: 0 });
+    }
+    queryClient.invalidateQueries({ queryKey: ['Post'] });
+  };
+
+  const handlePinReorder = async (postId, direction) => {
+    const idx = pinnedPosts.findIndex(p => p.id === postId);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= pinnedPosts.length) return;
+    const a = pinnedPosts[idx];
+    const b = pinnedPosts[swapIdx];
+    await Promise.all([
+      base44.entities.Post.update(a.id, { pin_order: b.pin_order ?? swapIdx }),
+      base44.entities.Post.update(b.id, { pin_order: a.pin_order ?? idx }),
+    ]);
+    queryClient.invalidateQueries({ queryKey: ['Post'] });
+  };
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['Post', 'list'],
@@ -74,7 +103,9 @@ export default function PostManager({ onStatsUpdate }) {
       tags: post.tags ? post.tags.join(", ") : "",
       image_url: post.image_url || "",
       published: post.published,
-      publish_at: post.publish_at ? post.publish_at.substring(0, 16) : ""
+      publish_at: post.publish_at ? post.publish_at.substring(0, 16) : "",
+      pinned: post.pinned || false,
+      pin_order: post.pin_order || 0
     });
     setIsEditing(true);
   };
@@ -89,7 +120,9 @@ export default function PostManager({ onStatsUpdate }) {
       tags: "",
       image_url: "",
       published: true,
-      publish_at: ""
+      publish_at: "",
+      pinned: false,
+      pin_order: 0
     });
     setIsEditing(true);
   };
@@ -265,6 +298,37 @@ export default function PostManager({ onStatsUpdate }) {
         </Button>
       </div>
 
+      {pinnedPosts.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-1">
+            <Pin className="w-4 h-4" /> Pinned Posts (drag to reorder)
+          </h4>
+          <div className="grid gap-3">
+            {pinnedPosts.map((post, idx) => (
+              <Card key={post.id} className="border-purple-200 bg-purple-50 dark:bg-purple-950/20">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="flex flex-col gap-1">
+                    <Button variant="ghost" size="sm" className="p-1 h-6" onClick={() => handlePinReorder(post.id, 'up')} disabled={idx === 0}>
+                      <ArrowUp className="w-3 h-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="p-1 h-6" onClick={() => handlePinReorder(post.id, 'down')} disabled={idx === pinnedPosts.length - 1}>
+                      <ArrowDown className="w-3 h-3" />
+                    </Button>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{post.title}</p>
+                    <p className="text-xs text-muted-foreground">{post.category}</p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => handleTogglePin(post)} title="Unpin">
+                    <PinOff className="w-4 h-4 text-purple-600" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-4">
         {posts.map((post) => (
           <Card key={post.id}>
@@ -273,6 +337,11 @@ export default function PostManager({ onStatsUpdate }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start gap-2 mb-2 sm:items-center">
                     <h4 className="font-semibold break-words">{post.title}</h4>
+                    {post.pinned && (
+                      <Badge className="bg-purple-100 text-purple-700 border border-purple-200 shrink-0 flex items-center gap-1">
+                        <Pin className="w-3 h-3" /> Pinned
+                      </Badge>
+                    )}
                     <Badge variant={post.published ? "default" : "secondary"} className="shrink-0">
                       {post.published ? "Published" : "Draft"}
                     </Badge>
@@ -292,6 +361,9 @@ export default function PostManager({ onStatsUpdate }) {
                   </p>
                 </div>
                 <div className="flex gap-2 shrink-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleTogglePin(post)} title={post.pinned ? "Unpin" : "Pin to top"}>
+                    {post.pinned ? <PinOff className="w-4 h-4 text-purple-500" /> : <Pin className="w-4 h-4 text-gray-400" />}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={() => handleEdit(post)}>
                     <Edit className="w-4 h-4" />
                   </Button>
