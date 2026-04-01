@@ -128,7 +128,7 @@ export default function ChapterList() {
 
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-6 flex items-center">
             <BookOpen className="w-6 h-6 mr-2 text-purple-600" />
             Chapters ({chapters.length})
           </h2>
@@ -156,7 +156,7 @@ export default function ChapterList() {
                               </Badge>
                             )}
                           </div>
-                          <h3 className="text-xl font-semibold text-gray-900">
+                          <h3 className="text-xl font-semibold text-gray-900 dark:text-foreground">
                             {chapter.title}
                           </h3>
                         </div>
@@ -172,8 +172,8 @@ export default function ChapterList() {
           {chapters.length === 0 && (
             <div className="text-center py-16">
               <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">No Chapters Yet</h3>
-              <p className="text-gray-600">Chapters are being prepared. Check back soon!</p>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">No Chapters Yet</h3>
+              <p className="text-gray-600 dark:text-muted-foreground">Chapters are being prepared. Check back soon!</p>
             </div>
           )}
         </div>

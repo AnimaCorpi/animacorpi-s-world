@@ -96,7 +96,7 @@ export default function Search() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Search posts, threads, stories…"
-              className="pl-12 h-12 text-base rounded-xl border-border bg-card"
+              className="pl-12 h-12 text-base text-foreground rounded-xl border-border bg-card"
             />
           </form>
         </div>

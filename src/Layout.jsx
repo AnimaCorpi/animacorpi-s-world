@@ -342,7 +342,7 @@ export default function Layout({ children, currentPageName }) {
                 <Input
                   type="search"
                   placeholder="Search posts..."
-                  className="pl-10 h-9 w-48"
+                  className="pl-10 h-9 w-48 text-foreground bg-background"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search posts"

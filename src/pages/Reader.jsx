@@ -158,8 +158,8 @@ export default function Reader() {
   const currentIndex = getCurrentChapterIndex();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <Link to={createPageUrl(`ChapterList?bookid=${book.id}`)} className="flex items-center text-purple-600 hover:text-purple-800">
@@ -168,7 +168,7 @@ export default function Reader() {
             </Link>
             
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="flex items-center text-sm text-gray-600 shrink-0">
+              <div className="flex items-center text-sm text-gray-600 dark:text-muted-foreground shrink-0">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Chapter {currentIndex + 1} of {chapters.length}
               </div>
@@ -196,19 +196,19 @@ export default function Reader() {
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-12 text-center">
           <p className="text-sm text-purple-600 font-medium mb-2">Chapter {currentIndex + 1}</p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{currentChapter.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-foreground mb-4">{currentChapter.title}</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto"></div>
         </header>
 
         <div 
-          className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-purple-600 prose-strong:text-gray-900"
+          className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-foreground prose-p:text-gray-700 dark:prose-p:text-foreground prose-p:leading-relaxed prose-a:text-purple-600 prose-strong:text-gray-900 dark:prose-strong:text-foreground"
           dangerouslySetInnerHTML={{ __html: currentChapter.content }}
         />
 
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-16 pt-8 border-t border-border">
           <div className="flex items-center mb-6">
             <ReactionButton contentId={currentChapter.id} contentType="chapter" user={user} />
-            <span className="text-sm text-gray-500 ml-1">Like this chapter</span>
+            <span className="text-sm text-gray-500 dark:text-muted-foreground ml-1">Like this chapter</span>
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             {previousChapter ? (
