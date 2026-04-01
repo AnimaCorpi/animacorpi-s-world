@@ -37,7 +37,7 @@ export default function BottomTabBar({ taskbarColor, user }) {
             to={tab.rootMatch ? "/" : createPageUrl(tab.path)}
             aria-label={tab.label}
             aria-current={active ? "page" : undefined}
-            className="flex flex-col items-center justify-center flex-1 gap-0.5 select-none min-h-[56px] px-1"
+            className="flex flex-col items-center justify-center flex-1 gap-0.5 select-none min-h-[72px] px-1"
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             <tab.icon
