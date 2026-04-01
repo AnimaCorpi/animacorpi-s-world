@@ -241,7 +241,7 @@ export default function ForumThreadPage() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Link to={createPageUrl("Forum")} className="inline-flex items-center text-purple-600 hover:text-purple-800">
@@ -272,7 +272,7 @@ export default function ForumThreadPage() {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-muted-foreground">
                   <div className="flex items-center">
                     <UserIcon className="w-4 h-4 mr-1" />
                     @{getAuthorDisplay(thread)}
@@ -329,7 +329,7 @@ export default function ForumThreadPage() {
                 />
               </div>
             )}
-            <div className="prose max-w-none mb-4">
+            <div className="prose dark:prose-invert max-w-none mb-4">
               <div dangerouslySetInnerHTML={{ __html: thread.content.replace(/\n/g, '<br>') }} />
             </div>
             {thread.tags && thread.tags.length > 0 && (
@@ -360,8 +360,8 @@ export default function ForumThreadPage() {
               <form onSubmit={handleSubmitComment} className="mb-6">
                 <div className="mb-4">
                   {replyingTo && (
-                    <div className="bg-gray-100 p-3 rounded-lg mb-2">
-                      <p className="text-sm text-gray-600">
+                    <div className="bg-gray-100 dark:bg-muted p-3 rounded-lg mb-2">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         Replying to comment by @{getAuthorDisplay(comments.find(c => c.id === replyingTo))}
                       </p>
                       <Button
@@ -382,7 +382,7 @@ export default function ForumThreadPage() {
                     rows={4}
                     maxLength={500}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
                     {newComment.length}/500 characters
                   </p>
                 </div>
@@ -396,8 +396,8 @@ export default function ForumThreadPage() {
                 </Button>
               </form>
             ) : !user || user.needsRegistration ? (
-              <div className="text-center py-8 bg-gray-50 rounded-lg">
-                <p className="text-gray-600 mb-4">
+              <div className="text-center py-8 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <p className="text-gray-600 dark:text-muted-foreground mb-4">
                   {user?.needsRegistration 
                     ? "Complete your profile to join the discussion" 
                     : "Sign in to join the discussion"}
@@ -415,7 +415,7 @@ export default function ForumThreadPage() {
             ) : thread.locked ? (
               <div className="text-center py-8">
                 <Lock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600">This discussion has been locked</p>
+                <p className="text-gray-600 dark:text-muted-foreground">This discussion has been locked</p>
               </div>
             ) : null}
 
@@ -426,7 +426,7 @@ export default function ForumThreadPage() {
                     <div className="flex items-center space-x-2">
                       <UserIcon className="w-4 h-4" />
                       <span className="font-medium">@{getAuthorDisplay(comment)}</span>
-                      <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-500 dark:text-muted-foreground">
                         {format(new Date(comment.created_date), "MMM d, h:mm a")}
                       </span>
                     </div>
@@ -459,7 +459,7 @@ export default function ForumThreadPage() {
                       </Button>
                     </div>
                   </div>
-                  <p className="text-gray-700 mb-2">
+                  <p className="text-gray-700 dark:text-foreground mb-2">
                     {comment.content}
                   </p>
                   <ReactionButton contentId={comment.id} contentType="forum_comment" user={user} />
@@ -472,7 +472,7 @@ export default function ForumThreadPage() {
                           <div className="flex items-center space-x-2">
                             <UserIcon className="w-3 h-3" />
                             <span className="font-medium text-sm">@{getAuthorDisplay(reply)}</span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 dark:text-muted-foreground">
                               {format(new Date(reply.created_date), "MMM d, h:mm a")}
                             </span>
                           </div>
@@ -497,7 +497,7 @@ export default function ForumThreadPage() {
                             </Button>
                           </div>
                         </div>
-                        <p className="text-gray-700 text-sm">{reply.content}</p>
+                        <p className="text-gray-700 dark:text-foreground text-sm">{reply.content}</p>
                         <ReactionButton contentId={reply.id} contentType="forum_comment" user={user} />
                       </div>
                     ))}
@@ -508,8 +508,8 @@ export default function ForumThreadPage() {
               {comments.length === 0 && (
                 <div className="text-center py-8">
                   <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No comments yet</h3>
-                  <p className="text-gray-500">Be the first to share your thoughts!</p>
+                  <h3 className="text-lg font-semibold text-gray-600 dark:text-muted-foreground mb-2">No comments yet</h3>
+                  <p className="text-gray-500 dark:text-muted-foreground">Be the first to share your thoughts!</p>
                 </div>
               )}
             </div>

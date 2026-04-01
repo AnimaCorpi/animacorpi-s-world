@@ -184,7 +184,7 @@ export default function PostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Navigation */}
         <div className="flex justify-between items-center mb-4">
@@ -207,7 +207,7 @@ export default function PostPage() {
             <img 
               src={post.image_url} 
               alt={post.title} 
-              className="w-full h-auto object-contain bg-gray-100"
+              className="w-full h-auto object-contain bg-gray-100 dark:bg-muted"
             />
           )}
           <CardHeader>
@@ -215,12 +215,12 @@ export default function PostPage() {
               <Badge className="bg-purple-100 text-purple-700 border border-purple-200 capitalize">
                 {post.category}
               </Badge>
-              <div className="flex items-center text-sm text-gray-500">
+              <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                 <Calendar className="w-4 h-4 mr-1" />
                 {format(new Date(post.created_date), "MMMM d, yyyy")}
               </div>
             </div>
-            <CardTitle className="text-4xl font-bold text-gray-900 mt-4">{post.title}</CardTitle>
+            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-foreground mt-4">{post.title}</CardTitle>
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-2">
                 {post.tags.map((tag, index) => (
@@ -234,7 +234,7 @@ export default function PostPage() {
           </CardHeader>
           <CardContent>
             <div 
-              className="prose max-w-none text-lg text-gray-700 leading-relaxed"
+              className="prose dark:prose-invert max-w-none text-lg text-gray-700 dark:text-foreground leading-relaxed"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
             
@@ -267,7 +267,7 @@ export default function PostPage() {
                   maxLength={500}
                 />
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-500 dark:text-muted-foreground">
                     {newComment.length}/500 characters
                   </span>
                   <Button type="submit" disabled={isSubmitting || !newComment.trim()}>
@@ -277,7 +277,7 @@ export default function PostPage() {
                 </div>
               </form>
             ) : (
-              <div className="text-center mb-8 p-4 bg-gray-100 rounded-lg">
+              <div className="text-center mb-8 p-4 bg-gray-100 dark:bg-muted rounded-lg">
                 <p>
                   <button onClick={() => base44.auth.redirectToLogin()} className="text-purple-600 font-semibold">Sign in</button> to leave a comment.
                 </p>
@@ -293,10 +293,10 @@ export default function PostPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold text-gray-800">
+                        <p className="font-semibold text-gray-800 dark:text-foreground">
                           @{comment.author_username || 'User'}
                         </p>
-                        <p className="text-sm text-gray-500 mb-1">
+                        <p className="text-sm text-gray-500 dark:text-muted-foreground mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>
                       </div>
@@ -312,7 +312,7 @@ export default function PostPage() {
                         </Button>
                       )}
                     </div>
-                    <p className="text-gray-700 break-words">{comment.content}</p>
+                    <p className="text-gray-700 dark:text-foreground break-words">{comment.content}</p>
                     <ReactionButton contentId={comment.id} contentType="post_comment" user={user} />
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export default function PostPage() {
               {comments.length === 0 && (
                 <div className="text-center py-8">
                   <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
+                  <p className="text-gray-500 dark:text-muted-foreground">No comments yet. Be the first to share your thoughts!</p>
                 </div>
               )}
             </div>

@@ -251,8 +251,8 @@ export default function Profile() {
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-gray-600 mt-1">Manage your account settings and preferences</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">My Profile</h1>
+          <p className="text-gray-600 dark:text-muted-foreground mt-1">Manage your account settings and preferences</p>
         </div>
 
         {message && (
@@ -321,8 +321,8 @@ export default function Profile() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold">{user?.full_name}</h3>
-                    <p className="text-gray-600">@{user?.username}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-gray-600 dark:text-muted-foreground">@{user?.username}</p>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground">
                       Joined {format(new Date(user?.created_date), "MMMM yyyy")}
                     </p>
                   </div>
@@ -342,16 +342,16 @@ export default function Profile() {
                       placeholder="your_username"
                       pattern="[a-zA-Z0-9_]+"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Only letters, numbers, and underscores allowed</p>
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">Only letters, numbers, and underscores allowed</p>
                   </div>
                   <div>
                     <Label>Birthdate</Label>
                     <Input
                       value={format(new Date(user?.birthdate), "MMMM d, yyyy")}
                       disabled
-                      className="bg-gray-50"
+                      className="bg-gray-50 dark:bg-muted"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Birthdate cannot be changed after registration</p>
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">Birthdate cannot be changed after registration</p>
                   </div>
                 </div>
               </CardContent>
@@ -404,7 +404,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">Email Notifications</p>
-                        <p className="text-sm text-gray-600">Receive notifications via email</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Receive notifications via email</p>
                       </div>
                       <input
                         type="checkbox"
@@ -423,7 +423,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">SMS Notifications</p>
-                        <p className="text-sm text-gray-600">Receive notifications via text message</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Receive notifications via text message</p>
                       </div>
                       <input
                         type="checkbox"
@@ -442,7 +442,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">Forum Replies</p>
-                        <p className="text-sm text-gray-600">Get notified when someone replies to your posts</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Get notified when someone replies to your posts</p>
                       </div>
                       <input
                         type="checkbox"
@@ -461,7 +461,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">New Stories</p>
-                        <p className="text-sm text-gray-600">Get notified when new stories are published</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Get notified when new stories are published</p>
                       </div>
                       <input
                         type="checkbox"
@@ -480,7 +480,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">Admin Messages</p>
-                        <p className="text-sm text-gray-600">Receive important messages from site administrators</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Receive important messages from site administrators</p>
                       </div>
                       <input
                         type="checkbox"
@@ -499,7 +499,7 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">Chapter Updates</p>
-                        <p className="text-sm text-gray-600">Get notified about new chapters for followed stories</p>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Get notified about new chapters for followed stories</p>
                       </div>
                       <input
                         type="checkbox"
@@ -527,7 +527,7 @@ export default function Profile() {
                   <Palette className="w-5 h-5" />
                   <span>Theme Preferences</span>
                 </CardTitle>
-                <p className="text-sm text-gray-600">Customize your visual experience</p>
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">Customize your visual experience</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
@@ -614,8 +614,8 @@ export default function Profile() {
                       </Label>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    When enabled, page headers will be transparent to show your background
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
+                     When enabled, page headers will be transparent to show your background
                   </p>
                 </div>
 
@@ -699,7 +699,7 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="p-4 border rounded-lg bg-gray-50">
+                <div className="p-4 border rounded-lg bg-gray-50 dark:bg-muted">
                   <h3 className="font-medium mb-2">Preview</h3>
                   <div 
                     className="h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center relative overflow-hidden"
@@ -736,15 +736,15 @@ export default function Profile() {
                 <div className="space-y-4">
                   {userThreads.map((thread) => (
                     <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} key={thread.id}>
-                      <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="border border-border rounded-lg p-4 hover:bg-accent transition-colors">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg">{thread.title}</h3>
-                            <p className="text-gray-600 mt-1 line-clamp-2">
+                            <p className="text-gray-600 dark:text-muted-foreground mt-1 line-clamp-2">
                               {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
                             </p>
                             <div className="flex items-center space-x-4 mt-2">
-                              <div className="flex items-center text-sm text-gray-500">
+                              <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                                 <Calendar className="w-4 h-4 mr-1" />
                                 {format(new Date(thread.created_date), "MMM d, yyyy")}
                               </div>
@@ -772,8 +772,8 @@ export default function Profile() {
                   {userThreads.length === 0 && (
                     <div className="text-center py-8">
                       <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-600 mb-2">No Forum Activity</h3>
-                      <p className="text-gray-500">You haven't created any forum threads yet.</p>
+                      <h3 className="text-lg font-semibold text-gray-600 dark:text-muted-foreground mb-2">No Forum Activity</h3>
+                      <p className="text-gray-500 dark:text-muted-foreground">You haven't created any forum threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -837,12 +837,12 @@ export default function Profile() {
         </div>
 
         {/* Danger Zone */}
-        <div className="mt-8 border border-red-200 rounded-xl p-6 bg-red-50/50">
+        <div className="mt-8 border border-red-200 dark:border-red-900 rounded-xl p-6 bg-red-50/50 dark:bg-red-950/20">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-5 h-5 text-red-600" />
             <h2 className="text-lg font-bold text-red-700">Danger Zone</h2>
           </div>
-          <p className="text-sm text-red-600 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
+          <p className="text-sm text-red-600 dark:text-red-400 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
           <Button
             variant="outline"
             className="border-red-400 text-red-600 hover:bg-red-100"

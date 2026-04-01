@@ -60,12 +60,12 @@ export default function Notifications() {
 
   const getNotificationColor = (type) => {
     const colors = {
-      chapter_update: "bg-blue-50 border-blue-200",
-      forum_reply: "bg-green-50 border-green-200",
-      admin_message: "bg-purple-50 border-purple-200",
-      story_update: "bg-orange-50 border-orange-200"
+      chapter_update: "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800",
+      forum_reply: "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800",
+      admin_message: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800",
+      story_update: "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800"
     };
-    return colors[type] || "bg-gray-50 border-gray-200";
+    return colors[type] || "bg-gray-50 dark:bg-muted border-gray-200 dark:border-border";
   };
 
   if (isLoading) {
@@ -83,15 +83,15 @@ export default function Notifications() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground flex items-center">
                 <Bell className="w-8 h-8 mr-3" aria-hidden="true" />
                 Notifications
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-muted-foreground mt-1">
                 {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
               </p>
             </div>
@@ -115,7 +115,7 @@ export default function Notifications() {
                 className={`transition-all duration-200 ${
                   !notification.read
                     ? `${getNotificationColor(notification.type)} border-l-4`
-                    : 'bg-white border-gray-200'
+                    : 'bg-card border-border'
                 }`}
               >
                 <CardContent className="p-6">
@@ -126,15 +126,15 @@ export default function Notifications() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                          <h3 className="text-lg font-semibold text-gray-800">
+                          <h3 className="text-lg font-semibold text-gray-800 dark:text-foreground">
                             {notification.title}
                           </h3>
                           {!notification.read && (
                             <Badge className="bg-blue-500 text-white">New</Badge>
                           )}
                         </div>
-                        <p className="text-gray-600 mb-3">{notification.message}</p>
-                        <div className="flex items-center text-sm text-gray-500">
+                        <p className="text-gray-600 dark:text-muted-foreground mb-3">{notification.message}</p>
+                        <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                           <Calendar className="w-4 h-4 mr-1" aria-hidden="true" />
                           {format(new Date(notification.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </div>
@@ -183,8 +183,8 @@ export default function Notifications() {
               <Card>
                 <CardContent className="p-12 text-center">
                   <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" aria-hidden="true" />
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No notifications yet</h3>
-                  <p className="text-gray-500">
+                  <h3 className="text-xl font-semibold text-gray-600 dark:text-muted-foreground mb-2">No notifications yet</h3>
+                  <p className="text-gray-500 dark:text-muted-foreground">
                     You'll receive notifications here when there are new chapters, forum replies, or messages.
                   </p>
                 </CardContent>
