@@ -168,7 +168,7 @@ export default function Layout({ children, currentPageName }) {
     : { backgroundColor: themePrefs.background_color };
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden" style={backgroundStyle}>
+    <div className="fixed inset-0 flex flex-col" style={backgroundStyle}>
       <header
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 bg-background/80'
