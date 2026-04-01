@@ -30,8 +30,8 @@ export default function BottomTabBar({ taskbarColor, user }) {
 
   const nav = (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex border-t border-border bg-background overflow-hidden"
-      style={{ top: 'auto', zIndex: 9999, paddingBottom: 'env(safe-area-inset-bottom)' }}
+      className="fixed left-0 right-0 flex border-t border-border bg-background"
+      style={{ bottom: 0, top: 'unset', zIndex: 9999, paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {tabs.map((tab) => {
         const active = isActive(tab);
