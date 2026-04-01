@@ -269,12 +269,12 @@ export default function Profile() {
         )}
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="activity">My Activity</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 p-1 h-auto">
+            <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-1">Profile</TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2 px-1">Notifs</TabsTrigger>
+            <TabsTrigger value="appearance" className="text-xs sm:text-sm py-2 px-1">Appearance</TabsTrigger>
+            <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 px-1">Activity</TabsTrigger>
+            <TabsTrigger value="saved" className="text-xs sm:text-sm py-2 px-1">Saved</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
