@@ -27,8 +27,8 @@ button, a, [role="button"], label {
   min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
 }
 
-/* Bottom padding so content isn't hidden behind the tab bar on mobile */
-@media (max-width: 767px) {
+/* Bottom padding so content isn't hidden behind the tab bar on mobile/tablet */
+@media (max-width: 1023px) {
   main > * {
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
