@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft, ArrowRight, Trash2 } from "lucide-react";
+import ReactionButton from "../components/ReactionButton";
 import { format } from "date-fns";
 
 export default function PostPage() {
@@ -311,7 +312,8 @@ export default function PostPage() {
                         </Button>
                       )}
                     </div>
-                    <p className="text-gray-700 break-words">{comment.content}</p> {/* Added break-words */}
+                    <p className="text-gray-700 break-words">{comment.content}</p>
+                    <ReactionButton contentId={comment.id} contentType="post_comment" user={user} />
                   </div>
                 </div>
               ))}

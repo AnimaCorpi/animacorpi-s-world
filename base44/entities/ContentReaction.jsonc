@@ -8,13 +8,15 @@
     },
     "content_id": {
       "type": "string",
-      "description": "ID of the thread or chapter"
+      "description": "ID of the thread, chapter, or comment"
     },
     "content_type": {
       "type": "string",
       "enum": [
         "thread",
-        "chapter"
+        "chapter",
+        "forum_comment",
+        "post_comment"
       ],
       "description": "Type of content being reacted to"
     }

@@ -462,6 +462,7 @@ export default function ForumThreadPage() {
                   <p className="text-gray-700 mb-2">
                     {comment.content}
                   </p>
+                  <ReactionButton contentId={comment.id} contentType="forum_comment" user={user} />
                   
                   {/* Replies */}
                   <div className="ml-6 space-y-3">
@@ -497,6 +498,7 @@ export default function ForumThreadPage() {
                           </div>
                         </div>
                         <p className="text-gray-700 text-sm">{reply.content}</p>
+                        <ReactionButton contentId={reply.id} contentType="forum_comment" user={user} />
                       </div>
                     ))}
                   </div>
