@@ -434,7 +434,7 @@ export default function Layout({ children, currentPageName }) {
         </UserContext.Provider>
       </main>
 
-      <BottomTabBar taskbarColor={themePrefs.taskbar_color} />
+      <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />
 
       <footer
         className={`transition-colors duration-300 ${

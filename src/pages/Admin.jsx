@@ -80,7 +80,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-3 sm:px-6 lg:px-8 pb-24 lg:pb-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -159,34 +159,34 @@ export default function Admin() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2 p-2 h-auto mb-6">
-                <TabsTrigger value="posts" className="flex items-center justify-center space-x-1 px-2 py-2">
+              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 gap-1 p-1 h-auto mb-6">
+                <TabsTrigger value="posts" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <FileText className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Posts</span>
+                  <span className="text-[10px] sm:text-xs">Posts</span>
                 </TabsTrigger>
-                <TabsTrigger value="books" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="books" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <BookOpen className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Books</span>
+                  <span className="text-[10px] sm:text-xs">Books</span>
                 </TabsTrigger>
-                <TabsTrigger value="backgrounds" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="backgrounds" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <Image className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Backgrounds</span>
+                  <span className="text-[10px] sm:text-xs">Backgrounds</span>
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="settings" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <Settings className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Settings</span>
+                  <span className="text-[10px] sm:text-xs">Settings</span>
                 </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="users" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <Users className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Users</span>
+                  <span className="text-[10px] sm:text-xs">Users</span>
                 </TabsTrigger>
-                <TabsTrigger value="messaging" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="messaging" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <Send className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Messaging</span>
+                  <span className="text-[10px] sm:text-xs">Messaging</span>
                 </TabsTrigger>
-                <TabsTrigger value="reports" className="flex items-center justify-center space-x-1 px-2 py-2">
+                <TabsTrigger value="reports" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <Flag className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline text-xs">Reports</span>
+                  <span className="text-[10px] sm:text-xs">Reports</span>
                 </TabsTrigger>
               </TabsList>
               
