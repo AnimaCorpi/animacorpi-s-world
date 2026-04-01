@@ -105,7 +105,7 @@ export default function Home() {
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900 dark:text-foreground">
                 {settings?.tagline || "Welcome to My Creative World"}
               </h1>
-              <p className="text-xl md:text-2xl mb-8 leading-relaxed text-gray-700 dark:text-muted-foreground">
+              <p className="text-xl md:text-2xl mb-8 leading-relaxed text-gray-700 dark:text-foreground/80">
                 {settings?.message || "Explore thoughts, artwork, photography, and stories from my heart."}
               </p>
               <div className="flex flex-wrap justify-center gap-4">

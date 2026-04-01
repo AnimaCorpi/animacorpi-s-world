@@ -185,7 +185,7 @@ export default function Layout({ children, currentPageName }) {
                   className={`flex items-center justify-center w-11 h-11 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     themePrefs.transparent_banners
                       ? 'text-white hover:bg-white/10'
-                      : 'text-foreground/70 hover:bg-accent hover:text-foreground'
+                      : 'text-gray-700 dark:text-foreground hover:bg-accent hover:text-foreground'
                   }`}
                 >
                   <ArrowLeft className="w-5 h-5" />
