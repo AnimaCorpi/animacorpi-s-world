@@ -44,7 +44,7 @@ const DropdownMenuSubContent = React.forwardRef(({ className, ...props }, ref) =
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName
 
-const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }, ref) => (
+const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, children, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
@@ -52,9 +52,13 @@ const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...pr
       className={cn(
         "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "max-[767px]:fixed max-[767px]:inset-x-0 max-[767px]:bottom-0 max-[767px]:top-auto max-[767px]:rounded-t-2xl max-[767px]:rounded-b-none max-[767px]:min-w-full max-[767px]:border-t max-[767px]:border-border max-[767px]:shadow-2xl max-[767px]:p-2 max-[767px]:pb-[calc(0.5rem+env(safe-area-inset-bottom))]",
         className
       )}
-      {...props} />
+      {...props}>
+      <div className="mx-auto mt-3 mb-2 h-1.5 w-10 rounded-full bg-muted hidden max-[767px]:block" />
+      {children}
+    </DropdownMenuPrimitive.Content>
   </DropdownMenuPrimitive.Portal>
 ))
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName

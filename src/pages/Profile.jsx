@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
+import AccountDeletionModal from "../components/AccountDeletionModal";
 import { BackgroundImage } from "@/entities/BackgroundImage";
 import { ForumThread } from "@/entities/ForumThread";
 import { UploadFile } from "@/integrations/Core";
@@ -17,6 +18,7 @@ import {
   Save, 
   Bell, 
   Palette,
+  AlertTriangle,
   MessageSquare,
   Calendar,
   Mail,
@@ -60,6 +62,7 @@ export default function Profile() {
   const [uploadingBackground, setUploadingBackground] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -832,6 +835,27 @@ export default function Profile() {
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
+
+        {/* Danger Zone */}
+        <div className="mt-8 border border-red-200 rounded-xl p-6 bg-red-50/50">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <h2 className="text-lg font-bold text-red-700">Danger Zone</h2>
+          </div>
+          <p className="text-sm text-red-600 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
+          <Button
+            variant="outline"
+            className="border-red-400 text-red-600 hover:bg-red-100"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            <AlertTriangle className="w-4 h-4 mr-2" />
+            Delete My Account
+          </Button>
+        </div>
+
+        {showDeleteModal && (
+          <AccountDeletionModal user={user} onClose={() => setShowDeleteModal(false)} />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { PenTool, Camera, BookOpen, MessageSquare, User as UserIcon } from "lucide-react";
 
@@ -13,6 +13,27 @@ const tabs = [
 
 export default function BottomTabBar({ taskbarColor }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const prevPathRef = useRef(location.pathname);
+
+  // Save scroll position when navigating away
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    if (prev !== location.pathname) {
+      sessionStorage.setItem(`scrollY:${location.pathname}`, String(window.scrollY));
+    }
+    // Restore scroll for new path
+    const saved = sessionStorage.getItem(`scrollY:${location.pathname}`);
+    if (saved !== null) {
+      requestAnimationFrame(() => window.scrollTo(0, parseInt(saved, 10)));
+    }
+    prevPathRef.current = location.pathname;
+  }, [location.pathname]);
+
+  const handleTabClick = (e, path) => {
+    // Save current scroll before navigating
+    sessionStorage.setItem(`scrollY:${location.pathname}`, String(window.scrollY));
+  };
 
   const isActive = (path) =>
     location.pathname === `/${path}` || location.pathname === createPageUrl(path);
@@ -28,6 +49,7 @@ export default function BottomTabBar({ taskbarColor }) {
           <Link
             key={tab.name}
             to={createPageUrl(tab.path)}
+            onClick={(e) => handleTabClick(e, tab.path)}
             aria-label={tab.label}
             aria-current={active ? "page" : undefined}
             className="flex flex-col items-center justify-center flex-1 gap-0.5 select-none min-h-[56px]"

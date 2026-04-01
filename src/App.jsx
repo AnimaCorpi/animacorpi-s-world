@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import ChapterList from '@/pages/ChapterList';
+const ChapterList = React.lazy(() => import('@/pages/ChapterList'));
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -63,6 +63,11 @@ const AuthenticatedApp = () => {
   }
 
   return (
+    <React.Suspense fallback={
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-purple-500 rounded-full animate-spin"></div>
+      </div>
+    }>
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={
@@ -92,6 +97,7 @@ const AuthenticatedApp = () => {
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AnimatePresence>
+    </React.Suspense>
   );
 };
 
