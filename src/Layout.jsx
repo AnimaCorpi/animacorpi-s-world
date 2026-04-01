@@ -195,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
                 to={createPageUrl("Home")}
                 aria-label={`${siteName} — go home`}
                 className={`flex items-center space-x-3 text-2xl font-bold transition-colors duration-200 ${
-                  themePrefs.transparent_banners ? 'banner-text hover:text-purple-200' : 'text-gray-800 hover:text-purple-600'
+                  themePrefs.transparent_banners ? 'banner-text hover:text-purple-200' : 'text-gray-800 dark:text-foreground hover:text-purple-600 dark:hover:text-purple-400'
                 }`}
               >
                 <div
@@ -218,7 +218,7 @@ export default function Layout({ children, currentPageName }) {
                       ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
                       : themePrefs.transparent_banners
                         ? 'banner-text-secondary hover:text-white hover:bg-white/10'
-                        : 'text-foreground/70 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                        : 'text-gray-700 dark:text-foreground hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -273,7 +273,7 @@ export default function Layout({ children, currentPageName }) {
                           {user.username?.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className={`hidden sm:block text-sm font-medium ${themePrefs.transparent_banners ? 'banner-text-secondary' : ''}`}>
+                      <span className={`hidden sm:block text-sm font-medium ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-800 dark:text-foreground'}`}>
                         {user.username}
                       </span>
                     </Button>
