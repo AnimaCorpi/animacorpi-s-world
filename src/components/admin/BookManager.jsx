@@ -16,8 +16,11 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
-  GripVertical
+  GripVertical,
+  CheckCircle,
+  Clock
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -37,7 +40,8 @@ export default function BookManager({ onStatsUpdate }) {
     cover_image_url: '',
     published: true,
     is_nsfw: false,
-    order_index: 0
+    order_index: 0,
+    status: 'not_started'
   });
   const [chapterForm, setChapterForm] = useState({
     title: '',
@@ -155,7 +159,8 @@ export default function BookManager({ onStatsUpdate }) {
       cover_image_url: book.cover_image_url || '',
       published: book.published,
       is_nsfw: book.is_nsfw,
-      order_index: book.order_index
+      order_index: book.order_index,
+      status: book.status || 'not_started'
     });
     setIsEditingBook(true);
   };
@@ -178,7 +183,8 @@ export default function BookManager({ onStatsUpdate }) {
       cover_image_url: '',
       published: true,
       is_nsfw: false,
-      order_index: books.length
+      order_index: books.length,
+      status: 'not_started'
     });
     setSelectedBook(null);
     setIsEditingBook(false);
@@ -289,21 +295,37 @@ export default function BookManager({ onStatsUpdate }) {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={bookForm.published}
-                    onCheckedChange={(checked) => setBookForm({ ...bookForm, published: checked })}
-                  />
-                  <Label>Published</Label>
+              <div className="space-y-4">
+                <div>
+                  <Label>Book Status</Label>
+                  <Select value={bookForm.status} onValueChange={(val) => setBookForm({ ...bookForm, status: val })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="not_started">Not Started</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={bookForm.is_nsfw}
-                    onCheckedChange={(checked) => setBookForm({ ...bookForm, is_nsfw: checked })}
-                  />
-                  <Label>NSFW</Label>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={bookForm.published}
+                      onCheckedChange={(checked) => setBookForm({ ...bookForm, published: checked })}
+                    />
+                    <Label>Published</Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={bookForm.is_nsfw}
+                      onCheckedChange={(checked) => setBookForm({ ...bookForm, is_nsfw: checked })}
+                    />
+                    <Label>NSFW</Label>
+                  </div>
                 </div>
               </div>
 
@@ -331,9 +353,21 @@ export default function BookManager({ onStatsUpdate }) {
                   )}
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-xl font-semibold">{book.title}</h3>
-                      {!book.published && <Badge variant="outline">Draft</Badge>}
-                      {book.is_nsfw && <Badge variant="destructive">NSFW</Badge>}
+                       <h3 className="text-xl font-semibold">{book.title}</h3>
+                       {!book.published && <Badge variant="outline">Draft</Badge>}
+                       {book.is_nsfw && <Badge variant="destructive">NSFW</Badge>}
+                       {book.status === 'in_progress' && (
+                         <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
+                           <Clock className="w-3 h-3" />
+                           In Progress
+                         </Badge>
+                       )}
+                       {book.status === 'completed' && (
+                         <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                           <CheckCircle className="w-3 h-3" />
+                           Completed
+                         </Badge>
+                       )}
                     </div>
                     <p className="text-gray-600 line-clamp-2">{book.description}</p>
                   </div>

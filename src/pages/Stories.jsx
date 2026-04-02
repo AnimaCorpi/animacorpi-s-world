@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Eye, EyeOff } from "lucide-react";
+import { BookOpen, Eye, EyeOff, CheckCircle, Clock } from "lucide-react";
+import ProgressBar from "../components/ProgressBar";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -14,10 +15,17 @@ export default function Stories() {
   const [showNSFW, setShowNSFW] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [bookmarks, setBookmarks] = useState([]);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadBookmarks();
+    }
+  }, [user?.id]);
 
   const loadData = async () => {
     try {
@@ -48,6 +56,15 @@ export default function Stories() {
       console.error("Error loading stories:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadBookmarks = async () => {
+    try {
+      const bookmarkData = await base44.entities.Bookmark.filter({ user_id: user.id });
+      setBookmarks(bookmarkData);
+    } catch (error) {
+      console.error("Error loading bookmarks:", error);
     }
   };
 
@@ -157,10 +174,31 @@ export default function Stories() {
                       <p className="text-muted-foreground line-clamp-4 mb-4">
                         {book.description}
                       </p>
-                      <div className="flex items-center text-purple-600 font-medium">
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        Read Now
-                      </div>
+                      {(() => {
+                        const bookmark = bookmarks.find(b => b.book_id === book.id);
+                        const statusIcon = book.status === 'completed' ? (<CheckCircle className="w-4 h-4 text-green-500 mr-2" />) : book.status === 'in_progress' ? (<Clock className="w-4 h-4 text-blue-500 mr-2" />) : null;
+                        return (
+                          <div className="space-y-3">
+                            {bookmark && (
+                              <ProgressBar
+                                percentage={bookmark.progress_percentage}
+                                label="Your Progress"
+                                className="mb-3"
+                              />
+                            )}
+                            <div className="flex items-center gap-2 text-purple-600 font-medium">
+                              {statusIcon}
+                              <BookOpen className="w-4 h-4" />
+                              Read Now
+                            </div>
+                          </div>
+                        );
+                      })()}
+                      {book.status !== 'not_started' && (
+                        <div className="mt-2 text-xs font-medium text-gray-500 dark:text-muted-foreground capitalize">
+                          Status: {book.status.replace('_', ' ')}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </Link>

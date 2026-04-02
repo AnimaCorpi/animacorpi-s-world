@@ -1,0 +1,47 @@
+{
+  "name": "Book",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Book title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Book description"
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Book cover image URL"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether book is published"
+    },
+    "is_nsfw": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether book contains NSFW content"
+    },
+    "order_index": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Book completion status"
+    }
+  },
+  "required": [
+    "title",
+    "description"
+  ]
+}

@@ -5,7 +5,8 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, BookOpen, PlayCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, CheckCircle, Clock } from "lucide-react";
+import ProgressBar from "../components/ProgressBar";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
@@ -111,6 +112,27 @@ export default function ChapterList() {
                     {book.description}
                   </p>
                   
+                  {bookmark && (
+                    <div className="mb-6">
+                      <ProgressBar
+                        percentage={bookmark.progress_percentage}
+                        label="Reading Progress"
+                      />
+                      {book.status === 'completed' && (
+                        <div className="mt-3 flex items-center text-green-600 font-medium text-sm">
+                          <CheckCircle className="w-5 h-5 mr-2" />
+                          You've completed this book!
+                        </div>
+                      )}
+                      {book.status === 'in_progress' && (
+                        <div className="mt-3 flex items-center text-blue-600 font-medium text-sm">
+                          <Clock className="w-5 h-5 mr-2" />
+                          Work in progress by the author
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
                   {bookmarkedChapter && (
                     <Link to={createPageUrl(`Reader?bookid=${book.id}&chapterid=${bookmarkedChapter.id}`)}>
                       <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 mb-4">
@@ -154,6 +176,11 @@ export default function ChapterList() {
                               <Badge variant="outline" className="text-xs">
                                 Currently Reading
                               </Badge>
+                            )}
+                            {chapters.length > 0 && (
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {Math.round(((chapter.chapter_number) / chapters.length) * 100)}%
+                              </span>
                             )}
                           </div>
                           <h3 className="text-xl font-semibold text-gray-900 dark:text-foreground">
