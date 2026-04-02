@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { base44 } from "@/api/base44Client"; // profile page
 import { User } from "@/entities/User";
 import AccountDeletionModal from "../components/AccountDeletionModal";
 import ThemeSettings from "../components/ThemeSettings";
@@ -29,7 +29,7 @@ import {
   Bookmark
 } from "lucide-react";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 export default function Profile() {
