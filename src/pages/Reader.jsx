@@ -21,6 +21,33 @@ export default function Reader() {
   const scrollToTopRef = useRef(false);
   const saveScrollProgressRef = useRef(null);
 
+  // Helper function to save/update user bookmark
+  const saveUserBookmark = async (chapterId, progressPercentage = 0) => {
+    if (!user || !book) return;
+    try {
+      const bookmarks = await base44.entities.Bookmark.filter({
+        user_id: user.id,
+        book_id: book.id
+      });
+
+      if (bookmarks.length > 0) {
+        await base44.entities.Bookmark.update(bookmarks[0].id, {
+          chapter_id: chapterId,
+          progress_percentage: progressPercentage
+        });
+      } else {
+        await base44.entities.Bookmark.create({
+          user_id: user.id,
+          book_id: book.id,
+          chapter_id: chapterId,
+          progress_percentage: progressPercentage
+        });
+      }
+    } catch (error) {
+      console.error('Error saving bookmark:', error);
+    }
+  };
+
   // Load book and chapter data on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -50,21 +77,7 @@ export default function Reader() {
     // Define throttled save function
     const saveScrollProgress = throttle(async () => {
       const scrollPercentage = (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100;
-      
-      try {
-        const bookmarks = await base44.entities.Bookmark.filter({ 
-          user_id: user.id, 
-          book_id: book.id 
-        });
-
-        if (bookmarks.length > 0) {
-          await base44.entities.Bookmark.update(bookmarks[0].id, {
-            progress_percentage: scrollPercentage
-          });
-        }
-      } catch (error) {
-        console.error("Error saving scroll progress:", error);
-      }
+      await saveUserBookmark(currentChapter.id, scrollPercentage);
     }, 2000);
 
     saveScrollProgressRef.current = saveScrollProgress;
@@ -136,6 +149,10 @@ export default function Reader() {
         // Default to first chapter
         if (chaptersData.length > 0) {
           setCurrentChapter(chaptersData[0]);
+          // Update bookmark to track this chapter
+          if (isAuthenticated) {
+            await saveUserBookmark(chaptersData[0].id, 0);
+          }
         }
       }
     } catch (error) {
@@ -153,34 +170,8 @@ export default function Reader() {
       saveScrollProgressRef.current.flush();
     }
     
-    // Update bookmark with new chapter ID (keep scroll at 0 for new chapter)
-    if (user && book) {
-      try {
-        const bookmarks = await base44.entities.Bookmark.filter({ 
-          user_id: user.id, 
-          book_id: book.id 
-        });
-        
-        if (bookmarks.length > 0) {
-          await base44.entities.Bookmark.update(bookmarks[0].id, { 
-            chapter_id: chapter.id,
-            progress_percentage: 0 
-          });
-        } else {
-          await base44.entities.Bookmark.create({ 
-            user_id: user.id, 
-            book_id: book.id, 
-            chapter_id: chapter.id,
-            progress_percentage: 0 
-          });
-        }
-      } catch (error) {
-        console.error("Error updating bookmark:", error);
-      }
-    }
-    
-    // Change chapter
-    setCurrentChapter(chapter);
+    // Update bookmark with new chapter ID
+    await saveUserBookmark(chapter.id, 0);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
 
