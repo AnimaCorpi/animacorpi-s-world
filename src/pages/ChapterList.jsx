@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, PlayCircle, CheckCircle, Clock } from "lucide-react";
-
+import ProgressBar from "@/components/ProgressBar";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
