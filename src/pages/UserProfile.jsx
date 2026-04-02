@@ -187,7 +187,7 @@ export default function UserProfile() {
                 {profileUser.karma > 0 && (
                   <div className="flex items-center gap-1 mt-2">
                     <KarmaBadge karma={profileUser.karma} size="md" />
-                    <span className="text-xs text-muted-foreground">karma</span>
+                    <span className="text-xs text-muted-foreground">imas</span>
                   </div>
                 )}
                 <div className="flex items-center justify-center sm:justify-start gap-6 mt-3">
