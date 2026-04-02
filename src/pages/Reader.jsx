@@ -19,9 +19,9 @@ export default function Reader() {
   const [isLoading, setIsLoading] = useState(true);
   const [readingMode, setReadingMode] = useState('light');
   const scrollToTopRef = useRef(false);
-  const scrollListenerRef = useRef(null);
   const saveScrollProgressRef = useRef(null);
 
+  // Load book and chapter data on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('bookid');
@@ -33,6 +33,7 @@ export default function Reader() {
     }
   }, []);
 
+  // Scroll to top when chapter changes
   useEffect(() => {
     if (scrollToTopRef.current && mainRef?.current) {
       setTimeout(() => {
@@ -42,62 +43,35 @@ export default function Reader() {
     }
   }, [currentChapter, mainRef]);
 
+  // Set up scroll position save when chapter loads
   useEffect(() => {
-    if (!currentChapter || !user || !book) return;
-    updateBookStatus('in_progress');
+    if (!currentChapter || !user || !book || !mainRef?.current) return;
 
-    // Remove old listener if exists
-    if (scrollListenerRef.current) {
-      if (mainRef?.current) {
-        mainRef.current.removeEventListener('scroll', scrollListenerRef.current);
-      } else {
-        window.removeEventListener('scroll', scrollListenerRef.current);
-      }
-    }
-
+    // Define throttled save function
     const saveScrollProgress = throttle(async () => {
-      const scrollPercentage = mainRef?.current ? (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100 : (window.scrollY / document.documentElement.scrollHeight) * 100;
+      const scrollPercentage = (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100;
       
       try {
-        const existingBookmarks = await base44.entities.Bookmark.filter({ 
+        const bookmarks = await base44.entities.Bookmark.filter({ 
           user_id: user.id, 
           book_id: book.id 
         });
 
-        if (existingBookmarks.length > 0) {
-          await base44.entities.Bookmark.update(existingBookmarks[0].id, {
-            chapter_id: currentChapter.id,
-            progress_percentage: scrollPercentage
-          });
-        } else {
-          await base44.entities.Bookmark.create({
-            user_id: user.id,
-            book_id: book.id,
-            chapter_id: currentChapter.id,
+        if (bookmarks.length > 0) {
+          await base44.entities.Bookmark.update(bookmarks[0].id, {
             progress_percentage: scrollPercentage
           });
         }
       } catch (error) {
-        console.error("Error saving progress:", error);
+        console.error("Error saving scroll progress:", error);
       }
     }, 2000);
 
     saveScrollProgressRef.current = saveScrollProgress;
-    scrollListenerRef.current = () => saveScrollProgress();
-    if (mainRef?.current) {
-      mainRef.current.addEventListener('scroll', scrollListenerRef.current, { passive: true });
-    } else {
-      window.addEventListener('scroll', scrollListenerRef.current);
-    }
+    mainRef.current.addEventListener('scroll', saveScrollProgress, { passive: true });
     
     return () => {
-      if (scrollListenerRef.current) {
-        if (mainRef?.current) {
-          mainRef.current.removeEventListener('scroll', scrollListenerRef.current);
-        } else {
-          window.removeEventListener('scroll', scrollListenerRef.current);
-        }
-      }
+      mainRef.current?.removeEventListener('scroll', saveScrollProgress);
       saveScrollProgress.cancel();
     };
   }, [currentChapter, user, book, mainRef]);
@@ -116,7 +90,7 @@ export default function Reader() {
         setBook(bookData[0]);
         setChapters(chaptersData);
 
-        // If chapterid in URL, navigate to that chapter
+        // If chapterid in URL, use that chapter
         if (urlChapterId) {
           const urlChapter = chaptersData.find(ch => ch.id === urlChapterId);
           if (urlChapter) {
@@ -126,12 +100,14 @@ export default function Reader() {
           }
         }
 
+        // Check if user is authenticated
         try {
           const isAuthenticated = await base44.auth.isAuthenticated();
           if (isAuthenticated) {
             const userData = await base44.auth.me();
             setUser(userData);
             
+            // Get user's bookmark for this book
             const bookmarks = await base44.entities.Bookmark.filter({ 
               user_id: userData.id, 
               book_id: bookId 
@@ -140,25 +116,12 @@ export default function Reader() {
             if (bookmarks.length > 0 && bookmarks[0].chapter_id) {
               const bookmarkedChapter = chaptersData.find(ch => ch.id === bookmarks[0].chapter_id);
               if (bookmarkedChapter) {
-                // If progress is 100%, go to next chapter at top
-                if (bookmarks[0].progress_percentage >= 100) {
-                  const currentIndex = chaptersData.findIndex(ch => ch.id === bookmarkedChapter.id);
-                  const nextChapter = chaptersData[currentIndex + 1];
-                  if (nextChapter) {
-                    setCurrentChapter(nextChapter);
-                    setIsLoading(false);
-                    return;
-                  }
-                }
-                // Otherwise, go to bookmarked chapter at saved position
+                // Load bookmarked chapter and restore scroll position
                 setCurrentChapter(bookmarkedChapter);
                 setTimeout(() => {
                   if (mainRef?.current) {
                     const scrollPosition = (mainRef.current.scrollHeight * bookmarks[0].progress_percentage) / 100;
                     mainRef.current.scrollTo(0, scrollPosition);
-                  } else {
-                    const scrollPosition = (document.documentElement.scrollHeight * bookmarks[0].progress_percentage) / 100;
-                    window.scrollTo(0, scrollPosition);
                   }
                 }, 100);
                 setIsLoading(false);
@@ -170,6 +133,7 @@ export default function Reader() {
           console.log("User not authenticated");
         }
 
+        // Default to first chapter
         if (chaptersData.length > 0) {
           setCurrentChapter(chaptersData[0]);
         }
@@ -183,53 +147,41 @@ export default function Reader() {
 
   const navigateToChapter = async (chapter) => {
     scrollToTopRef.current = true;
-    // Flush any pending scroll progress save before navigating
+    
+    // Flush any pending scroll save
     if (saveScrollProgressRef.current) {
       saveScrollProgressRef.current.flush();
     }
     
-    // Update bookmark BEFORE changing chapter to ensure immediate real-time sync
+    // Update bookmark with new chapter ID (keep scroll at 0 for new chapter)
     if (user && book) {
       try {
-        const bookmarks = await base44.entities.Bookmark.filter({ user_id: user.id, book_id: book.id });
+        const bookmarks = await base44.entities.Bookmark.filter({ 
+          user_id: user.id, 
+          book_id: book.id 
+        });
+        
         if (bookmarks.length > 0) {
-          await base44.entities.Bookmark.update(bookmarks[0].id, { chapter_id: chapter.id, progress_percentage: 0 });
+          await base44.entities.Bookmark.update(bookmarks[0].id, { 
+            chapter_id: chapter.id,
+            progress_percentage: 0 
+          });
         } else {
-          await base44.entities.Bookmark.create({ user_id: user.id, book_id: book.id, chapter_id: chapter.id, progress_percentage: 0 });
+          await base44.entities.Bookmark.create({ 
+            user_id: user.id, 
+            book_id: book.id, 
+            chapter_id: chapter.id,
+            progress_percentage: 0 
+          });
         }
       } catch (error) {
         console.error("Error updating bookmark:", error);
       }
     }
     
-    // Change chapter and update URL after bookmark is saved
+    // Change chapter
     setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
-  };
-
-  const updateBookmark = async () => {
-    if (!user || !book || !currentChapter) return;
-    try {
-      const existingBookmarks = await base44.entities.Bookmark.filter({ 
-        user_id: user.id, 
-        book_id: book.id 
-      });
-      if (existingBookmarks.length > 0) {
-        await base44.entities.Bookmark.update(existingBookmarks[0].id, {
-          chapter_id: currentChapter.id,
-          progress_percentage: 0
-        });
-      } else {
-        await base44.entities.Bookmark.create({
-          user_id: user.id,
-          book_id: book.id,
-          chapter_id: currentChapter.id,
-          progress_percentage: 0
-        });
-      }
-    } catch (error) {
-      console.error('Error updating bookmark:', error);
-    }
   };
 
   const getCurrentChapterIndex = () => {
