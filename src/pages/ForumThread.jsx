@@ -23,6 +23,8 @@ import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 import ReportForm from "../components/forum/ReportForm";
 import ReactionButton from "../components/ReactionButton";
+import UserAvatar from "../components/UserAvatar";
+import { getUserAvatars } from "@/functions/getUserAvatars";
 
 export default function ForumThreadPage() {
   const [thread, setThread] = useState(null);
@@ -36,6 +38,7 @@ export default function ForumThreadPage() {
   const [error, setError] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
+  const [avatarMap, setAvatarMap] = useState({});
 
 
   useEffect(() => {
@@ -63,8 +66,14 @@ export default function ForumThreadPage() {
       setThread(threadData[0]);
       setComments(commentsData);
 
+      // Fetch avatars for all comment authors + thread author
+      const uniqueIds = [...new Set([threadData[0].author_id, ...commentsData.map(c => c.author_id)].filter(Boolean))];
+      if (uniqueIds.length > 0) {
+        const res = await getUserAvatars({ userIds: uniqueIds });
+        setAvatarMap(res.data || {});
+      }
+
       try {
-        // Check if user is authenticated first without prompting login
         const isAuthenticated = await base44.auth.isAuthenticated();
         if (isAuthenticated) {
           const userData = await base44.auth.me();
@@ -73,7 +82,6 @@ export default function ForumThreadPage() {
               setUser({ ...userData, needsRegistration: true });
             } else {
               setUser(userData);
-              // Check if already bookmarked
               const existing = await base44.entities.ForumBookmark.filter({ user_id: userData.id, thread_id: threadId });
               if (existing.length > 0) {
                 setIsBookmarked(true);
@@ -273,9 +281,9 @@ export default function ForumThreadPage() {
                   )}
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-muted-foreground">
-                  <div className="flex items-center">
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    <Link to={createPageUrl(`UserProfile?id=${thread.author_id}`)} className="hover:text-purple-600 hover:underline">@{getAuthorDisplay(thread)}</Link>
+                  <div className="flex items-center gap-2">
+                   <UserAvatar avatarUrl={avatarMap[thread.author_id]?.avatar_url} username={thread.author_username} />
+                   <Link to={createPageUrl(`UserProfile?id=${thread.author_id}`)} className="hover:text-purple-600 hover:underline">@{getAuthorDisplay(thread)}</Link>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
@@ -424,7 +432,7 @@ export default function ForumThreadPage() {
                 <div key={comment.id} className="border-l-2 border-purple-200 pl-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center space-x-2">
-                      <UserIcon className="w-4 h-4" />
+                      <UserAvatar avatarUrl={avatarMap[comment.author_id]?.avatar_url} username={comment.author_username} />
                       <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-medium hover:text-purple-600 hover:underline">@{getAuthorDisplay(comment)}</Link>
                               <span className="text-sm text-gray-500 dark:text-muted-foreground">
                         {format(new Date(comment.created_date), "MMM d, h:mm a")}
@@ -470,7 +478,7 @@ export default function ForumThreadPage() {
                       <div key={reply.id} className="border-l border-gray-200 pl-3">
                         <div className="flex justify-between items-start mb-1">
                           <div className="flex items-center space-x-2">
-                            <UserIcon className="w-3 h-3" />
+                            <UserAvatar avatarUrl={avatarMap[reply.author_id]?.avatar_url} username={reply.author_username} size="sm" />
                             <Link to={createPageUrl(`UserProfile?id=${reply.author_id}`)} className="font-medium text-sm hover:text-purple-600 hover:underline">@{getAuthorDisplay(reply)}</Link>
                             <span className="text-xs text-gray-500 dark:text-muted-foreground">
                               {format(new Date(reply.created_date), "MMM d, h:mm a")}

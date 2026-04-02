@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft, ArrowRight, Trash2, Bookmark } from "lucide-react";
 import ReactionButton from "../components/ReactionButton";
+import UserAvatar from "../components/UserAvatar";
+import { getUserAvatars } from "@/functions/getUserAvatars";
 import { format } from "date-fns";
 
 export default function PostPage() {
@@ -21,6 +23,7 @@ export default function PostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
+  const [avatarMap, setAvatarMap] = useState({});
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -60,6 +63,12 @@ export default function PostPage() {
         setComments(commentsData);
         setReactions(reactionsData);
         loadNavigation(postData[0]);
+        // Fetch avatars for comment authors
+        const uniqueIds = [...new Set(commentsData.map(c => c.author_id).filter(Boolean))];
+        if (uniqueIds.length > 0) {
+          const res = await getUserAvatars({ userIds: uniqueIds });
+          setAvatarMap(res.data || {});
+        }
       }
 
       try {
@@ -311,9 +320,7 @@ export default function PostPage() {
             <div className="space-y-6">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex items-start space-x-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <UserIcon className="w-5 h-5 text-purple-600" />
-                  </div>
+                  <UserAvatar avatarUrl={avatarMap[comment.author_id]?.avatar_url} username={comment.author_username} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
