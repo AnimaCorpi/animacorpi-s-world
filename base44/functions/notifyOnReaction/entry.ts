@@ -7,9 +7,8 @@ Deno.serve(async (req) => {
     const reaction = payload.data;
     if (!reaction) return Response.json({ ok: true });
 
-    const users = await base44.asServiceRole.entities.User.list();
-    const reactor = users.find(u => u.id === reaction.user_id);
-    const reactorName = reactor?.username || 'Someone';
+    const reactorUsers = await base44.asServiceRole.entities.User.filter({ id: reaction.user_id });
+    const reactorName = reactorUsers[0]?.username || 'Someone';
 
     let ownerId = null;
     let title = '';
@@ -31,7 +30,8 @@ Deno.serve(async (req) => {
       const books = await base44.asServiceRole.entities.Book.filter({ id: item.book_id });
       if (!books.length) return Response.json({ ok: true });
       const book = books[0];
-      const author = users.find(u => u.email === book.created_by);
+      const authorList = await base44.asServiceRole.entities.User.filter({ email: book.created_by });
+      const author = authorList[0];
       if (!author) return Response.json({ ok: true });
       ownerId = author.id;
       title = 'Someone liked your chapter';
@@ -60,9 +60,12 @@ Deno.serve(async (req) => {
 
     if (!ownerId || ownerId === reaction.user_id) return Response.json({ ok: true });
 
+    const notifType = (reaction.content_type === 'thread' || reaction.content_type === 'forum_comment')
+      ? 'forum_reply' : 'story_update';
+
     await base44.asServiceRole.entities.Notification.create({
       user_id: ownerId,
-      type: "admin_message",
+      type: notifType,
       title,
       message,
       read: false,
