@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -14,7 +14,7 @@ export default function Reader() {
   const [currentChapter, setCurrentChapter] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
+  const scrollToTopRef = useRef(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -28,11 +28,13 @@ export default function Reader() {
   }, []);
 
   useEffect(() => {
-    if (shouldScrollToTop) {
-      window.scrollTo(0, 0);
-      setShouldScrollToTop(false);
+    if (scrollToTopRef.current) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        scrollToTopRef.current = false;
+      });
     }
-  }, [currentChapter, shouldScrollToTop]);
+  }, [currentChapter]);
 
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
@@ -146,9 +148,9 @@ export default function Reader() {
   };
 
   const navigateToChapter = (chapter) => {
+    scrollToTopRef.current = true;
     setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
-    setShouldScrollToTop(true);
   };
 
   const getCurrentChapterIndex = () => {
