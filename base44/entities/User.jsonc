@@ -2,31 +2,22 @@
   "name": "User",
   "type": "object",
   "properties": {
-    "first_name": {
-      "type": "string",
-      "description": "User's first name"
-    },
-    "last_name": {
-      "type": "string",
-      "description": "User's last name (optional)"
-    },
     "username": {
       "type": "string",
-      "description": "Unique username chosen by user"
+      "description": "Unique username"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL to user's avatar image"
     },
     "birthdate": {
       "type": "string",
       "format": "date",
-      "description": "User's birthdate for age verification"
+      "description": "User's date of birth"
     },
-    "avatar_url": {
+    "bio": {
       "type": "string",
-      "description": "URL to user's profile picture"
-    },
-    "karma": {
-      "type": "number",
-      "default": 0,
-      "description": "Reputation/karma points earned by the user"
+      "description": "User biography"
     },
     "notification_preferences": {
       "type": "object",
@@ -59,7 +50,7 @@
     },
     "notification_email": {
       "type": "string",
-      "description": "Email for notifications (defaults to registration email)"
+      "description": "Email for notifications"
     },
     "phone_number": {
       "type": "string",
@@ -77,31 +68,56 @@
           "default": "#e879f9"
         },
         "background_image": {
-          "type": "string",
-          "description": "URL to custom background image"
+          "type": "string"
         },
         "transparent_banners": {
           "type": "boolean",
-          "default": false,
-          "description": "Whether page banners should be transparent"
+          "default": false
         }
       }
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "admin"
+      ],
+      "default": "user"
+    },
+    "karma": {
+      "type": "number",
+      "default": 0,
+      "description": "User karma points"
+    },
+    "blocked_posts_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp until which user is blocked from commenting on blog posts"
+    },
+    "blocked_forum_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp until which user is blocked from forum activity (create/comment threads)"
+    },
+    "appeal_deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deadline for user to submit an appeal to a report"
+    },
+    "appeal_message": {
+      "type": "string",
+      "description": "Message from user appealing a report"
     },
     "followers_private": {
       "type": "boolean",
       "default": false,
-      "description": "Whether followers list is hidden from public"
+      "description": "Whether followers list is private"
     },
     "followers_mutual_only": {
       "type": "boolean",
       "default": false,
-      "description": "Whether only mutual followers can view list"
+      "description": "Whether only mutual followers can see followers list"
     }
   },
-  "required": [
-    "first_name",
-    "last_name",
-    "username",
-    "birthdate"
-  ]
+  "required": []
 }

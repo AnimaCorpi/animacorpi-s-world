@@ -12,6 +12,8 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 const ChapterList = React.lazy(() => import('@/pages/ChapterList'));
 const UserProfile = React.lazy(() => import('@/pages/UserProfile'));
+const ProfileSettings = React.lazy(() => import('@/pages/ProfileSettings'));
+const MyReports = React.lazy(() => import('@/pages/MyReports'));
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -101,6 +103,22 @@ const AuthenticatedApp = () => {
           element={
             <LayoutWrapper currentPageName="UserProfile">
               <AnimatedPage><UserProfile /></AnimatedPage>
+            </LayoutWrapper>
+          }
+        />
+        <Route
+          path="/ProfileSettings"
+          element={
+            <LayoutWrapper currentPageName="ProfileSettings">
+              <AnimatedPage><ProfileSettings /></AnimatedPage>
+            </LayoutWrapper>
+          }
+        />
+        <Route
+          path="/MyReports"
+          element={
+            <LayoutWrapper currentPageName="MyReports">
+              <AnimatedPage><MyReports /></AnimatedPage>
             </LayoutWrapper>
           }
         />

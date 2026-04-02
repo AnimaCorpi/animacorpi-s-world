@@ -14,7 +14,9 @@ import {
   UserCheck,
   Users,
   Bookmark,
-  MoreVertical
+  MoreVertical,
+  Settings,
+  Trash2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -56,6 +58,7 @@ export default function UserProfile() {
   const [notifyThreads, setNotifyThreads] = useState(true);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [reportingUser, setReportingUser] = useState(false);
+  const [deletingThreadId, setDeletingThreadId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -156,6 +159,33 @@ export default function UserProfile() {
     }
   };
 
+  const handleDeleteThread = async (threadId) => {
+    if (!confirm("Are you sure you want to delete this thread?")) return;
+    setDeletingThreadId(threadId);
+    try {
+      await base44.entities.ForumThread.delete(threadId);
+      setThreads(threads.filter(t => t.id !== threadId));
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+    }
+    setDeletingThreadId(null);
+  };
+
+  const handleRemoveFavorite = async (postId) => {
+    try {
+      const favorites = await base44.entities.PostFavorite.filter({
+        post_id: postId,
+        user_id: viewer?.id
+      });
+      if (favorites.length > 0) {
+        await base44.entities.PostFavorite.delete(favorites[0].id);
+        setFavoritedPosts(favoritedPosts.filter(p => p.id !== postId));
+      }
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -229,10 +259,12 @@ export default function UserProfile() {
 
               <div className="flex flex-col gap-2 items-center">
                 {isOwnProfile ? (
-                  <Link to={createPageUrl("Profile")}>
-                    <Button variant="outline" className="w-full">Edit Profile</Button>
-                  </Link>
-                ) : (
+                    <Link to={createPageUrl("ProfileSettings")}>
+                      <Button variant="outline" className="w-full" size="sm">
+                        <Settings className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  ) : (
                   <div className="flex gap-2 w-full">
                     <Button
                       onClick={handleFollow}
@@ -286,8 +318,8 @@ export default function UserProfile() {
             <CardContent>
               <div className="space-y-3">
                 {favoritedPosts.map(post => (
-                  <Link key={post.id} to={`/Post?id=${post.id}`}>
-                    <div className="p-4 border border-border rounded-lg hover:bg-accent transition-colors">
+                  <div key={post.id} className="p-4 border border-border rounded-lg hover:bg-accent transition-colors flex items-start justify-between">
+                    <Link to={`/Post?id=${post.id}`} className="flex-1 min-w-0">
                       <div className="flex items-start gap-3">
                         {post.image_url && (
                           <img src={post.image_url} alt={post.title} className="w-14 h-14 rounded-lg object-cover shrink-0" />
@@ -300,52 +332,71 @@ export default function UserProfile() {
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                    {isOwnProfile && (
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => handleRemoveFavorite(post.id)}
+                         className="ml-2 text-red-600 hover:bg-red-50 shrink-0"
+                       >
+                         <Trash2 className="w-4 h-4" />
+                       </Button>
+                     )}
+                  </div>
                 ))}
               </div>
             </CardContent>
-          </Card>
-        )}
-
-        {/* Threads */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" />
-              Forum Threads
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {threads.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No public threads yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {threads.map(thread => (
-                  <Link key={thread.id} to={`/ForumThread?id=${thread.id}`}>
-                    <div className="p-4 border border-border rounded-lg hover:bg-accent transition-colors">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-foreground truncate">{thread.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {thread.content.replace(/<[^>]*>/g, '').substring(0, 120)}
-                          </p>
-                          <span className="text-xs text-muted-foreground mt-1 block">
-                            {safeFormat(thread.created_date, "MMM d, yyyy")}
-                          </span>
-                        </div>
-                        {thread.is_nsfw && <Badge variant="destructive" className="shrink-0">NSFW</Badge>}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+            </Card>
             )}
-          </CardContent>
-        </Card>
+
+            {/* Threads */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Forum Threads
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {threads.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No public threads yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {threads.map(thread => (
+                      <div key={thread.id} className="p-4 border border-border rounded-lg hover:bg-accent transition-colors">
+                        <Link to={`/ForumThread?id=${thread.id}`} className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground truncate">{thread.title}</h3>
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                              {thread.content.replace(/<[^>]*>/g, '').substring(0, 120)}
+                            </p>
+                            <span className="text-xs text-muted-foreground mt-1 block">
+                              {safeFormat(thread.created_date, "MMM d, yyyy")}
+                            </span>
+                          </div>
+                          {thread.is_nsfw && <Badge variant="destructive" className="shrink-0">NSFW</Badge>}
+                        </Link>
+                        {isOwnProfile && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteThread(thread.id)}
+                            disabled={deletingThreadId === thread.id}
+                            className="ml-2 text-red-600 hover:bg-red-50 shrink-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
       </div>
 
       <FollowersListModal
