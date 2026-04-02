@@ -182,12 +182,12 @@ export default function Reader() {
   const navigateToChapter = async (chapter) => {
     scrollToTopRef.current = true;
     
-    // Flush any pending scroll save
+    // Flush any pending scroll save from previous chapter
     if (saveScrollProgressRef.current) {
       saveScrollProgressRef.current.flush();
     }
     
-    // Update bookmark with new chapter ID
+    // Update bookmark with new chapter ID, reset progress to 0 (top of chapter)
     await saveUserBookmark(chapter.id, 0);
     
     // Update the UI to the new chapter
