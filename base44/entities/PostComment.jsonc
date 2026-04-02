@@ -1,0 +1,35 @@
+{
+  "name": "PostComment",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "ID of the post this comment belongs to"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment content (max 500 words)"
+    },
+    "gif_url": {
+      "type": "string",
+      "description": "Optional GIF URL attached to the comment"
+    },
+    "author_id": {
+      "type": "string",
+      "description": "ID of comment author"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "Username of comment author at time of posting"
+    },
+    "parent_comment_id": {
+      "type": "string",
+      "description": "ID of parent comment for replies"
+    }
+  },
+  "required": [
+    "post_id",
+    "content",
+    "author_id"
+  ]
+}

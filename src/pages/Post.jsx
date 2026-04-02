@@ -10,6 +10,7 @@ import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft,
 import ReactionButton from "../components/ReactionButton";
 import UserAvatar from "../components/UserAvatar";
 import KarmaBadge from "../components/KarmaBadge";
+import GifPicker from "../components/GifPicker";
 import { getUserAvatars } from "@/functions/getUserAvatars";
 import { format } from "date-fns";
 
@@ -25,6 +26,8 @@ export default function PostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
   const [avatarMap, setAvatarMap] = useState({});
+  const [commentGif, setCommentGif] = useState("");
+  const [showGifPicker, setShowGifPicker] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -135,9 +138,11 @@ export default function PostPage() {
         post_id: post.id,
         content: newComment,
         author_id: user.id,
-        author_username: user.username
+        author_username: user.username,
+        gif_url: commentGif || ""
       });
       setNewComment("");
+      setCommentGif("");
       await loadCommentsAndReactions();
     } catch (error) {
       console.error("Error submitting comment:", error);
@@ -300,11 +305,21 @@ export default function PostPage() {
                   rows={3}
                   maxLength={500}
                 />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500 dark:text-muted-foreground">
-                    {newComment.length}/500 characters
-                  </span>
-                  <Button type="submit" disabled={isSubmitting || !newComment.trim()}>
+                {commentGif && (
+                  <div className="mt-2 relative inline-block">
+                    <img src={commentGif} alt="GIF" className="max-h-32 rounded-lg" />
+                    <button onClick={() => setCommentGif("")} className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">&times;</button>
+                  </div>
+                )}
+                <div className="flex justify-between items-center mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-muted-foreground">{newComment.length}/500</span>
+                    <div className="relative">
+                      <Button type="button" variant="outline" size="sm" onClick={() => setShowGifPicker(p => !p)}>GIF</Button>
+                      {showGifPicker && <GifPicker onSelect={(url) => { setCommentGif(url); setShowGifPicker(false); }} onClose={() => setShowGifPicker(false)} />}
+                    </div>
+                  </div>
+                  <Button type="submit" disabled={isSubmitting || (!newComment.trim() && !commentGif)}>
                     <Send className="w-4 h-4 mr-2" />
                     {isSubmitting ? "Posting..." : "Post Comment"}
                   </Button>
@@ -348,6 +363,7 @@ export default function PostPage() {
                       )}
                     </div>
                     <p className="text-gray-700 dark:text-foreground break-words">{comment.content}</p>
+                    {comment.gif_url && <img src={comment.gif_url} alt="GIF" className="max-h-40 rounded-lg my-2" />}
                     <ReactionButton contentId={comment.id} contentType="post_comment" user={user} />
                   </div>
                 </div>

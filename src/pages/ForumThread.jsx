@@ -25,6 +25,7 @@ import ReportForm from "../components/forum/ReportForm";
 import ReactionButton from "../components/ReactionButton";
 import UserAvatar from "../components/UserAvatar";
 import KarmaBadge from "../components/KarmaBadge";
+import GifPicker from "../components/GifPicker";
 import { getUserAvatars } from "@/functions/getUserAvatars";
 
 export default function ForumThreadPage() {
@@ -40,6 +41,8 @@ export default function ForumThreadPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
   const [avatarMap, setAvatarMap] = useState({});
+  const [commentGif, setCommentGif] = useState("");
+  const [showGifPicker, setShowGifPicker] = useState(false);
 
 
   useEffect(() => {
@@ -137,12 +140,14 @@ export default function ForumThreadPage() {
         content: newComment.trim(),
         author_id: user.id,
         author_username: user.username,
-        parent_comment_id: replyingTo || ""
+        parent_comment_id: replyingTo || "",
+        gif_url: commentGif || ""
       };
 
       await base44.entities.ForumComment.create(commentData);
       
       setNewComment("");
+      setCommentGif("");
       setReplyingTo(null);
       
       const updatedComments = await base44.entities.ForumComment.filter({ thread_id: thread.id }, "created_date");
@@ -394,15 +399,27 @@ export default function ForumThreadPage() {
                   <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
                     {newComment.length}/500 characters
                   </p>
+                  {commentGif && (
+                    <div className="mt-2 relative inline-block">
+                      <img src={commentGif} alt="GIF" className="max-h-32 rounded-lg" />
+                      <button onClick={() => setCommentGif("")} className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">&times;</button>
+                    </div>
+                  )}
                 </div>
-                <Button 
-                  type="submit" 
-                  disabled={!newComment.trim() || isSubmitting}
-                  className="bg-purple-500 hover:bg-purple-600"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  {isSubmitting ? "Posting..." : "Post Comment"}
-                </Button>
+                <div className="flex items-center gap-2 relative">
+                  <div className="relative">
+                    <Button type="button" variant="outline" size="sm" onClick={() => setShowGifPicker(p => !p)}>GIF</Button>
+                    {showGifPicker && <GifPicker onSelect={(url) => { setCommentGif(url); setShowGifPicker(false); }} onClose={() => setShowGifPicker(false)} />}
+                  </div>
+                  <Button 
+                    type="submit" 
+                    disabled={(!newComment.trim() && !commentGif) || isSubmitting}
+                    className="bg-purple-500 hover:bg-purple-600"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    {isSubmitting ? "Posting..." : "Post Comment"}
+                  </Button>
+                </div>
               </form>
             ) : !user || user.needsRegistration ? (
               <div className="text-center py-8 bg-gray-50 dark:bg-muted/50 rounded-lg">
@@ -469,9 +486,8 @@ export default function ForumThreadPage() {
                       </Button>
                     </div>
                   </div>
-                  <p className="text-gray-700 dark:text-foreground mb-2">
-                    {comment.content}
-                  </p>
+                  <p className="text-gray-700 dark:text-foreground mb-2">{comment.content}</p>
+                  {comment.gif_url && <img src={comment.gif_url} alt="GIF" className="max-h-40 rounded-lg mb-2" />}
                   <ReactionButton contentId={comment.id} contentType="forum_comment" user={user} />
                   
                   {/* Replies */}
@@ -509,6 +525,7 @@ export default function ForumThreadPage() {
                           </div>
                         </div>
                         <p className="text-gray-700 dark:text-foreground text-sm">{reply.content}</p>
+                        {reply.gif_url && <img src={reply.gif_url} alt="GIF" className="max-h-32 rounded-lg mt-1" />}
                         <ReactionButton contentId={reply.id} contentType="forum_comment" user={user} />
                       </div>
                     ))}
