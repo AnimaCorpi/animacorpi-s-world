@@ -21,6 +21,7 @@ import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
 import ThemeToggle from "./components/ThemeToggle";
 import AnnouncementBanner from "./components/AnnouncementBanner";
+import { MainRefProvider } from "./lib/MainRefContext";
 
 const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Stories", "BookDetail", "ChapterReader", "Post", "Terms", "Guidelines", "Search", "Forum", "ForumThread", "Registration", "Contact"];
 
@@ -358,9 +359,11 @@ export default function Layout({ children, currentPageName }) {
 
       <AnnouncementBanner />
       <main ref={mainRef} className="flex-1 overflow-y-auto transition-colors duration-300">
-        <UserContext.Provider value={user}>
-          {children}
-        </UserContext.Provider>
+        <MainRefProvider mainRef={mainRef}>
+          <UserContext.Provider value={user}>
+            {children}
+          </UserContext.Provider>
+        </MainRefProvider>
       </main>
 
       <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />

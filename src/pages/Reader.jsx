@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, List } from "lucide-react";
 import ReactionButton from "../components/ReactionButton";
 import { throttle } from "lodash";
+import { MainRefContext } from "@/lib/MainRefContext";
 
 export default function Reader() {
+  const mainRef = useContext(MainRefContext);
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [currentChapter, setCurrentChapter] = useState(null);
@@ -28,19 +30,20 @@ export default function Reader() {
   }, []);
 
   useEffect(() => {
-    if (scrollToTopRef.current) {
+    if (scrollToTopRef.current && mainRef?.current) {
       setTimeout(() => {
-        window.scrollTo(0, 0);
+        mainRef.current.scrollTo(0, 0);
         scrollToTopRef.current = false;
       }, 0);
     }
-  }, [currentChapter]);
+  }, [currentChapter, mainRef]);
 
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
+    updateBookStatus('in_progress');
 
     const saveScrollProgress = throttle(async () => {
-      const scrollPercentage = (window.scrollY / document.documentElement.scrollHeight) * 100;
+      const scrollPercentage = mainRef?.current ? (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100 : (window.scrollY / document.documentElement.scrollHeight) * 100;
       
       try {
         const existingBookmarks = await base44.entities.Bookmark.filter({ 
@@ -66,12 +69,21 @@ export default function Reader() {
       }
     }, 2000);
 
-    window.addEventListener('scroll', saveScrollProgress);
+    const handleScroll = () => saveScrollProgress();
+    if (mainRef?.current) {
+      mainRef.current.addEventListener('scroll', handleScroll, { passive: true });
+    } else {
+      window.addEventListener('scroll', handleScroll);
+    }
     return () => {
-      window.removeEventListener('scroll', saveScrollProgress);
+      if (mainRef?.current) {
+        mainRef.current.removeEventListener('scroll', handleScroll);
+      } else {
+        window.removeEventListener('scroll', handleScroll);
+      }
       saveScrollProgress.cancel();
     };
-  }, [currentChapter, user, book]);
+  }, [currentChapter, user, book, mainRef]);
 
   const loadBookData = async (bookId) => {
     try {
@@ -124,8 +136,13 @@ export default function Reader() {
                 // Otherwise, go to bookmarked chapter at saved position
                 setCurrentChapter(bookmarkedChapter);
                 setTimeout(() => {
-                  const scrollPosition = (document.documentElement.scrollHeight * bookmarks[0].progress_percentage) / 100;
-                  window.scrollTo(0, scrollPosition);
+                  if (mainRef?.current) {
+                    const scrollPosition = (mainRef.current.scrollHeight * bookmarks[0].progress_percentage) / 100;
+                    mainRef.current.scrollTo(0, scrollPosition);
+                  } else {
+                    const scrollPosition = (document.documentElement.scrollHeight * bookmarks[0].progress_percentage) / 100;
+                    window.scrollTo(0, scrollPosition);
+                  }
                 }, 100);
                 setIsLoading(false);
                 return;
@@ -151,6 +168,16 @@ export default function Reader() {
     scrollToTopRef.current = true;
     setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
+  };
+
+  const updateBookStatus = async (status) => {
+    if (!book) return;
+    try {
+      await base44.entities.Book.update(book.id, { status });
+      setBook(prev => ({ ...prev, status }));
+    } catch (error) {
+      console.error('Error updating book status:', error);
+    }
   };
 
   const getCurrentChapterIndex = () => {
