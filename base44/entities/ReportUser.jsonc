@@ -1,0 +1,32 @@
+{
+  "name": "ReportUser",
+  "type": "object",
+  "properties": {
+    "reported_user_id": {
+      "type": "string",
+      "description": "ID of the user being reported"
+    },
+    "reporter_id": {
+      "type": "string",
+      "description": "ID of the user who made the report"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason provided by the user for the report"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "resolved"
+      ],
+      "default": "pending",
+      "description": "The current status of the report"
+    }
+  },
+  "required": [
+    "reported_user_id",
+    "reporter_id",
+    "reason"
+  ]
+}

@@ -13,9 +13,18 @@ import {
   UserPlus,
   UserCheck,
   Users,
-  Bookmark
+  Bookmark,
+  MoreVertical
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import KarmaBadge from "../components/KarmaBadge";
+import FollowersListModal from "../components/FollowersListModal";
+import ReportUserModal from "../components/ReportUserModal";
 import { format } from "date-fns";
 
 function safeFormat(date, fmt) {
@@ -45,6 +54,8 @@ export default function UserProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [notifyThreads, setNotifyThreads] = useState(true);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [reportingUser, setReportingUser] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -202,10 +213,13 @@ export default function UserProfile() {
                   </div>
                 )}
                 <div className="flex items-center justify-center sm:justify-start gap-6 mt-3">
-                  <div className="text-center">
+                  <button
+                    onClick={() => setShowFollowersModal(true)}
+                    className="text-center hover:opacity-75 transition"
+                  >
                     <p className="font-bold text-foreground">{followersCount}</p>
-                    <p className="text-xs text-muted-foreground">Followers</p>
-                  </div>
+                    <p className="text-xs text-muted-foreground cursor-pointer hover:underline">Followers</p>
+                  </button>
                   <div className="text-center">
                     <p className="font-bold text-foreground">{threads.length}</p>
                     <p className="text-xs text-muted-foreground">Threads</p>
@@ -219,29 +233,41 @@ export default function UserProfile() {
                     <Button variant="outline" className="w-full">Edit Profile</Button>
                   </Link>
                 ) : (
-                  <>
+                  <div className="flex gap-2 w-full">
                     <Button
                       onClick={handleFollow}
                       disabled={isFollowLoading}
                       variant={followRecord ? "secondary" : "default"}
-                      className={followRecord ? "" : "bg-purple-500 hover:bg-purple-600 text-white"}
+                      className={`flex-1 ${followRecord ? "" : "bg-purple-500 hover:bg-purple-600 text-white"}`}
                     >
                       {followRecord ? <><UserCheck className="w-4 h-4 mr-1" />Following</> : <><UserPlus className="w-4 h-4 mr-1" />Follow</>}
                     </Button>
-                    {followRecord && (
-                      <button
-                        onClick={handleNotifyToggle}
-                        className={`text-xs px-3 py-1 rounded-full border transition-colors ${
-                          notifyThreads
-                            ? 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
-                            : 'bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200'
-                        }`}
-                        title="Toggle forum thread email notifications"
-                      >
-                        {notifyThreads ? '🔔 Notify new threads' : '🔕 Muted threads'}
-                      </button>
-                    )}
-                  </>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="px-2">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setReportingUser(true)}>
+                          Report User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                )}
+                {followRecord && (
+                  <button
+                    onClick={handleNotifyToggle}
+                    className={`text-xs px-3 py-1 rounded-full border transition-colors w-full ${
+                      notifyThreads
+                        ? 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
+                        : 'bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200'
+                    }`}
+                    title="Toggle forum thread email notifications"
+                  >
+                    {notifyThreads ? '🔔 Notify new threads' : '🔕 Muted threads'}
+                  </button>
                 )}
               </div>
             </div>
@@ -321,6 +347,20 @@ export default function UserProfile() {
           </CardContent>
         </Card>
       </div>
+
+      <FollowersListModal
+        isOpen={showFollowersModal}
+        onClose={() => setShowFollowersModal(false)}
+        profileUser={profileUser}
+        viewer={viewer}
+      />
+
+      {reportingUser && (
+        <ReportUserModal
+          reportedUserId={profileUser?.id}
+          onClose={() => setReportingUser(false)}
+        />
+      )}
     </div>
   );
 }

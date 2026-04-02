@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Report } from "@/entities/Report";
 import { ForumThread } from "@/entities/ForumThread";
 import { ForumComment } from "@/entities/ForumComment";
@@ -12,6 +13,7 @@ import { Flag, Check, Trash2, ExternalLink, Eye, EyeOff, AlertCircle } from "luc
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import ReportedUsersTab from "./ReportedUsersTab";
 
 export default function ReportManager() {
     const [reports, setReports] = useState([]);
@@ -20,6 +22,7 @@ export default function ReportManager() {
     const [usersMap, setUsersMap] = useState({});
     const [contentMap, setContentMap] = useState({});
     const [deletingContent, setDeletingContent] = useState(null);
+    const [activeTab, setActiveTab] = useState("threads");
 
     useEffect(() => {
         loadReportsAndData();
@@ -197,7 +200,15 @@ export default function ReportManager() {
     }
 
     return (
-        <div className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="threads">Threads</TabsTrigger>
+            <TabsTrigger value="comments">Comments</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="threads" className="mt-6">
+            <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-lg font-semibold flex items-center space-x-2">
@@ -325,6 +336,29 @@ export default function ReportManager() {
                     </p>
                 </div>
             )}
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="comments" className="mt-6">
+            <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h3 className="text-lg font-semibold flex items-center space-x-2">
+                        <Flag className="w-5 h-5" />
+                        <span>Comment Reports</span>
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Review and manage user-submitted reports for comments.
+                    </p>
+                </div>
+            </div>
+            <p className="text-sm text-gray-600">Comment reports will be displayed here.</p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="users" className="mt-6">
+            <ReportedUsersTab />
+          </TabsContent>
+        </Tabs>
     );
 }

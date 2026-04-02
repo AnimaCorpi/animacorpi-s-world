@@ -86,6 +86,16 @@
           "description": "Whether page banners should be transparent"
         }
       }
+    },
+    "followers_private": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether followers list is hidden from public"
+    },
+    "followers_mutual_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether only mutual followers can view list"
     }
   },
   "required": [
