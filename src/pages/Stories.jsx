@@ -118,7 +118,7 @@ export default function Stories() {
               <h1 className="banner-text text-4xl md:text-6xl font-bold mb-6">
                 {settings?.tagline || "Explore My Stories"}
               </h1>
-              <p className="text-gray-700 dark:text-gray-100 text-xl md:text-2xl mb-8">
+              <p className="banner-text-secondary text-xl md:text-2xl mb-8">
                 {settings?.message || "Dive into worlds of imagination, one chapter at a time."}
               </p>
             </div>

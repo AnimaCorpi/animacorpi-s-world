@@ -35,17 +35,17 @@ button, a, [role="button"], label {
 
 /* Banner text — readable in both light and dark mode */
 .banner-text {
-  color: #1f2937;
+  color: #374151;
 }
 .dark .banner-text {
-  color: hsl(var(--foreground));
+  color: #f3f4f6;
   text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.5);
 }
 .banner-text-secondary {
-  color: #4b5563;
+  color: #6b7280;
 }
 .dark .banner-text-secondary {
-  color: hsl(var(--muted-foreground));
+  color: #e5e7eb;
   text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.5);
 }
 
