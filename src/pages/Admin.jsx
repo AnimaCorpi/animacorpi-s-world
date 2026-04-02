@@ -14,8 +14,7 @@ import {
   Image,
   Bell,
   Send,
-  Flag,
-  Megaphone
+  Flag
 } from "lucide-react";
 import PostManager from "../components/admin/PostManager";
 import BookManager from "../components/admin/BookManager";
@@ -24,7 +23,7 @@ import UserManager from "../components/admin/UserManager";
 import BackgroundManager from "../components/admin/BackgroundManager";
 import UserMessaging from "../components/admin/UserMessaging";
 import ReportManager from "../components/admin/ReportManager";
-import AnnouncementManager from "../components/admin/AnnouncementManager";
+
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -161,7 +160,7 @@ export default function Admin() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 gap-1 p-1 h-auto mb-6">
+              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 gap-1 p-1 h-auto mb-6">
                 <TabsTrigger value="posts" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
                   <FileText className="w-4 h-4 shrink-0" />
                   <span className="text-[10px] sm:text-xs">Posts</span>
@@ -190,10 +189,7 @@ export default function Admin() {
                   <Flag className="w-4 h-4 shrink-0" />
                   <span className="text-[10px] sm:text-xs">Reports</span>
                 </TabsTrigger>
-                <TabsTrigger value="announcements" className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 px-1 py-2">
-                  <Megaphone className="w-4 h-4 shrink-0" />
-                  <span className="text-[10px] sm:text-xs">Announce</span>
-                </TabsTrigger>
+
               </TabsList>
               
               <TabsContent value="posts" className="mt-6">
@@ -224,9 +220,6 @@ export default function Admin() {
                 <ReportManager />
               </TabsContent>
 
-              <TabsContent value="announcements" className="mt-6">
-                <AnnouncementManager />
-              </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
