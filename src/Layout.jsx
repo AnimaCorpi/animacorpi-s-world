@@ -12,12 +12,10 @@ import {
   User as UserIcon,
   Search,
   Bell,
-  ArrowLeft,
-  Menu
+  ArrowLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { UserContext } from "./components/UserContext";
 import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
@@ -240,29 +238,7 @@ export default function Layout({ children, currentPageName }) {
               </Link>
             </div>
 
-            <Sheet>
-              <SheetTrigger asChild>
-                <button className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-accent transition-colors" aria-label="Menu">
-                  <Menu className="w-5 h-5" />
-                </button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72">
-                <nav className="flex flex-col space-y-2 mt-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={createPageUrl(item.path)}
-                      className={`nav-link px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 flex items-center space-x-3 ${isActive(item.path) ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' : 'text-gray-700 dark:text-foreground hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'}`}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </Link>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
-
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
@@ -372,8 +348,12 @@ export default function Layout({ children, currentPageName }) {
                   Sign In
                 </Button>
               )}
+
+
             </div>
           </div>
+
+
         </div>
       </header>
 
