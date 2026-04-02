@@ -358,12 +358,17 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       <AnnouncementBanner />
-      <main ref={mainRef} className="flex-1 overflow-y-auto transition-colors duration-300">
-        <MainRefProvider mainRef={mainRef}>
-          <UserContext.Provider value={user}>
-            {children}
-          </UserContext.Provider>
-        </MainRefProvider>
+      <main ref={mainRef} className={`flex-1 overflow-y-auto transition-colors duration-300 ${effectiveBgImage && !themePrefs.transparent_banners ? 'relative' : ''}`}>
+        {effectiveBgImage && !themePrefs.transparent_banners && (
+          <div className="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
+        )}
+        <div className="relative z-10">
+          <MainRefProvider mainRef={mainRef}>
+            <UserContext.Provider value={user}>
+              {children}
+            </UserContext.Provider>
+          </MainRefProvider>
+        </div>
       </main>
 
       <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />
