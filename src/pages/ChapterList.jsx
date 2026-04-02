@@ -7,19 +7,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, PlayCircle, CheckCircle, Clock } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function ChapterList() {
   const urlParams = new URLSearchParams(window.location.search);
   const bookId = urlParams.get('bookid');
 
   const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(async (ok) => {
       if (ok) setUser(await base44.auth.me());
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (user?.id && bookId) {
+      queryClient.invalidateQueries({ queryKey: ['Bookmark', 'list'] });
+    }
+  }, [user?.id, bookId, queryClient]);
 
   const { data: bookData, isLoading: loadingBook } = useQuery({
     queryKey: ['Book', 'list', { id: bookId }],
@@ -39,10 +46,20 @@ export default function ChapterList() {
     enabled: !!user?.id && !!bookId,
   });
 
+  useEffect(() => {
+    if (!user?.id || !bookId) return;
+    const unsubscribe = base44.entities.Bookmark.subscribe((event) => {
+      if (event.data?.book_id === bookId && event.data?.user_id === user.id) {
+        queryClient.invalidateQueries({ queryKey: ['Bookmark', 'list', { book_id: bookId, user_id: user.id }] });
+      }
+    });
+    return () => unsubscribe();
+  }, [bookId, user?.id, queryClient]);
+
   const book = bookData?.[0] ?? null;
   const chapters = chaptersData ?? [];
   const bookmark = bookmarksData?.[0] ?? null;
-  const isLoading = loadingBook || loadingChapters;
+  const isLoading = loadingBook || loadingChapters || !bookmarksData;
 
   if (isLoading) {
     return (
