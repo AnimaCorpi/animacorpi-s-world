@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
 import AccountDeletionModal from "../components/AccountDeletionModal";
+import ThemeSettings from "../components/ThemeSettings";
 import { BackgroundImage } from "@/entities/BackgroundImage";
 import { ForumThread } from "@/entities/ForumThread";
 import { UploadFile } from "@/integrations/Core";
@@ -533,201 +534,21 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Palette className="w-5 h-5" />
-                  <span>Theme Preferences</span>
+                  <span>Theme & Appearance</span>
                 </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-muted-foreground">Customize your visual experience</p>
+                <p className="text-sm text-muted-foreground">Customize your visual experience</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label htmlFor="background-color">Background Color</Label>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <input
-                      id="background-color"
-                      type="color"
-                      value={profileData.theme_preferences.background_color}
-                      onChange={(e) => setProfileData(prev => ({
-                        ...prev,
-                        theme_preferences: {
-                          ...prev.theme_preferences,
-                          background_color: e.target.value
-                        }
-                      }))}
-                      className="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
-                    />
-                    <Input
-                      value={profileData.theme_preferences.background_color}
-                      onChange={(e) => setProfileData(prev => ({
-                        ...prev,
-                        theme_preferences: {
-                          ...prev.theme_preferences,
-                          background_color: e.target.value
-                        }
-                      }))}
-                      className="font-mono flex-1"
-                      placeholder="#fef7ff"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="taskbar-color">Navigation Bar Color</Label>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <input
-                      id="taskbar-color"
-                      type="color"
-                      value={profileData.theme_preferences.taskbar_color}
-                      onChange={(e) => setProfileData(prev => ({
-                        ...prev,
-                        theme_preferences: {
-                          ...prev.theme_preferences,
-                          taskbar_color: e.target.value
-                        }
-                      }))}
-                      className="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
-                    />
-                    <Input
-                      value={profileData.theme_preferences.taskbar_color}
-                      onChange={(e) => setProfileData(prev => ({
-                        ...prev,
-                        theme_preferences: {
-                          ...prev.theme_preferences,
-                          taskbar_color: e.target.value
-                        }
-                      }))}
-                      className="font-mono flex-1"
-                      placeholder="#e879f9"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="transparent-banners">Banner Transparency</Label>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="transparent-banners"
-                        checked={profileData.theme_preferences.transparent_banners}
-                        onChange={(e) => setProfileData(prev => ({
-                          ...prev,
-                          theme_preferences: {
-                            ...prev.theme_preferences,
-                            transparent_banners: e.target.checked
-                          }
-                        }))}
-                        className="w-4 h-4"
-                      />
-                      <Label htmlFor="transparent-banners" className="text-sm">
-                        Make page banners transparent
-                      </Label>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
-                     When enabled, page headers will be transparent to show your background
-                  </p>
-                </div>
-
-                <div>
-                  <Label>Custom Background Image</Label>
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm">Upload Custom Background</Label>
-                      <div className="flex items-center space-x-4">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleBackgroundUpload}
-                          className="hidden"
-                          id="background-upload"
-                          disabled={uploadingBackground}
-                        />
-                        <label htmlFor="background-upload">
-                          <Button variant="outline" asChild disabled={uploadingBackground}>
-                            <span>
-                              <Upload className="w-4 h-4 mr-2" />
-                              {uploadingBackground ? "Uploading..." : "Upload Image"}
-                            </span>
-                          </Button>
-                        </label>
-                        {profileData.theme_preferences.background_image && (
-                          <Button
-                            variant="outline"
-                            onClick={() => setProfileData(prev => ({
-                              ...prev,
-                              theme_preferences: {
-                                ...prev.theme_preferences,
-                                background_image: ""
-                              }
-                            }))}
-                          >
-                            Remove Background
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    {backgroundImages.length > 0 && (
-                      <div>
-                        <Label className="text-sm">Choose from Available Backgrounds</Label>
-                        <div className="grid grid-cols-3 gap-3 mt-2">
-                          {backgroundImages.map((bg) => (
-                            <div
-                              key={bg.id}
-                              className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-colors ${
-                                profileData.theme_preferences.background_image === bg.image_url
-                                  ? 'border-purple-500'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
-                              onClick={() => setProfileData(prev => ({
-                                ...prev,
-                                theme_preferences: {
-                                  ...prev.theme_preferences,
-                                  background_image: bg.image_url
-                                }
-                              }))}
-                            >
-                              <img
-                                src={bg.thumbnail_url || bg.image_url}
-                                alt={bg.name}
-                                className="w-full h-20 object-cover"
-                              />
-                              {profileData.theme_preferences.background_image === bg.image_url && (
-                                <div className="absolute inset-0 bg-purple-500 bg-opacity-20 flex items-center justify-center">
-                                  <Check className="w-6 h-6 text-purple-600" />
-                                </div>
-                              )}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
-                                {bg.name}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-4 border rounded-lg bg-gray-50 dark:bg-muted">
-                  <h3 className="font-medium mb-2">Preview</h3>
-                  <div 
-                    className="h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center relative overflow-hidden"
-                    style={{ 
-                      backgroundColor: profileData.theme_preferences.background_color,
-                      backgroundImage: profileData.theme_preferences.background_image 
-                        ? `url(${profileData.theme_preferences.background_image})`
-                        : 'none',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  >
-                    <div 
-                      className="px-4 py-2 rounded text-white text-sm font-medium relative z-10"
-                      style={{ backgroundColor: profileData.theme_preferences.taskbar_color }}
-                    >
-                      Sample Navigation
-                    </div>
-                  </div>
-                </div>
+              <CardContent>
+                <ThemeSettings
+                  themePrefs={profileData.theme_preferences}
+                  onChange={(key, value) => setProfileData(prev => ({
+                    ...prev,
+                    theme_preferences: { ...prev.theme_preferences, [key]: value }
+                  }))}
+                  backgroundImages={backgroundImages}
+                  onBackgroundUpload={handleBackgroundUpload}
+                  uploadingBackground={uploadingBackground}
+                />
               </CardContent>
             </Card>
           </TabsContent>
