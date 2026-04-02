@@ -35,7 +35,7 @@ export default function GifPicker({ onSelect, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end sm:items-start sm:absolute sm:inset-auto sm:bottom-full sm:mb-2 sm:left-0 sm:w-96" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-start sm:absolute sm:inset-auto sm:bottom-full sm:mb-2 sm:left-0 sm:w-96 pb-[env(safe-area-inset-bottom)]" onClick={onClose}>
     <div className="w-full sm:w-auto bg-popover border border-border rounded-t-2xl sm:rounded-xl shadow-xl p-3 max-h-[70vh] sm:max-h-none flex flex-col" onClick={e => e.stopPropagation()}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold text-foreground">Search GIFs</span>

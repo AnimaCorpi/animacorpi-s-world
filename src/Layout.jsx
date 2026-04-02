@@ -314,7 +314,9 @@ export default function Layout({ children, currentPageName }) {
                         <Link
                           to={`/UserProfile?id=${user.id}`}
                           onClick={closeMenu}
+                          replace
                           className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                          replace
                         >
                           <UserIcon className="w-4 h-4 mr-2" />
                           Profile
