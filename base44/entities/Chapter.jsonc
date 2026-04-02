@@ -1,0 +1,37 @@
+{
+  "name": "Chapter",
+  "type": "object",
+  "properties": {
+    "book_id": {
+      "type": "string",
+      "description": "ID of the book this chapter belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Chapter title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Chapter content"
+    },
+    "chapter_number": {
+      "type": "number",
+      "description": "Chapter order number"
+    },
+    "author_notes": {
+      "type": "string",
+      "description": "Author's notes or commentary for this chapter"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether chapter is published"
+    }
+  },
+  "required": [
+    "book_id",
+    "title",
+    "content",
+    "chapter_number"
+  ]
+}

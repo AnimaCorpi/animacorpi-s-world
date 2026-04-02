@@ -153,7 +153,18 @@ export default function UserProfile() {
     );
   }
 
-  if (!profileUser) return null;
+  if (!profileUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600 mb-4">User not found.</p>
+          <Link to={createPageUrl("Home")}>
+            <Button>Back to Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const isOwnProfile = viewer?.id === profileUser.id;
 

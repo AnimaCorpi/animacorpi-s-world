@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import ReaderModeToggle from "../components/ReaderModeToggle";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, BookOpen, List } from "lucide-react";
@@ -16,7 +17,9 @@ export default function Reader() {
   const [currentChapter, setCurrentChapter] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [readingMode, setReadingMode] = useState('light');
   const scrollToTopRef = useRef(false);
+  const scrollListenerRef = useRef(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,6 +44,15 @@ export default function Reader() {
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
     updateBookStatus('in_progress');
+
+    // Remove old listener if exists
+    if (scrollListenerRef.current) {
+      if (mainRef?.current) {
+        mainRef.current.removeEventListener('scroll', scrollListenerRef.current);
+      } else {
+        window.removeEventListener('scroll', scrollListenerRef.current);
+      }
+    }
 
     const saveScrollProgress = throttle(async () => {
       const scrollPercentage = mainRef?.current ? (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100 : (window.scrollY / document.documentElement.scrollHeight) * 100;
@@ -69,17 +81,19 @@ export default function Reader() {
       }
     }, 2000);
 
-    const handleScroll = () => saveScrollProgress();
+    scrollListenerRef.current = () => saveScrollProgress();
     if (mainRef?.current) {
-      mainRef.current.addEventListener('scroll', handleScroll, { passive: true });
+      mainRef.current.addEventListener('scroll', scrollListenerRef.current, { passive: true });
     } else {
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('scroll', scrollListenerRef.current);
     }
     return () => {
-      if (mainRef?.current) {
-        mainRef.current.removeEventListener('scroll', handleScroll);
-      } else {
-        window.removeEventListener('scroll', handleScroll);
+      if (scrollListenerRef.current) {
+        if (mainRef?.current) {
+          mainRef.current.removeEventListener('scroll', scrollListenerRef.current);
+        } else {
+          window.removeEventListener('scroll', scrollListenerRef.current);
+        }
       }
       saveScrollProgress.cancel();
     };
@@ -251,7 +265,8 @@ export default function Reader() {
               Chapter List
             </Link>
             
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <ReaderModeToggle readingMode={readingMode} onModeChange={setReadingMode} />
               <div className="flex items-center text-sm text-gray-600 dark:text-muted-foreground shrink-0">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Chapter {currentIndex + 1} of {chapters.length}
@@ -285,9 +300,26 @@ export default function Reader() {
         </header>
 
         <div 
-          className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-foreground prose-p:text-gray-700 dark:prose-p:text-foreground prose-p:leading-relaxed prose-a:text-purple-600 prose-strong:text-gray-900 dark:prose-strong:text-foreground"
+          className={`prose prose-lg max-w-none prose-headings:font-bold prose-p:leading-relaxed prose-a:text-purple-600 prose-strong:font-bold ${
+            readingMode === 'light'
+              ? 'dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-foreground prose-p:text-gray-700 dark:prose-p:text-foreground prose-strong:text-gray-900 dark:prose-strong:text-foreground bg-white dark:bg-background'
+              : readingMode === 'sepia'
+              ? 'bg-yellow-50 text-yellow-900 prose-headings:text-yellow-900 prose-p:text-yellow-900'
+              : 'bg-gray-900 text-gray-100 prose-headings:text-gray-100 prose-p:text-gray-100 prose-strong:text-gray-100 prose-a:text-purple-400'
+          } p-6 rounded-lg`}
+          style={{
+            backgroundColor: readingMode === 'light' ? undefined : readingMode === 'sepia' ? '#fef3c7' : '#111827',
+            color: readingMode === 'light' ? undefined : readingMode === 'sepia' ? '#78350f' : '#f3f4f6'
+          }}
           dangerouslySetInnerHTML={{ __html: currentChapter.content }}
         />
+
+        {currentChapter.author_notes && (
+          <div className="mt-12 p-6 border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded">
+            <h3 className="font-bold text-lg text-purple-900 dark:text-purple-300 mb-2">Author's Notes</h3>
+            <p className="text-purple-800 dark:text-purple-200 whitespace-pre-wrap">{currentChapter.author_notes}</p>
+          </div>
+        )}
 
         <div className="mt-16 pt-8 border-t border-border">
           <div className="flex items-center mb-6">

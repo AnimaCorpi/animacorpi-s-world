@@ -46,6 +46,7 @@ export default function BookManager({ onStatsUpdate }) {
   const [chapterForm, setChapterForm] = useState({
     title: '',
     content: '',
+    author_notes: '',
     chapter_number: 1,
     published: true
   });
@@ -170,6 +171,7 @@ export default function BookManager({ onStatsUpdate }) {
     setChapterForm({
       title: chapter.title,
       content: chapter.content,
+      author_notes: chapter.author_notes || '',
       chapter_number: chapter.chapter_number,
       published: chapter.published
     });
@@ -194,6 +196,7 @@ export default function BookManager({ onStatsUpdate }) {
     setChapterForm({
       title: '',
       content: '',
+      author_notes: '',
       chapter_number: chapters.length + 1,
       published: true
     });
@@ -427,6 +430,16 @@ export default function BookManager({ onStatsUpdate }) {
                                   ['clean']
                                 ]
                               }}
+                            />
+                          </div>
+
+                          <div>
+                            <Label>Author's Notes (Optional)</Label>
+                            <Textarea
+                              value={chapterForm.author_notes}
+                              onChange={(e) => setChapterForm({ ...chapterForm, author_notes: e.target.value })}
+                              placeholder="Add chapter-specific notes or commentary..."
+                              rows={3}
                             />
                           </div>
 
