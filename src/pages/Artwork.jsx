@@ -56,102 +56,59 @@ export default function Artwork() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen">
-        {/* Hero Section */}
-        <section className="pastel-gradient py-20 px-4 sm:px-6 lg:px-8">
+      <div>
+        <section className="banner-transparent py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-foreground mb-6 leading-tight">
-                {settings?.tagline || "Creative Expressions"}
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-600 dark:text-muted-foreground mb-8 leading-relaxed">
-                {settings?.message || "Explore my artistic creations and visual storytelling."}
-              </p>
-            </motion.div>
+            <h1 className="banner-text text-4xl md:text-5xl font-bold mb-4">{settings?.tagline || "Creative Expressions"}</h1>
+            <p className="banner-text-secondary text-xl">{settings?.message || "Explore my artistic creations and visual storytelling."}</p>
           </div>
         </section>
 
-        {/* Posts Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-background/50">
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="card-hover bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:border-border"
-                >
-                  {post.image_url && (
+            {posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map((post, index) => (
+                  <motion.article
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
                     <Link to={createPageUrl(`Post?id=${post.id}`)}>
-                      <div className="aspect-video overflow-hidden">
-                        <img 
-                          src={post.image_url} 
-                          alt={post.title}
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                        />
-                      </div>
-                    </Link>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-pink-100 text-pink-700 border border-pink-200">
-                          🎨 Artwork
-                        </Badge>
-                        {post.pinned && (
-                          <Badge className="bg-purple-50 text-purple-500 border border-purple-200 flex items-center gap-1 text-xs">
-                            <Pin className="w-3 h-3" /> Pinned
-                          </Badge>
+                      <div className="bg-white dark:bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
+                        {post.image_url && (
+                          <div className="relative h-48 bg-gray-200 dark:bg-muted overflow-hidden">
+                            <img src={post.image_url} alt={post.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            {post.pinned && (
+                              <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 p-1.5 rounded-full">
+                                <Pin className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
                         )}
+                        <div className="p-4 flex flex-col flex-1">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-foreground mb-2 line-clamp-2 hover:text-purple-600">{post.title}</h3>
+                          <p className="text-gray-600 dark:text-muted-foreground text-sm mb-3 line-clamp-2">{stripHtmlTags(post.content).substring(0, 100)}...</p>
+                          <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-muted-foreground mb-3 mt-auto">
+                            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(post.created_date), "MMM d, yyyy")}</span>
+                          </div>
+                          {post.tags && post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {post.tags.slice(0, 2).map((tag, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs"><Tag className="w-2 h-2 mr-1" />{tag}</Badge>
+                              ))}
+                            </div>
+                          )}
+                          <span className="text-purple-600 hover:text-purple-800 font-medium text-sm inline-flex items-center gap-1">Read More <ArrowRight className="w-3 h-3" /></span>
+                        </div>
                       </div>
-                      <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {format(new Date(post.created_date), "MMM d, yyyy")}
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-foreground mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-muted-foreground mb-4 line-clamp-3">
-                      {stripHtmlTags(post.excerpt || post.content).substring(0, 150) + "..."}
-                    </p>
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground"
-                          >
-                            <Tag className="w-3 h-3 mr-1" />
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <Link 
-                      to={createPageUrl(`Post?id=${post.id}`)}
-                      className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200"
-                    >
-                      View Artwork
-                      <ArrowRight className="w-4 h-4 ml-1" />
                     </Link>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-
-            {posts.length === 0 && (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🎨</div>
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">No artwork yet</h3>
-                <p className="text-gray-600 dark:text-muted-foreground">Check back soon for new creative pieces!</p>
+                  </motion.article>
+                ))}
               </div>
+            ) : (
+              <div className="text-center py-16"><div className="text-6xl mb-4">🎨</div><h3 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">No artwork yet</h3><p className="text-gray-600 dark:text-muted-foreground">Check back soon for new creative content!</p></div>
             )}
           </div>
         </section>

@@ -32,6 +32,8 @@ import {
 import { useUser } from "../components/UserContext";
 import PullToRefresh from "../components/PullToRefresh";
 
+import React, { useState, useEffect } from 'react';
+
 export default function Forum() {
   const user = useUser();
   const [threads, setThreads] = useState([]);
@@ -43,7 +45,6 @@ export default function Forum() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState([]);
-
 
   // Derived state - no separate auth fetch needed, user comes from Layout context
   const needsRegistration = user && (!user.username || !user.birthdate);

@@ -19,7 +19,6 @@ export default function PullToRefresh({ onRefresh, children }) {
     if (startY.current === null || isRefreshing) return;
     const delta = e.touches[0].clientY - startY.current;
     if (delta > 0 && containerRef.current?.scrollTop === 0) {
-      e.preventDefault();
       setPullDistance(Math.min(delta * 0.5, PULL_THRESHOLD + 20));
     }
   }, [isRefreshing]);
@@ -42,7 +41,7 @@ export default function PullToRefresh({ onRefresh, children }) {
     <div
       ref={containerRef}
       className="flex-1 overflow-y-auto"
-      style={{ overscrollBehavior: "none" }}
+      style={{ overscrollBehavior: "contain" }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
