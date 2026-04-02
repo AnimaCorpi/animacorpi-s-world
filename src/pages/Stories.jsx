@@ -174,10 +174,6 @@ export default function Stories() {
                       <p className="text-muted-foreground line-clamp-4 mb-4">
                         {book.description}
                       </p>
-                      {(() => {
-                        const statusIcon = book.status === 'completed' ? (<CheckCircle className="w-4 h-4 text-green-500 mr-2" />) : book.status === 'in_progress' ? (<Clock className="w-4 h-4 text-blue-500 mr-2" />) : null;
-                        return (
-                          <div className="flex items-center gap-2 text-purple-600 font-medium">}
                       {book.status && book.status !== 'not_started' && (
                         <div className="mt-2 text-xs font-medium text-gray-500 dark:text-muted-foreground capitalize">
                           Status: {book.status.replace('_', ' ')}
