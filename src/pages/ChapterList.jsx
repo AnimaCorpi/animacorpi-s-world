@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, PlayCircle, CheckCircle, Clock } from "lucide-react";
-import ProgressBar from "@/components/ProgressBar";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
@@ -112,12 +111,8 @@ export default function ChapterList() {
                     {book.description}
                   </p>
                   
-                  {bookmark && (
+                  {bookmark && book.status && (
                     <div className="mb-6">
-                      <ProgressBar
-                        percentage={bookmark.progress_percentage}
-                        label="Reading Progress"
-                      />
                       {book.status === 'completed' && (
                         <div className="mt-3 flex items-center text-green-600 font-medium text-sm">
                           <CheckCircle className="w-5 h-5 mr-2" />
