@@ -14,6 +14,7 @@ export default function Home() {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [settings, setSettings] = useState(null);
+  const [activeThreads, setActiveThreads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,16 +27,24 @@ export default function Home() {
 
   const loadData = useCallback(async () => {
     try {
-      const [postsData, settingsData] = await Promise.all([
-      base44.entities.Post.filter({ published: true }, "-created_date"),
-      base44.entities.SiteSettings.filter({ page: "home" })]
-      );
+      const [postsData, settingsData, threadsData] = await Promise.all([
+        base44.entities.Post.filter({ published: true }, "-created_date"),
+        base44.entities.SiteSettings.filter({ page: "home" }),
+        base44.entities.ForumThread.filter({}, "-last_reply_at", 5)
+      ]);
       const now = new Date();
       const visiblePosts = postsData.filter((post) =>
-      !post.publish_at || new Date(post.publish_at) <= now
+        !post.publish_at || new Date(post.publish_at) <= now
       );
       setPosts(visiblePosts);
       setSettings(settingsData[0] || { tagline: "Welcome to My Creative World", message: "Explore thoughts, artwork, photography, and stories from my heart." });
+      // Sort by last_reply_at if available, else created_date
+      const sorted = threadsData.sort((a, b) => {
+        const dateA = new Date(a.last_reply_at || a.created_date);
+        const dateB = new Date(b.last_reply_at || b.created_date);
+        return dateB - dateA;
+      });
+      setActiveThreads(sorted.slice(0, 5));
     } catch (error) {
       console.error("Error loading data:", error);
     }
@@ -232,6 +241,45 @@ export default function Home() {
             }
         </div>
       </section>
+
+      {/* Active Threads */}
+      {activeThreads.length > 0 && (
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-foreground mb-1">Active Threads</h2>
+                <p className="text-gray-600 dark:text-muted-foreground">Most recently active discussions</p>
+              </div>
+              <Link to={createPageUrl("Forum")} className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {activeThreads.map((thread) => (
+                <Link key={thread.id} to={createPageUrl(`ForumThread?id=${thread.id}`)}>
+                  <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-xl border border-purple-100 dark:border-border p-4 hover:border-purple-300 dark:hover:border-purple-700 transition-all flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+                      <span className="text-lg">💬</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-800 dark:text-foreground truncate">{thread.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-muted-foreground mt-0.5">
+                        by @{thread.author_username} · last active {thread.last_reply_at
+                          ? format(new Date(thread.last_reply_at), "MMM d")
+                          : format(new Date(thread.created_date), "MMM d")}
+                      </p>
+                    </div>
+                    {thread.is_nsfw && (
+                      <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full shrink-0">NSFW</span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Call to Action */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-500 to-pink-500">

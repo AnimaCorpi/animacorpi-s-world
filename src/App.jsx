@@ -11,6 +11,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 const ChapterList = React.lazy(() => import('@/pages/ChapterList'));
+const UserProfile = React.lazy(() => import('@/pages/UserProfile'));
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -94,6 +95,14 @@ const AuthenticatedApp = () => {
               <AnimatedPage><ChapterList /></AnimatedPage>
             </LayoutWrapper>
           } 
+        />
+        <Route
+          path="/UserProfile"
+          element={
+            <LayoutWrapper currentPageName="UserProfile">
+              <AnimatedPage><UserProfile /></AnimatedPage>
+            </LayoutWrapper>
+          }
         />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

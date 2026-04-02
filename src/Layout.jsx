@@ -20,6 +20,7 @@ import { UserContext } from "./components/UserContext";
 import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
 import ThemeToggle from "./components/ThemeToggle";
+import AnnouncementBanner from "./components/AnnouncementBanner";
 
 const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Stories", "BookDetail", "ChapterReader", "Post", "Terms", "Guidelines", "Search", "Forum", "ForumThread", "Registration", "Contact"];
 
@@ -43,6 +44,13 @@ export default function Layout({ children, currentPageName }) {
   const [notificationCount, setNotificationCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const [wallpaperOverride, setWallpaperOverride] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => setWallpaperOverride(e.detail?.image ?? null);
+    window.addEventListener('wallpaper-override', handler);
+    return () => window.removeEventListener('wallpaper-override', handler);
+  }, []);
 
   // No longer force redirect - users can browse as guests
 
@@ -158,9 +166,10 @@ export default function Layout({ children, currentPageName }) {
     { name: "Forum", path: "Forum", icon: MessageSquare },
   ];
 
-  const backgroundStyle = themePrefs.background_image
+  const effectiveBgImage = wallpaperOverride !== null ? wallpaperOverride : themePrefs.background_image;
+  const backgroundStyle = effectiveBgImage
     ? {
-        backgroundImage: `url(${themePrefs.background_image})`,
+        backgroundImage: `url(${effectiveBgImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
@@ -325,6 +334,7 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </header>
 
+      <AnnouncementBanner />
       <main className="flex-1 overflow-y-auto transition-colors duration-300">
         <UserContext.Provider value={user}>
           {children}

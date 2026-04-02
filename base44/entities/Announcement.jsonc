@@ -1,0 +1,34 @@
+{
+  "name": "Announcement",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Announcement message text"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether announcement is visible"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "success",
+        "new_drop"
+      ],
+      "default": "info",
+      "description": "Visual style of the announcement"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional expiry datetime"
+    }
+  },
+  "required": [
+    "message"
+  ]
+}

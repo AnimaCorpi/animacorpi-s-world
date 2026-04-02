@@ -35,6 +35,7 @@ import { createPageUrl } from "@/utils";
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [userThreads, setUserThreads] = useState([]);
+  const [userReplies, setUserReplies] = useState([]);
   const [savedThreads, setSavedThreads] = useState([]);
   const [backgroundImages, setBackgroundImages] = useState([]);
   const [profileData, setProfileData] = useState({
@@ -114,12 +115,14 @@ export default function Profile() {
         }
       });
 
-      const [threads, bookmarks, backgrounds] = await Promise.all([
+      const [threads, bookmarks, backgrounds, replies] = await Promise.all([
         ForumThread.filter({ author_id: userData.id }, "-created_date"),
         base44.entities.ForumBookmark.filter({ user_id: userData.id }, "-created_date"),
-        BackgroundImage.filter({ active: true })
+        BackgroundImage.filter({ active: true }),
+        base44.entities.ForumComment.filter({ author_id: userData.id }, "-created_date", 10)
       ]);
       setUserThreads(threads);
+      setUserReplies(replies);
       setBackgroundImages(backgrounds);
 
       if (bookmarks.length > 0) {
@@ -558,54 +561,55 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="w-5 h-5" />
-                  <span>My Forum Activity</span>
+                  <span>Recent Activity</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {userThreads.map((thread) => (
-                    <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} key={thread.id}>
-                      <div className="border border-border rounded-lg p-4 hover:bg-accent transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">{thread.title}</h3>
-                            <p className="text-gray-600 dark:text-muted-foreground mt-1 line-clamp-2">
-                              {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
-                            </p>
-                            <div className="flex items-center space-x-4 mt-2">
-                              <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
-                                <Calendar className="w-4 h-4 mr-1" />
-                                {format(new Date(thread.created_date), "MMM d, yyyy")}
-                              </div>
-                              {thread.tags && thread.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {thread.tags.map((tag, index) => (
-                                    <Badge key={index} variant="outline" className="text-xs">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          {thread.is_nsfw && (
-                            <Badge variant="destructive" className="ml-4">
-                              NSFW
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+                {(() => {
+                  // Build combined activity feed, limit to 10
+                  const feed = [
+                    ...userThreads.map(t => ({ type: 'thread', date: t.created_date, item: t })),
+                    ...userReplies.map(r => ({ type: 'reply', date: r.created_date, item: r }))
+                  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
 
-                  {userThreads.length === 0 && (
+                  if (feed.length === 0) return (
                     <div className="text-center py-8">
                       <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-600 dark:text-muted-foreground mb-2">No Forum Activity</h3>
-                      <p className="text-gray-500 dark:text-muted-foreground">You haven't created any forum threads yet.</p>
+                      <p className="text-muted-foreground">No activity yet.</p>
                     </div>
-                  )}
-                </div>
+                  );
+
+                  return (
+                    <div className="space-y-3">
+                      {feed.map((entry, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
+                            entry.type === 'thread' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                          }`}>
+                            {entry.type === 'thread' ? '📝' : '💬'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-muted-foreground mb-0.5">
+                              {entry.type === 'thread' ? 'Created a thread' : 'Replied in a thread'}
+                            </p>
+                            {entry.type === 'thread' ? (
+                              <Link to={createPageUrl(`ForumThread?id=${entry.item.id}`)} className="font-medium text-foreground hover:text-purple-600 truncate block">
+                                {entry.item.title}
+                              </Link>
+                            ) : (
+                              <p className="text-sm text-foreground line-clamp-2">
+                                {entry.item.content.replace(/<[^>]*>/g, '').substring(0, 100)}
+                              </p>
+                            )}
+                            <span className="text-xs text-muted-foreground">
+                              {format(new Date(entry.date), "MMM d, yyyy 'at' h:mm a")}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>

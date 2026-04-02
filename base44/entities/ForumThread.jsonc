@@ -1,0 +1,53 @@
+{
+  "name": "ForumThread",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Thread title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Thread content (max 1000 words)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Optional image URL for the thread"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Thread tags"
+    },
+    "is_nsfw": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether thread contains NSFW content"
+    },
+    "author_id": {
+      "type": "string",
+      "description": "ID of thread author"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "Username of thread author at time of posting"
+    },
+    "locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether thread is locked for comments"
+    },
+    "last_reply_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent reply"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "author_id"
+  ]
+}
