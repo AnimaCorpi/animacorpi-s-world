@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X, Search } from "lucide-react";
 
-const TENOR_KEY = "LIVDSRZULELA"; // Tenor public demo key
+const TENOR_KEY = "LIVDSRZULELA";
 
 export default function GifPicker({ onSelect, onClose }) {
   const [query, setQuery] = useState("");
@@ -19,8 +19,8 @@ export default function GifPicker({ onSelect, onClose }) {
   const fetchGifs = async (q) => {
     setLoading(true);
     const endpoint = q
-      ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(q)}&key=${TENOR_KEY}&limit=24&media_filter=gif`
-      : `https://tenor.googleapis.com/v2/featured?key=${TENOR_KEY}&limit=24&media_filter=gif`;
+      ? `https://api.tenor.com/v1/search?q=${encodeURIComponent(q)}&key=${TENOR_KEY}&limit=24`
+      : `https://api.tenor.com/v1/trending?key=${TENOR_KEY}&limit=24`;
     const res = await fetch(endpoint);
     const data = await res.json();
     setGifs(data.results || []);
@@ -59,7 +59,7 @@ export default function GifPicker({ onSelect, onClose }) {
       ) : (
         <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
           {gifs.map((gif) => {
-            const url = gif.media_formats?.gif?.url || gif.media_formats?.tinygif?.url;
+            const url = gif.media?.[0]?.tinygif?.url || gif.media?.[0]?.gif?.url;
             if (!url) return null;
             return (
               <button
