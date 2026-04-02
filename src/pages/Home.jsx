@@ -9,6 +9,13 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import PullToRefresh from "@/components/PullToRefresh";
 
+const CATEGORY_OPTIONS = [
+  { value: "all", label: "All" },
+  { value: "thoughts", label: "💭 Thoughts" },
+  { value: "artwork", label: "🎨 Artwork" },
+  { value: "photography", label: "📸 Photography" }
+];
+
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
@@ -20,6 +27,18 @@ export default function Home() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    filterPosts();
+  }, [posts, selectedCategory]);
+
+  const filterPosts = () => {
+    if (selectedCategory === 'all') {
+      setFilteredPosts(posts.filter(p => p.published));
+    } else {
+      setFilteredPosts(posts.filter(p => p.published && p.category === selectedCategory));
+    }
+  };
 
   useEffect(() => {
     filterPosts();
@@ -50,14 +69,6 @@ export default function Home() {
     }
     setIsLoading(false);
   }, []);
-
-  const filterPosts = () => {
-    if (selectedCategory === "all") {
-      setFilteredPosts(posts);
-    } else {
-      setFilteredPosts(posts.filter((post) => post.category === selectedCategory));
-    }
-  };
 
   const getCategoryColor = (category) => {
     const colors = {
@@ -91,13 +102,6 @@ export default function Home() {
       </div>);
 
   }
-
-  const categories = [
-  { value: "all", label: "All" },
-  { value: "thoughts", label: "💭 Thoughts" },
-  { value: "artwork", label: "🎨 Artwork" },
-  { value: "photography", label: "📸 Photography" }];
-
 
   return (
     <PullToRefresh onRefresh={loadData}>
@@ -158,11 +162,11 @@ export default function Home() {
               </div>
             )}
 
-            {threads.length > 0 && (
+            {activeThreads.length > 0 && (
               <div className="mt-16">
                 <h2 className="text-3xl font-bold text-foreground mb-6">Latest Discussions</h2>
                 <div className="space-y-3">
-                  {threads.slice(0, 5).map(thread => (
+                  {activeThreads.slice(0, 5).map(thread => (
                     <Link key={thread.id} to={createPageUrl(`ForumThread?id=${thread.id}`)}>
                       <div className="bg-white dark:bg-card p-4 rounded-lg hover:shadow-md transition-shadow">
                         <h3 className="font-semibold text-foreground hover:text-purple-600">{thread.title}</h3>
