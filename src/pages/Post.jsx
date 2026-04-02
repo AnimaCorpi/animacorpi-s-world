@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft, ArrowRight, Trash2 } from "lucide-react";
+import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft, ArrowRight, Trash2, Bookmark } from "lucide-react";
 import ReactionButton from "../components/ReactionButton";
 import { format } from "date-fns";
 
@@ -16,6 +16,8 @@ export default function PostPage() {
   const [reactions, setReactions] = useState([]);
   const [user, setUser] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteRecord, setFavoriteRecord] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [navigation, setNavigation] = useState({ prev: null, next: null });
@@ -61,11 +63,16 @@ export default function PostPage() {
       }
 
       try {
-        // Check if user is authenticated first without prompting login
         const isAuthenticated = await base44.auth.isAuthenticated();
         if (isAuthenticated) {
           const userData = await base44.auth.me();
           setUser(userData);
+          // Check if user has favorited this post
+          const favs = await base44.entities.PostFavorite.filter({ post_id: postId, user_id: userData.id });
+          if (favs.length > 0) {
+            setIsFavorited(true);
+            setFavoriteRecord(favs[0]);
+          }
         } else {
           setUser(null);
         }
@@ -165,7 +172,20 @@ export default function PostPage() {
   };
   
   const userHasReacted = reactions.some(r => r.created_by === user?.email);
-  const isAdmin = user?.role === 'admin'; // Determine if the current user is an admin
+  const isAdmin = user?.role === 'admin';
+
+  const handleFavorite = async () => {
+    if (!user) { base44.auth.redirectToLogin(); return; }
+    if (isFavorited && favoriteRecord) {
+      await base44.entities.PostFavorite.delete(favoriteRecord.id);
+      setIsFavorited(false);
+      setFavoriteRecord(null);
+    } else {
+      const created = await base44.entities.PostFavorite.create({ post_id: post.id, user_id: user.id });
+      setIsFavorited(true);
+      setFavoriteRecord(created);
+    }
+  }; // Determine if the current user is an admin
 
   if (isLoading) {
     return (
@@ -239,10 +259,14 @@ export default function PostPage() {
             />
             
             {/* Reactions */}
-            <div className="mt-8 pt-4 border-t">
+            <div className="mt-8 pt-4 border-t flex items-center gap-3">
               <Button onClick={handleReaction} variant="outline" disabled={!user}>
                 <Heart className={`w-5 h-5 mr-2 ${userHasReacted ? 'text-red-500 fill-current' : ''}`} />
                 {reactions.length} {reactions.length === 1 ? 'Like' : 'Likes'}
+              </Button>
+              <Button onClick={handleFavorite} variant="outline" disabled={!user} title={isFavorited ? 'Remove from saved' : 'Save post'}>
+                <Bookmark className={`w-5 h-5 mr-2 ${isFavorited ? 'text-purple-500 fill-current' : ''}`} />
+                {isFavorited ? 'Saved' : 'Save'}
               </Button>
             </div>
           </CardContent>

@@ -1,0 +1,18 @@
+{
+  "name": "PostFavorite",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "ID of the favorited post"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user who favorited the post"
+    }
+  },
+  "required": [
+    "post_id",
+    "user_id"
+  ]
+}

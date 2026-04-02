@@ -11,7 +11,8 @@ import {
   MessageSquare,
   UserPlus,
   UserCheck,
-  Users
+  Users,
+  Bookmark
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -29,6 +30,7 @@ export default function UserProfile() {
   const [profileUser, setProfileUser] = useState(null);
   const [viewer, setViewer] = useState(null);
   const [threads, setThreads] = useState([]);
+  const [favoritedPosts, setFavoritedPosts] = useState([]);
   const [followRecord, setFollowRecord] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,9 +61,10 @@ export default function UserProfile() {
       const pu = users[0];
       setProfileUser(pu);
 
-      const [followers, allThreads] = await Promise.all([
+      const [followers, allThreads, favorites] = await Promise.all([
         base44.entities.Follow.filter({ following_id: userId }),
-        base44.entities.ForumThread.filter({ author_id: userId }, "-created_date", 15)
+        base44.entities.ForumThread.filter({ author_id: userId }, "-created_date", 15),
+        base44.entities.PostFavorite.filter({ user_id: userId })
       ]);
       setFollowersCount(followers.length);
 
@@ -75,6 +78,12 @@ export default function UserProfile() {
       const viewerAge = viewerData ? getAge(viewerData.birthdate) : null;
       const isUnderage = viewerAge === null || viewerAge < 18;
       setThreads(isUnderage ? allThreads.filter(t => !t.is_nsfw) : allThreads);
+
+      // Load favorited posts
+      if (favorites.length > 0) {
+        const postFetches = await Promise.all(favorites.map(f => base44.entities.Post.filter({ id: f.post_id, published: true })));
+        setFavoritedPosts(postFetches.flat());
+      }
     } catch (error) {
       console.error("Error loading user profile:", error);
     }
@@ -212,6 +221,40 @@ export default function UserProfile() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Favorited Posts */}
+        {favoritedPosts.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bookmark className="w-5 h-5 text-purple-500" />
+                Saved Posts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {favoritedPosts.map(post => (
+                  <Link key={post.id} to={`/Post?id=${post.id}`}>
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent transition-colors">
+                      <div className="flex items-start gap-3">
+                        {post.image_url && (
+                          <img src={post.image_url} alt={post.title} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <Badge className="bg-purple-100 text-purple-700 border border-purple-200 capitalize text-xs mb-1">{post.category}</Badge>
+                          <h3 className="font-semibold text-foreground truncate">{post.title}</h3>
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(post.created_date), "MMM d, yyyy")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Threads */}
         <Card>
