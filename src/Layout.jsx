@@ -334,7 +334,7 @@ export default function Layout({ children, currentPageName }) {
       <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />
 
       <footer
-        className={`shrink-0 transition-colors duration-300 ${
+        className={`hidden lg:block shrink-0 transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-border bg-background/80 backdrop-blur-sm'
         }`}
       >
