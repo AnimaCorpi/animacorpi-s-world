@@ -64,10 +64,10 @@ export default function UserProfile() {
         setViewer(viewerData);
       }
 
-      const profileData = await getUserProfile({ userId });
-      if (profileData.error) { navigate("/"); return; }
-      const pu = profileData;
-      setProfileUser(pu);
+      const profileRes = await getUserProfile({ userId });
+      const profileData = profileRes.data;
+      if (!profileData || profileData.error) { navigate("/"); return; }
+      setProfileUser(profileData);
 
       const [followers, allThreads, favorites] = await Promise.all([
         base44.entities.Follow.filter({ following_id: userId }),
