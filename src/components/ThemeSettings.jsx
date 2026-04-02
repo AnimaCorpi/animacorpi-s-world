@@ -220,7 +220,7 @@ export default function ThemeSettings({ themePrefs, onChange, backgroundImages, 
       <div>
         <Label className="text-base font-semibold">Preview</Label>
         <div
-          className="mt-2 h-28 rounded-xl border overflow-hidden relative flex items-start"
+          className="mt-2 h-48 rounded-xl border overflow-hidden relative flex items-start"
           style={{
             backgroundColor: themePrefs.background_color,
             backgroundImage: themePrefs.background_image ? `url(${themePrefs.background_image})` : "none",
