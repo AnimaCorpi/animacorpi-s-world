@@ -24,7 +24,8 @@ Deno.serve(async (req) => {
       created_date: user.created_date,
       theme_preferences: user.theme_preferences,
       birthdate: user.birthdate,
-      role: user.role
+      role: user.role,
+      karma: user.karma || 0
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

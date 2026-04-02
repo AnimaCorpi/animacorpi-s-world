@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import ReportForm from "../components/forum/ReportForm";
 import ReactionButton from "../components/ReactionButton";
 import UserAvatar from "../components/UserAvatar";
+import KarmaBadge from "../components/KarmaBadge";
 import { getUserAvatars } from "@/functions/getUserAvatars";
 
 export default function ForumThreadPage() {
@@ -434,6 +435,7 @@ export default function ForumThreadPage() {
                     <div className="flex items-center space-x-2">
                       <UserAvatar avatarUrl={avatarMap[comment.author_id]?.avatar_url} username={comment.author_username} />
                       <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-medium hover:text-purple-600 hover:underline">@{getAuthorDisplay(comment)}</Link>
+                      <KarmaBadge karma={avatarMap[comment.author_id]?.karma} />
                               <span className="text-sm text-gray-500 dark:text-muted-foreground">
                         {format(new Date(comment.created_date), "MMM d, h:mm a")}
                       </span>
@@ -480,6 +482,7 @@ export default function ForumThreadPage() {
                           <div className="flex items-center space-x-2">
                             <UserAvatar avatarUrl={avatarMap[reply.author_id]?.avatar_url} username={reply.author_username} size="sm" />
                             <Link to={createPageUrl(`UserProfile?id=${reply.author_id}`)} className="font-medium text-sm hover:text-purple-600 hover:underline">@{getAuthorDisplay(reply)}</Link>
+                            <KarmaBadge karma={avatarMap[reply.author_id]?.karma} />
                             <span className="text-xs text-gray-500 dark:text-muted-foreground">
                               {format(new Date(reply.created_date), "MMM d, h:mm a")}
                             </span>

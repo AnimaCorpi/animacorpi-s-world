@@ -18,7 +18,8 @@ Deno.serve(async (req) => {
     fetches.flat().forEach(u => {
       avatarMap[u.id] = {
         avatar_url: u.avatar_url || null,
-        username: u.username || null
+        username: u.username || null,
+        karma: u.karma || 0
       };
     });
 

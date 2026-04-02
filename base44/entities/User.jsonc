@@ -1,0 +1,97 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string",
+      "description": "User's first name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "User's last name (optional)"
+    },
+    "username": {
+      "type": "string",
+      "description": "Unique username chosen by user"
+    },
+    "birthdate": {
+      "type": "string",
+      "format": "date",
+      "description": "User's birthdate for age verification"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL to user's profile picture"
+    },
+    "karma": {
+      "type": "number",
+      "default": 0,
+      "description": "Reputation/karma points earned by the user"
+    },
+    "notification_preferences": {
+      "type": "object",
+      "properties": {
+        "email_notifications": {
+          "type": "boolean",
+          "default": true
+        },
+        "sms_notifications": {
+          "type": "boolean",
+          "default": false
+        },
+        "forum_replies": {
+          "type": "boolean",
+          "default": true
+        },
+        "new_stories": {
+          "type": "boolean",
+          "default": true
+        },
+        "admin_messages": {
+          "type": "boolean",
+          "default": true
+        },
+        "chapter_updates": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "notification_email": {
+      "type": "string",
+      "description": "Email for notifications (defaults to registration email)"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number for SMS notifications"
+    },
+    "theme_preferences": {
+      "type": "object",
+      "properties": {
+        "background_color": {
+          "type": "string",
+          "default": "#fef7ff"
+        },
+        "taskbar_color": {
+          "type": "string",
+          "default": "#e879f9"
+        },
+        "background_image": {
+          "type": "string",
+          "description": "URL to custom background image"
+        },
+        "transparent_banners": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether page banners should be transparent"
+        }
+      }
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name",
+    "username",
+    "birthdate"
+  ]
+}

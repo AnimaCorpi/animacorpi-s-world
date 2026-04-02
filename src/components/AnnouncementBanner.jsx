@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { X, Info, AlertTriangle, CheckCircle, Sparkles } from "lucide-react";
 
-const DISMISSED_KEY = "dismissed_announcements";
+const getDismissedKey = (userId) => userId ? `dismissed_announcements_${userId}` : "dismissed_announcements_guest";
 
 const STYLES = {
   info:     { bg: "bg-blue-500",   Icon: Info },
@@ -14,15 +14,23 @@ const STYLES = {
 export default function AnnouncementBanner() {
   const [announcement, setAnnouncement] = useState(null);
   const [visible, setVisible] = useState(true);
+  const keyRef = React.useRef("dismissed_announcements_guest");
 
   useEffect(() => {
     (async () => {
       try {
+        let userId = null;
+        try {
+          const isAuth = await base44.auth.isAuthenticated();
+          if (isAuth) { const me = await base44.auth.me(); userId = me?.id || null; }
+        } catch {}
+        keyRef.current = getDismissedKey(userId);
+
         const list = await base44.entities.Announcement.filter({ active: true }, "-created_date", 1);
         if (!list.length) return;
         const a = list[0];
         if (a.expires_at && new Date(a.expires_at) < new Date()) return;
-        const dismissed = JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]");
+        const dismissed = JSON.parse(localStorage.getItem(keyRef.current) || "[]");
         if (dismissed.includes(a.id)) return;
         setAnnouncement(a);
         setVisible(true);
@@ -32,8 +40,8 @@ export default function AnnouncementBanner() {
 
   const dismiss = () => {
     if (!announcement) return;
-    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]");
-    localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed, announcement.id]));
+    const dismissed = JSON.parse(localStorage.getItem(keyRef.current) || "[]");
+    localStorage.setItem(keyRef.current, JSON.stringify([...dismissed, announcement.id]));
     setVisible(false);
     setAnnouncement(null);
   };

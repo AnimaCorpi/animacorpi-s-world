@@ -15,6 +15,7 @@ import {
   Users,
   Bookmark
 } from "lucide-react";
+import KarmaBadge from "../components/KarmaBadge";
 import { format } from "date-fns";
 
 function safeFormat(date, fmt) {
@@ -183,6 +184,12 @@ export default function UserProfile() {
                   <Calendar className="w-4 h-4" />
                   <span>Joined {safeFormat(profileUser.created_date, "MMMM yyyy")}</span>
                 </div>
+                {profileUser.karma > 0 && (
+                  <div className="flex items-center gap-1 mt-2">
+                    <KarmaBadge karma={profileUser.karma} size="md" />
+                    <span className="text-xs text-muted-foreground">karma</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-center sm:justify-start gap-6 mt-3">
                   <div className="text-center">
                     <p className="font-bold text-foreground">{followersCount}</p>

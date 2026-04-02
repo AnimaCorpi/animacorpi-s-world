@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, User as UserIcon, Heart, MessageSquare, Send, ArrowLeft, ArrowRight, Trash2, Bookmark } from "lucide-react";
 import ReactionButton from "../components/ReactionButton";
 import UserAvatar from "../components/UserAvatar";
+import KarmaBadge from "../components/KarmaBadge";
 import { getUserAvatars } from "@/functions/getUserAvatars";
 import { format } from "date-fns";
 
@@ -324,9 +325,12 @@ export default function PostPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-semibold text-gray-800 dark:text-foreground hover:text-purple-600 hover:underline">
-                          @{comment.author_username || 'User'}
-                        </Link>
+                        <span className="flex items-center gap-2">
+                          <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-semibold text-gray-800 dark:text-foreground hover:text-purple-600 hover:underline">
+                            @{comment.author_username || 'User'}
+                          </Link>
+                          <KarmaBadge karma={avatarMap[comment.author_id]?.karma} />
+                        </span>
                         <p className="text-sm text-gray-500 dark:text-muted-foreground mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>
