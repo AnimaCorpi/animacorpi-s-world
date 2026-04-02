@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { getUserProfile } from "@/functions/getUserProfile";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
@@ -56,9 +57,9 @@ export default function UserProfile() {
         setViewer(viewerData);
       }
 
-      const users = await base44.entities.User.filter({ id: userId });
-      if (!users.length) { navigate("/"); return; }
-      const pu = users[0];
+      const profileData = await getUserProfile({ userId });
+      if (profileData.error) { navigate("/"); return; }
+      const pu = profileData;
       setProfileUser(pu);
 
       const [followers, allThreads, favorites] = await Promise.all([
