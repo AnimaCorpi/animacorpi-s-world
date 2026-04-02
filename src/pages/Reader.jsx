@@ -18,8 +18,7 @@ export default function Reader() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [readingMode, setReadingMode] = useState('light');
-  const scrollToTopRef = useRef(false);
-  const restoreScrollRef = useRef(false);
+  const shouldRestoreScrollRef = useRef(false);
   const restoreScrollPositionRef = useRef(0);
   const saveScrollProgressRef = useRef(null);
 
@@ -62,50 +61,58 @@ export default function Reader() {
     }
   }, []);
 
-  // Scroll to top when navigating, or restore scroll when continuing reading
+  // Restore scroll position only when continue=true flag is present and content is stable
   useEffect(() => {
-    if (!mainRef?.current || !currentChapter) return;
-
-    if (restoreScrollRef.current && restoreScrollPositionRef.current > 0) {
-      // Wait longer for dangerouslySetInnerHTML content to fully render
-      let lastScrollHeight = 0;
-      let stableCount = 0;
-      const maxAttempts = 200;
-      let attempts = 0;
-
-      const checkAndRestore = () => {
-        if (!mainRef?.current) return;
-        
-        const currentScrollHeight = mainRef.current.scrollHeight;
-        
-        if (currentScrollHeight > 0 && currentScrollHeight === lastScrollHeight) {
-          stableCount++;
-        } else {
-          stableCount = 0;
-        }
-        
-        lastScrollHeight = currentScrollHeight;
-        attempts++;
-
-        // Require more stability checks before restoring
-        if (stableCount >= 8 || attempts >= maxAttempts) {
-          const scrollPosition = (mainRef.current.scrollHeight * restoreScrollPositionRef.current) / 100;
-          mainRef.current.scrollTo(0, scrollPosition);
-          restoreScrollRef.current = false;
-          restoreScrollPositionRef.current = 0;
-        } else {
-          setTimeout(checkAndRestore, 50);
-        }
-      };
-
-      // Initial delay to let content render
-      setTimeout(checkAndRestore, 300);
-    } else if (scrollToTopRef.current) {
-      if (mainRef.current) {
-        mainRef.current.scrollTo(0, 0);
-        scrollToTopRef.current = false;
-      }
+    if (!mainRef?.current || !currentChapter || !shouldRestoreScrollRef.current) {
+      return;
     }
+
+    const targetPosition = restoreScrollPositionRef.current;
+    if (targetPosition <= 0) {
+      shouldRestoreScrollRef.current = false;
+      return;
+    }
+
+    // Wait for content to render and stabilize
+    let lastScrollHeight = 0;
+    let stableCount = 0;
+    const maxAttempts = 200;
+    let attempts = 0;
+
+    const attemptRestore = () => {
+      if (!mainRef?.current) return;
+
+      const currentScrollHeight = mainRef.current.scrollHeight;
+
+      if (currentScrollHeight > 0 && currentScrollHeight === lastScrollHeight) {
+        stableCount++;
+      } else {
+        stableCount = 0;
+      }
+
+      lastScrollHeight = currentScrollHeight;
+      attempts++;
+
+      // Once content is stable, scroll to saved position
+      if (stableCount >= 8 || attempts >= maxAttempts) {
+        const scrollPosition = (mainRef.current.scrollHeight * targetPosition) / 100;
+        mainRef.current.scrollTo(0, scrollPosition);
+        shouldRestoreScrollRef.current = false;
+        restoreScrollPositionRef.current = 0;
+      } else {
+        setTimeout(attemptRestore, 50);
+      }
+    };
+
+    setTimeout(attemptRestore, 300);
+  }, [currentChapter, mainRef]);
+
+  // Always scroll to top for new chapters (unless continue=true)
+  useEffect(() => {
+    if (!mainRef?.current || !currentChapter || shouldRestoreScrollRef.current) {
+      return;
+    }
+    mainRef.current.scrollTo(0, 0);
   }, [currentChapter, mainRef]);
 
   // Set up scroll position save when chapter loads
@@ -131,6 +138,7 @@ export default function Reader() {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const urlChapterId = urlParams.get('chapterid');
+      const continueReading = urlParams.get('continue') === 'true';
       
       // Authenticate user FIRST
       let userData = null;
@@ -154,7 +162,7 @@ export default function Reader() {
         setBook(book);
         setChapters(chaptersData);
 
-        // Determine which chapter to load: URL > bookmark > first chapter
+        // Determine which chapter to load
         let initialChapter = null;
         let initialProgressPercentage = 0;
 
@@ -163,10 +171,24 @@ export default function Reader() {
           const urlChapter = chaptersData.find(ch => ch.id === urlChapterId);
           if (urlChapter) {
             initialChapter = urlChapter;
+            // Only restore scroll if continue=true flag is present
+            if (continueReading && userData?.id) {
+              try {
+                const bookmarks = await base44.entities.Bookmark.filter({
+                  user_id: userData.id,
+                  book_id: bookId
+                });
+                if (bookmarks.length > 0) {
+                  initialProgressPercentage = bookmarks[0].progress_percentage || 0;
+                }
+              } catch (error) {
+                console.error('Error fetching bookmark:', error);
+              }
+            }
           }
         }
 
-        // 2. If no URL chapter, check for user's bookmark
+        // 2. If no URL chapter, check for user's bookmark to auto-load last read chapter
         if (!initialChapter && userData?.id) {
           try {
             const bookmarks = await base44.entities.Bookmark.filter({
@@ -192,15 +214,15 @@ export default function Reader() {
 
         // Set the current chapter
         if (initialChapter) {
-          // If restoring from bookmark (not from URL), prepare to restore scroll position
-          if (!urlChapterId && initialProgressPercentage > 0) {
-            restoreScrollRef.current = true;
+          // Only restore scroll if we have a saved position and continue=true
+          if (continueReading && initialProgressPercentage > 0) {
+            shouldRestoreScrollRef.current = true;
             restoreScrollPositionRef.current = initialProgressPercentage;
           }
 
           setCurrentChapter(initialChapter);
 
-          // IMMEDIATELY create or update the bookmark
+          // Update bookmark with new chapter
           if (userData?.id) {
             await saveUserBookmark(initialChapter.id, initialProgressPercentage);
           }
@@ -214,8 +236,6 @@ export default function Reader() {
   };
 
   const navigateToChapter = async (chapter) => {
-    scrollToTopRef.current = true;
-    
     // Flush any pending scroll save from previous chapter
     if (saveScrollProgressRef.current) {
       saveScrollProgressRef.current.flush();
@@ -227,7 +247,7 @@ export default function Reader() {
     // Update the UI to the new chapter
     setCurrentChapter(chapter);
     
-    // Update URL
+    // Update URL (no continue=true flag, so it won't restore scroll)
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
 

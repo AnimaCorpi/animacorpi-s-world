@@ -151,7 +151,7 @@ export default function ChapterList() {
                   )}
 
                   {nextChapterToRead && (
-                    <Link to={createPageUrl(`Reader?bookid=${book.id}&chapterid=${nextChapterToRead.id}`)}>
+                    <Link to={createPageUrl(`Reader?bookid=${book.id}&chapterid=${nextChapterToRead.id}&continue=true`)}>
                       <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 mb-4">
                         <PlayCircle className="w-4 h-4 mr-2" />
                         {bookmark ? 'Continue Reading' : 'Start Reading'}: {nextChapterToRead.title}
