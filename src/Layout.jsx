@@ -45,6 +45,19 @@ export default function Layout({ children, currentPageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const [wallpaperOverride, setWallpaperOverride] = useState(null);
+  const [footerVisible, setFooterVisible] = useState(false);
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+    const handleScroll = () => {
+      const atBottom = main.scrollHeight - main.scrollTop - main.clientHeight < 40;
+      setFooterVisible(atBottom);
+    };
+    main.addEventListener('scroll', handleScroll, { passive: true });
+    return () => main.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const handler = (e) => setWallpaperOverride(e.detail?.image ?? null);
@@ -335,7 +348,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       <AnnouncementBanner />
-      <main className="flex-1 overflow-y-auto transition-colors duration-300">
+      <main ref={mainRef} className="flex-1 overflow-y-auto transition-colors duration-300">
         <UserContext.Provider value={user}>
           {children}
         </UserContext.Provider>
@@ -344,9 +357,9 @@ export default function Layout({ children, currentPageName }) {
       <BottomTabBar taskbarColor={themePrefs.taskbar_color} user={user} />
 
       <footer
-        className={`hidden lg:block shrink-0 transition-colors duration-300 ${
+        className={`hidden lg:block shrink-0 transition-all duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-t border-white/20' : 'border-t border-border bg-background/80 backdrop-blur-sm'
-        }`}
+        } ${footerVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
