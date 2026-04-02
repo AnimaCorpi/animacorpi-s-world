@@ -45,7 +45,6 @@ export default function Reader() {
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
     updateBookStatus('in_progress');
-    updateBookmark();
 
     // Remove old listener if exists
     if (scrollListenerRef.current) {
