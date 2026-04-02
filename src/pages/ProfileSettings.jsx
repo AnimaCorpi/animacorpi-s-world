@@ -22,7 +22,8 @@ import {
   Phone,
   Upload,
   Check,
-  Bookmark
+  Bookmark,
+  Trash2
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
@@ -263,11 +264,10 @@ export default function ProfileSettings() {
         )}
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 gap-1 p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-3 gap-1 p-1 h-auto">
             <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-1">Profile</TabsTrigger>
             <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2 px-1">Notifs</TabsTrigger>
             <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 px-1">Activity</TabsTrigger>
-            <TabsTrigger value="saved" className="text-xs sm:text-sm py-2 px-1">Saved</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
@@ -581,6 +581,27 @@ export default function ProfileSettings() {
                               {format(new Date(entry.date), "MMM d, yyyy 'at' h:mm a")}
                             </span>
                           </div>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await base44.functions.invoke('deleteActivityItem', {
+                                  itemId: entry.item.id,
+                                  itemType: entry.type
+                                });
+                                if (entry.type === 'thread') {
+                                  setUserThreads(userThreads.filter(t => t.id !== entry.item.id));
+                                } else {
+                                  setUserReplies(userReplies.filter(r => r.id !== entry.item.id));
+                                }
+                              } catch (error) {
+                                console.error('Error deleting activity item:', error);
+                              }
+                            }}
+                            className="text-red-600 hover:bg-red-50 p-1.5 rounded shrink-0 transition-colors"
+                            title="Delete this item"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -588,9 +609,10 @@ export default function ProfileSettings() {
                 })()}
                 <Button
                   onClick={async () => {
-                    if (!confirm('Are you sure? This will clear your entire activity history.')) return;
+                    if (!confirm('Are you sure? This will permanently delete all your activity. This cannot be undone.')) return;
                     try {
-                      setThreads([]);
+                      await base44.functions.invoke('clearAllActivity', {});
+                      setUserThreads([]);
                       setUserReplies([]);
                     } catch (error) {
                       console.error('Error clearing activity:', error);
@@ -599,70 +621,8 @@ export default function ProfileSettings() {
                   variant="outline"
                   className="mt-4 border-red-300 text-red-600 hover:bg-red-50"
                 >
-                  Clear Activity
+                  Clear All Activity
                 </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="saved">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Bookmark className="w-5 h-5" />
-                  <span>Saved Threads</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {savedThreads.map((thread) => (
-                    <div key={thread.id} className="border rounded-lg p-4 hover:bg-accent transition-colors">
-                      <div className="flex items-start justify-between gap-3">
-                        <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg">{thread.title}</h3>
-                          <p className="text-muted-foreground mt-1 line-clamp-2">
-                            {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
-                          </p>
-                          <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                            <Calendar className="w-4 h-4 mr-1" />
-                            {format(new Date(thread.created_date), "MMM d, yyyy")}
-                          </div>
-                        </Link>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {thread.is_nsfw && <Badge variant="destructive">NSFW</Badge>}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={async () => {
-                              try {
-                                const bookmarks = await base44.entities.ForumBookmark.filter({
-                                  user_id: user.id,
-                                  thread_id: thread.id
-                                });
-                                if (bookmarks.length > 0) {
-                                  await base44.entities.ForumBookmark.delete(bookmarks[0].id);
-                                  setSavedThreads(savedThreads.filter(t => t.id !== thread.id));
-                                }
-                              } catch (error) {
-                                console.error('Error unsaving thread:', error);
-                              }
-                            }}
-                            className="text-red-600 hover:bg-red-50"
-                          >
-                            <Bookmark className="w-4 h-4 fill-current" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {savedThreads.length === 0 && (
-                    <div className="text-center py-8">
-                      <Bookmark className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Saved Threads</h3>
-                      <p className="text-muted-foreground">Bookmark forum threads to find them here easily.</p>
-                    </div>
-                  )}
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
