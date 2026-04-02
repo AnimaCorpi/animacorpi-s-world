@@ -172,6 +172,11 @@ export default function Reader() {
     
     // Update bookmark with new chapter ID
     await saveUserBookmark(chapter.id, 0);
+    
+    // Update the UI to the new chapter
+    setCurrentChapter(chapter);
+    
+    // Update URL
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
 
