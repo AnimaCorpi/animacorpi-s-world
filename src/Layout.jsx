@@ -204,7 +204,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="fixed inset-0 flex flex-col" style={backgroundStyle}>
       <header
         className={`sticky top-0 z-50 transition-colors duration-300 ${
-          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 bg-background/80'
+          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 dark:bg-gray-900/95 bg-background/80'
         }`}
         style={themePrefs.transparent_banners ? {} : { backgroundColor: `${themePrefs.taskbar_color}20` }}
       >
@@ -275,10 +275,10 @@ export default function Layout({ children, currentPageName }) {
                   to={createPageUrl(item.path)}
                   className={`nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
                     isActive(item.path)
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-white'
                       : themePrefs.transparent_banners
                         ? 'banner-text-secondary hover:text-white hover:bg-white/10'
-                        : 'text-gray-700 dark:text-foreground hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                        : 'text-gray-700 dark:text-white hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />

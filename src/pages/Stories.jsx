@@ -112,7 +112,7 @@ export default function Stories() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="dark:bg-black/40 dark:rounded-2xl dark:px-8 dark:py-6"
+            className="dark:bg-gray-800/90 dark:rounded-2xl dark:px-8 dark:py-6"
           >
             <div className="banner-text-container">
               <h1 className="banner-text text-4xl md:text-6xl font-bold mb-6">
