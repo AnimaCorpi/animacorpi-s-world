@@ -204,7 +204,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="fixed inset-0 flex flex-col" style={backgroundStyle}>
       <header
         className={`sticky top-0 z-50 transition-colors duration-300 ${
-          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'backdrop-blur-md border-b border-border/50 dark:bg-gray-900/95 bg-background/80'
+          themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'dark:bg-gray-900/98 bg-background/95 border-b border-border/50'
         }`}
         style={themePrefs.transparent_banners ? {} : { backgroundColor: `${themePrefs.taskbar_color}20` }}
       >
