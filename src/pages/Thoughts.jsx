@@ -62,6 +62,7 @@ export default function Thoughts() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="dark:bg-black/40 dark:rounded-2xl dark:px-8 dark:py-6"
           >
             <h1 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-foreground mb-6 leading-tight">
               {settings?.tagline || "Thoughts & Reflections"}
@@ -69,9 +70,9 @@ export default function Thoughts() {
             <p className="text-xl md:text-2xl text-gray-600 dark:text-muted-foreground mb-8 leading-relaxed">
               {settings?.message || "Personal reflections and musings from my creative journey."}
             </p>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
+          </div>
+        </section>
 
       {/* Posts Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-background/50">
