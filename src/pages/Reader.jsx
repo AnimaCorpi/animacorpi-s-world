@@ -45,6 +45,7 @@ export default function Reader() {
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
     updateBookStatus('in_progress');
+    updateBookmark();
 
     // Remove old listener if exists
     if (scrollListenerRef.current) {
@@ -210,6 +211,31 @@ export default function Reader() {
       setBook(prev => ({ ...prev, status }));
     } catch (error) {
       console.error('Error updating book status:', error);
+    }
+  };
+
+  const updateBookmark = async () => {
+    if (!user || !book || !currentChapter) return;
+    try {
+      const existingBookmarks = await base44.entities.Bookmark.filter({ 
+        user_id: user.id, 
+        book_id: book.id 
+      });
+      if (existingBookmarks.length > 0) {
+        await base44.entities.Bookmark.update(existingBookmarks[0].id, {
+          chapter_id: currentChapter.id,
+          progress_percentage: 0
+        });
+      } else {
+        await base44.entities.Bookmark.create({
+          user_id: user.id,
+          book_id: book.id,
+          chapter_id: currentChapter.id,
+          progress_percentage: 0
+        });
+      }
+    } catch (error) {
+      console.error('Error updating bookmark:', error);
     }
   };
 
