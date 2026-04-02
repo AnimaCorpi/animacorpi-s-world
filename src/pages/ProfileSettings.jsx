@@ -263,10 +263,9 @@ export default function ProfileSettings() {
         )}
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 gap-1 p-1 h-auto">
             <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 px-1">Profile</TabsTrigger>
             <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2 px-1">Notifs</TabsTrigger>
-            <TabsTrigger value="appearance" className="text-xs sm:text-sm py-2 px-1">Appearance</TabsTrigger>
             <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 px-1">Activity</TabsTrigger>
             <TabsTrigger value="saved" className="text-xs sm:text-sm py-2 px-1">Saved</TabsTrigger>
           </TabsList>
@@ -346,6 +345,28 @@ export default function ProfileSettings() {
                     <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">Birthdate cannot be changed after registration</p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Palette className="w-5 h-5" />
+                  <span>Theme & Appearance</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Customize your visual experience</p>
+              </CardHeader>
+              <CardContent>
+                <ThemeSettings
+                  themePrefs={profileData.theme_preferences}
+                  onChange={(key, value) => setProfileData(prev => ({
+                    ...prev,
+                    theme_preferences: { ...prev.theme_preferences, [key]: value }
+                  }))}
+                  backgroundImages={backgroundImages}
+                  onBackgroundUpload={handleBackgroundUpload}
+                  uploadingBackground={uploadingBackground}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -511,30 +532,6 @@ export default function ProfileSettings() {
               </CardContent>
             </Card>
           </TabsContent>
-          
-          <TabsContent value="appearance">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Palette className="w-5 h-5" />
-                  <span>Theme & Appearance</span>
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">Customize your visual experience</p>
-              </CardHeader>
-              <CardContent>
-                <ThemeSettings
-                  themePrefs={profileData.theme_preferences}
-                  onChange={(key, value) => setProfileData(prev => ({
-                    ...prev,
-                    theme_preferences: { ...prev.theme_preferences, [key]: value }
-                  }))}
-                  backgroundImages={backgroundImages}
-                  onBackgroundUpload={handleBackgroundUpload}
-                  uploadingBackground={uploadingBackground}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="activity">
             <Card>
@@ -589,6 +586,21 @@ export default function ProfileSettings() {
                     </div>
                   );
                 })()}
+                <Button
+                  onClick={async () => {
+                    if (!confirm('Are you sure? This will clear your entire activity history.')) return;
+                    try {
+                      setThreads([]);
+                      setUserReplies([]);
+                    } catch (error) {
+                      console.error('Error clearing activity:', error);
+                    }
+                  }}
+                  variant="outline"
+                  className="mt-4 border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  Clear Activity
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -604,23 +616,44 @@ export default function ProfileSettings() {
               <CardContent>
                 <div className="space-y-4">
                   {savedThreads.map((thread) => (
-                    <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} key={thread.id}>
-                      <div className="border rounded-lg p-4 hover:bg-accent transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">{thread.title}</h3>
-                            <p className="text-muted-foreground mt-1 line-clamp-2">
-                              {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
-                            </p>
-                            <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                              <Calendar className="w-4 h-4 mr-1" />
-                              {format(new Date(thread.created_date), "MMM d, yyyy")}
-                            </div>
+                    <div key={thread.id} className="border rounded-lg p-4 hover:bg-accent transition-colors">
+                      <div className="flex items-start justify-between gap-3">
+                        <Link to={createPageUrl(`ForumThread?id=${thread.id}`)} className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-lg">{thread.title}</h3>
+                          <p className="text-muted-foreground mt-1 line-clamp-2">
+                            {thread.content.substring(0, 150).replace(/<[^>]*>/g, '')}...
+                          </p>
+                          <div className="flex items-center mt-2 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4 mr-1" />
+                            {format(new Date(thread.created_date), "MMM d, yyyy")}
                           </div>
-                          {thread.is_nsfw && <Badge variant="destructive" className="ml-4">NSFW</Badge>}
+                        </Link>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {thread.is_nsfw && <Badge variant="destructive">NSFW</Badge>}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                const bookmarks = await base44.entities.ForumBookmark.filter({
+                                  user_id: user.id,
+                                  thread_id: thread.id
+                                });
+                                if (bookmarks.length > 0) {
+                                  await base44.entities.ForumBookmark.delete(bookmarks[0].id);
+                                  setSavedThreads(savedThreads.filter(t => t.id !== thread.id));
+                                }
+                              } catch (error) {
+                                console.error('Error unsaving thread:', error);
+                              }
+                            }}
+                            className="text-red-600 hover:bg-red-50"
+                          >
+                            <Bookmark className="w-4 h-4 fill-current" />
+                          </Button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                   {savedThreads.length === 0 && (
                     <div className="text-center py-8">

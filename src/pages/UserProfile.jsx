@@ -54,6 +54,7 @@ export default function UserProfile() {
   const [followRecord, setFollowRecord] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [savedThreads, setSavedThreads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [notifyThreads, setNotifyThreads] = useState(true);
@@ -85,11 +86,12 @@ export default function UserProfile() {
       if (!profileData || profileData.error) { navigate("/"); return; }
       setProfileUser(profileData);
 
-      const [followers, following, allThreads, favorites] = await Promise.all([
+      const [followers, following, allThreads, favorites, bookmarks] = await Promise.all([
         base44.entities.Follow.filter({ following_id: userId }),
         base44.entities.Follow.filter({ follower_id: userId }),
         base44.entities.ForumThread.filter({ author_id: userId }, "-created_date", 15),
-        base44.entities.PostFavorite.filter({ user_id: userId })
+        base44.entities.PostFavorite.filter({ user_id: userId }),
+        base44.entities.ForumBookmark.filter({ user_id: userId })
       ]);
       setFollowersCount(followers.length);
       setFollowingCount(following.length);
@@ -109,6 +111,12 @@ export default function UserProfile() {
       if (favorites.length > 0) {
         const postFetches = await Promise.all(favorites.map(f => base44.entities.Post.filter({ id: f.post_id, published: true })));
         setFavoritedPosts(postFetches.flat());
+      }
+
+      // Load saved threads
+      if (bookmarks.length > 0) {
+        const saved = await Promise.all(bookmarks.map(b => base44.entities.ForumThread.filter({ id: b.thread_id })));
+        setSavedThreads(saved.flat());
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
@@ -355,6 +363,56 @@ export default function UserProfile() {
               </div>
             </CardContent>
             </Card>
+            )}
+
+            {/* Saved Threads */}
+            {savedThreads.length > 0 && isOwnProfile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bookmark className="w-5 h-5 text-purple-500" />
+                    Saved Threads
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {savedThreads.map(thread => (
+                      <div key={thread.id} className="p-4 border border-border rounded-lg hover:bg-accent transition-colors flex items-start justify-between gap-3">
+                        <Link to={`/ForumThread?id=${thread.id}`} className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-foreground truncate">{thread.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {thread.content.replace(/<[^>]*>/g, '').substring(0, 100)}
+                          </p>
+                          <span className="text-xs text-muted-foreground mt-1 block">
+                            {safeFormat(thread.created_date, "MMM d, yyyy")}
+                          </span>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              const toDelete = await base44.entities.ForumBookmark.filter({
+                                user_id: viewer?.id,
+                                thread_id: thread.id
+                              });
+                              if (toDelete.length > 0) {
+                                await base44.entities.ForumBookmark.delete(toDelete[0].id);
+                                setSavedThreads(savedThreads.filter(t => t.id !== thread.id));
+                              }
+                            } catch (error) {
+                              console.error('Error unsaving thread:', error);
+                            }
+                          }}
+                          className="text-red-600 hover:bg-red-50 shrink-0"
+                        >
+                          <Bookmark className="w-4 h-4 fill-current" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Threads */}
