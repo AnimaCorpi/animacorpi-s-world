@@ -162,19 +162,7 @@ export default function UserProfile() {
               </div>
 
               <div className="flex flex-col gap-2">
-                {!isOwnProfile && (
-                  <Button
-                    onClick={handleFollow}
-                    disabled={isFollowLoading}
-                    variant={followRecord ? "outline" : "default"}
-                    className={!followRecord ? "bg-purple-500 hover:bg-purple-600 text-white" : ""}
-                  >
-                    {followRecord
-                      ? <><UserCheck className="w-4 h-4 mr-2" />Following</>
-                      : <><UserPlus className="w-4 h-4 mr-2" />Follow</>}
-                  </Button>
-                )}
-                {isOwnProfile && (
+                {!isOwnProfile && profileUser.role === 'admin' && (
                   <Link to={createPageUrl("Profile")}>
                     <Button variant="outline" className="w-full">Edit Profile</Button>
                   </Link>
