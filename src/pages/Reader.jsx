@@ -73,6 +73,9 @@ export default function Reader() {
 
   const loadBookData = async (bookId) => {
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlChapterId = urlParams.get('chapterid');
+      
       const [bookData, chaptersData] = await Promise.all([
         base44.entities.Book.filter({ id: bookId }),
         base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
@@ -81,6 +84,16 @@ export default function Reader() {
       if (bookData.length > 0) {
         setBook(bookData[0]);
         setChapters(chaptersData);
+
+        // If chapterid in URL, navigate to that chapter
+        if (urlChapterId) {
+          const urlChapter = chaptersData.find(ch => ch.id === urlChapterId);
+          if (urlChapter) {
+            setCurrentChapter(urlChapter);
+            setIsLoading(false);
+            return;
+          }
+        }
 
         try {
           const isAuthenticated = await base44.auth.isAuthenticated();
@@ -96,11 +109,23 @@ export default function Reader() {
             if (bookmarks.length > 0 && bookmarks[0].chapter_id) {
               const bookmarkedChapter = chaptersData.find(ch => ch.id === bookmarks[0].chapter_id);
               if (bookmarkedChapter) {
+                // If progress is 100%, go to next chapter at top
+                if (bookmarks[0].progress_percentage >= 100) {
+                  const currentIndex = chaptersData.findIndex(ch => ch.id === bookmarkedChapter.id);
+                  const nextChapter = chaptersData[currentIndex + 1];
+                  if (nextChapter) {
+                    setCurrentChapter(nextChapter);
+                    setIsLoading(false);
+                    return;
+                  }
+                }
+                // Otherwise, go to bookmarked chapter at saved position
                 setCurrentChapter(bookmarkedChapter);
                 setTimeout(() => {
                   const scrollPosition = (document.documentElement.scrollHeight * bookmarks[0].progress_percentage) / 100;
                   window.scrollTo(0, scrollPosition);
                 }, 100);
+                setIsLoading(false);
                 return;
               }
             }
