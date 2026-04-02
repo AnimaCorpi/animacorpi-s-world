@@ -67,10 +67,10 @@ export default function Reader() {
     if (!mainRef?.current || !currentChapter) return;
 
     if (restoreScrollRef.current && restoreScrollPositionRef.current > 0) {
-      // Wait for scrollHeight to stabilize before restoring scroll position
+      // Wait longer for dangerouslySetInnerHTML content to fully render
       let lastScrollHeight = 0;
       let stableCount = 0;
-      const maxAttempts = 100;
+      const maxAttempts = 200;
       let attempts = 0;
 
       const checkAndRestore = () => {
@@ -87,17 +87,19 @@ export default function Reader() {
         lastScrollHeight = currentScrollHeight;
         attempts++;
 
-        if (stableCount >= 2 || attempts >= maxAttempts) {
+        // Require more stability checks before restoring
+        if (stableCount >= 8 || attempts >= maxAttempts) {
           const scrollPosition = (mainRef.current.scrollHeight * restoreScrollPositionRef.current) / 100;
           mainRef.current.scrollTo(0, scrollPosition);
           restoreScrollRef.current = false;
           restoreScrollPositionRef.current = 0;
         } else {
-          requestAnimationFrame(checkAndRestore);
+          setTimeout(checkAndRestore, 50);
         }
       };
 
-      checkAndRestore();
+      // Initial delay to let content render
+      setTimeout(checkAndRestore, 300);
     } else if (scrollToTopRef.current) {
       if (mainRef.current) {
         mainRef.current.scrollTo(0, 0);
