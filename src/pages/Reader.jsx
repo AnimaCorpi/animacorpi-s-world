@@ -20,6 +20,7 @@ export default function Reader() {
   const [readingMode, setReadingMode] = useState('light');
   const scrollToTopRef = useRef(false);
   const scrollListenerRef = useRef(null);
+  const saveScrollProgressRef = useRef(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -54,39 +55,16 @@ export default function Reader() {
       }
     }
 
-    const saveScrollProgress = throttle(async () => {
-      const scrollPercentage = mainRef?.current ? (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100 : (window.scrollY / document.documentElement.scrollHeight) * 100;
-      
-      try {
-        const existingBookmarks = await base44.entities.Bookmark.filter({ 
-          user_id: user.id, 
-          book_id: book.id 
-        });
-
-        if (existingBookmarks.length > 0) {
-          await base44.entities.Bookmark.update(existingBookmarks[0].id, {
-            chapter_id: currentChapter.id,
-            progress_percentage: scrollPercentage
-          });
-        } else {
-          await base44.entities.Bookmark.create({
-            user_id: user.id,
-            book_id: book.id,
-            chapter_id: currentChapter.id,
-            progress_percentage: scrollPercentage
-          });
-        }
-      } catch (error) {
-        console.error("Error saving progress:", error);
-      }
     }, 2000);
 
+    saveScrollProgressRef.current = saveScrollProgress;
     scrollListenerRef.current = () => saveScrollProgress();
     if (mainRef?.current) {
       mainRef.current.addEventListener('scroll', scrollListenerRef.current, { passive: true });
     } else {
       window.addEventListener('scroll', scrollListenerRef.current);
     }
+    
     return () => {
       if (scrollListenerRef.current) {
         if (mainRef?.current) {
@@ -180,6 +158,10 @@ export default function Reader() {
 
   const navigateToChapter = async (chapter) => {
     scrollToTopRef.current = true;
+    // Flush any pending scroll progress save before navigating
+    if (saveScrollProgressRef.current) {
+      saveScrollProgressRef.current.flush();
+    }
     setCurrentChapter(chapter);
     if (user && book) {
       try {
