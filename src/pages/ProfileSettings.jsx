@@ -1,33 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AccountDeletionModal from "../components/AccountDeletionModal";
-import ThemeSettings from "../components/ThemeSettings";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  User as UserIcon, 
-  Camera, 
-  Save, 
-  Bell, 
-  Palette,
-  AlertTriangle,
-  MessageSquare,
-  Calendar,
-  Mail,
-  Phone,
-  Upload,
-  Check,
-  Bookmark,
-  Trash2
-} from "lucide-react";
-import { format } from "date-fns";
-import { Link, useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import ProfileActivity from "../components/ProfileActivity";
 
 export default function ProfileSettings() {
   const [user, setUser] = useState(null);
@@ -61,7 +35,6 @@ export default function ProfileSettings() {
   const [uploadingBackground, setUploadingBackground] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -112,14 +85,10 @@ export default function ProfileSettings() {
         }
       });
 
-      const [threads, bookmarks, backgrounds, replies] = await Promise.all([
-        base44.entities.ForumThread.filter({ author_id: userData.id }, "-created_date"),
+      const [bookmarks, backgrounds] = await Promise.all([
         base44.entities.ForumBookmark.filter({ user_id: userData.id }, "-created_date"),
-        base44.entities.BackgroundImage.filter({ active: true }),
-        base44.entities.ForumComment.filter({ author_id: userData.id }, "-created_date", 10)
+        base44.entities.BackgroundImage.filter({ active: true })
       ]);
-      setUserThreads(threads);
-      setUserReplies(replies);
       setBackgroundImages(backgrounds);
 
       if (bookmarks.length > 0) {
@@ -538,91 +507,11 @@ export default function ProfileSettings() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="w-5 h-5" />
-                  <span>Recent Activity</span>
+                  <span>Your Activity</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {(() => {
-                  const feed = [
-                    ...userThreads.map(t => ({ type: 'thread', date: t.created_date, item: t })),
-                    ...userReplies.map(r => ({ type: 'reply', date: r.created_date, item: r }))
-                  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
-
-                  if (feed.length === 0) return (
-                    <div className="text-center py-8">
-                      <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-muted-foreground">No activity yet.</p>
-                    </div>
-                  );
-
-                  return (
-                    <div className="space-y-3">
-                      {feed.map((entry, i) => (
-                        <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
-                            entry.type === 'thread' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
-                          }`}>
-                            {entry.type === 'thread' ? '📝' : '💬'}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-muted-foreground mb-0.5">
-                              {entry.type === 'thread' ? 'Created a thread' : 'Replied in a thread'}
-                            </p>
-                            {entry.type === 'thread' ? (
-                              <Link to={createPageUrl(`ForumThread?id=${entry.item.id}`)} className="font-medium text-foreground hover:text-purple-600 truncate block">
-                                {entry.item.title}
-                              </Link>
-                            ) : (
-                              <p className="text-sm text-foreground line-clamp-2">
-                                {entry.item.content.replace(/<[^>]*>/g, '').substring(0, 100)}
-                              </p>
-                            )}
-                            <span className="text-xs text-muted-foreground">
-                              {format(new Date(entry.date), "MMM d, yyyy 'at' h:mm a")}
-                            </span>
-                          </div>
-                          <button
-                            onClick={async () => {
-                              try {
-                                await base44.functions.invoke('deleteActivityItem', {
-                                  itemId: entry.item.id,
-                                  itemType: entry.type
-                                });
-                                if (entry.type === 'thread') {
-                                  setUserThreads(userThreads.filter(t => t.id !== entry.item.id));
-                                } else {
-                                  setUserReplies(userReplies.filter(r => r.id !== entry.item.id));
-                                }
-                              } catch (error) {
-                                console.error('Error deleting activity item:', error);
-                              }
-                            }}
-                            className="text-red-600 hover:bg-red-50 p-1.5 rounded shrink-0 transition-colors"
-                            title="Delete this item"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-                <Button
-                  onClick={async () => {
-                    if (!confirm('Are you sure? This will permanently delete all your activity. This cannot be undone.')) return;
-                    try {
-                      await base44.functions.invoke('clearAllActivity', {});
-                      setUserThreads([]);
-                      setUserReplies([]);
-                    } catch (error) {
-                      console.error('Error clearing activity:', error);
-                    }
-                  }}
-                  variant="outline"
-                  className="mt-4 border-red-300 text-red-600 hover:bg-red-50"
-                >
-                  Clear All Activity
-                </Button>
+                <ProfileActivity user={user} />
               </CardContent>
             </Card>
           </TabsContent>

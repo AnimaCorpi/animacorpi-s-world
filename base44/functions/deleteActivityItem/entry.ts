@@ -27,6 +27,18 @@ Deno.serve(async (req) => {
         return Response.json({ error: 'Unauthorized' }, { status: 403 });
       }
       await base44.entities.ForumComment.delete(itemId);
+    } else if (itemType === 'post') {
+      const post = await base44.entities.Post.filter({ id: itemId });
+      if (post.length === 0 || post[0].created_by !== user.email) {
+        return Response.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      await base44.entities.Post.delete(itemId);
+    } else if (itemType === 'post_comment') {
+      const comment = await base44.entities.PostComment.filter({ id: itemId });
+      if (comment.length === 0 || comment[0].author_id !== user.id) {
+        return Response.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+      await base44.entities.PostComment.delete(itemId);
     } else {
       return Response.json({ error: 'Invalid itemType' }, { status: 400 });
     }
