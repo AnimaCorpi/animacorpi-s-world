@@ -32,8 +32,6 @@ import {
 import { useUser } from "../components/UserContext";
 import PullToRefresh from "../components/PullToRefresh";
 
-import React, { useState, useEffect } from 'react';
-
 export default function Forum() {
   const user = useUser();
   const [threads, setThreads] = useState([]);

@@ -101,6 +101,81 @@ export default function Home() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div>
+      <div className="min-h-screen">
+        <section className="banner-transparent py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="banner-text text-4xl md:text-5xl font-bold mb-4">{settings?.tagline || "Welcome"}</h1>
+            <p className="banner-text-secondary text-xl">{settings?.message || "Explore creativity and connection"}</p>
+          </div>
+        </section>
 
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <label className="text-sm font-semibold text-foreground block mb-3">Filter by Category:</label>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORY_OPTIONS.map(cat => (
+                  <button
+                    key={cat.value}
+                    onClick={() => setSelectedCategory(cat.value)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      selectedCategory === cat.value
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground hover:bg-gray-300'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {filteredPosts.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                {filteredPosts.map((post, index) => (
+                  <motion.article
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <Link to={createPageUrl(`Post?id=${post.id}`)}>
+                      <div className="bg-white dark:bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
+                        {post.image_url && (
+                          <img src={post.image_url} alt={post.title} className="w-full h-48 object-cover" />
+                        )}
+                        <div className="p-4 flex flex-col flex-1">
+                          <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{post.title}</h3>
+                          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{post.excerpt || stripHtmlTags(post.content).substring(0, 100)}...</p>
+                          <div className="flex items-center text-xs text-muted-foreground mt-auto">
+                            <span>{format(new Date(post.created_date), "MMM d, yyyy")}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.article>
+                ))}
+              </div>
+            )}
+
+            {threads.length > 0 && (
+              <div className="mt-16">
+                <h2 className="text-3xl font-bold text-foreground mb-6">Latest Discussions</h2>
+                <div className="space-y-3">
+                  {threads.slice(0, 5).map(thread => (
+                    <Link key={thread.id} to={createPageUrl(`ForumThread?id=${thread.id}`)}>
+                      <div className="bg-white dark:bg-card p-4 rounded-lg hover:shadow-md transition-shadow">
+                        <h3 className="font-semibold text-foreground hover:text-purple-600">{thread.title}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">by @{thread.author_username} • {format(new Date(thread.created_date), "MMM d")}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </PullToRefresh>
+  );
 }
