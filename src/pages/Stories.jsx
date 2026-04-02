@@ -125,6 +125,77 @@ export default function Stories() {
           </motion.div>
         </div>
       </section>
+
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          {user && user.birthdate && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
+            <div className="flex justify-end mb-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowNSFW(!showNSFW)}
+                className="flex items-center"
+              >
+                {showNSFW ? <Eye className="w-4 h-4 mr-2" /> : <EyeOff className="w-4 h-4 mr-2" />}
+                {showNSFW ? "Hide NSFW" : "Show NSFW"}
+              </Button>
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredBooks.map((book, index) => (
+              <motion.div
+                key={book.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Link to={createPageUrl(`ChapterList?bookid=${book.id}`)}>
+                  <Card className="card-hover overflow-hidden h-full">
+                    {book.cover_image_url && (
+                      <div className="aspect-[2/3] overflow-hidden bg-muted">
+                        <img 
+                          src={book.cover_image_url} 
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-xl font-bold text-foreground line-clamp-2 flex-1">
+                          {book.title}
+                        </h3>
+                        {book.is_nsfw && (
+                          <Badge variant="destructive" className="ml-2 text-xs">
+                            NSFW
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground line-clamp-4 mb-4">
+                        {book.description}
+                      </p>
+                      {book.status && book.status !== 'not_started' && (
+                        <div className="mt-2 text-xs font-medium text-gray-500 dark:text-muted-foreground capitalize">
+                          Status: {book.status.replace('_', ' ')}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {filteredBooks.length === 0 && (
+            <div className="text-center py-16">
+              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">No Stories Yet</h3>
+              <p className="text-muted-foreground">Check back soon for new adventures!</p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
