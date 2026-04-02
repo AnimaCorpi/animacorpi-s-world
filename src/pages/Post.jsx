@@ -130,7 +130,7 @@ export default function PostPage() {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !user) return;
+    if ((!newComment.trim() && !commentGif) || !user) return;
     
     setIsSubmitting(true);
     try {

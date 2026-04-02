@@ -129,7 +129,7 @@ export default function ForumThreadPage() {
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !user || isSubmitting) return;
+    if ((!newComment.trim() && !commentGif) || !user || isSubmitting) return;
 
     setIsSubmitting(true);
     setError("");
