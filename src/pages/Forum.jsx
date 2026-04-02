@@ -202,7 +202,7 @@ export default function Forum() {
     <div className="min-h-screen">
       <section className="banner-transparent py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="banner-text-container">
+          <div className="banner-text-container dark:bg-black/40 dark:rounded-2xl dark:px-8 dark:py-6">
             <h1 className="banner-text text-4xl md:text-5xl font-bold mb-6">
               {settings?.tagline || "Connect & Share"}
             </h1>
@@ -225,29 +225,33 @@ export default function Forum() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col gap-4 mb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search discussions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full"
-                />
+              <div className="dark:bg-black/40 dark:rounded-lg dark:border dark:border-white/20 p-3">
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-white/70" />
+                  <Input
+                    placeholder="Search discussions..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full dark:bg-transparent dark:text-white dark:placeholder:text-white/70 border-none"
+                  />
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2 w-full sm:w-auto">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <Select value={selectedTag} onValueChange={setSelectedTag}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Filter by tag" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    {allTags.map(tag => (
-                      <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="dark:bg-black/40 dark:rounded-lg dark:border dark:border-white/20 p-3">
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
+                  <Filter className="w-4 h-4 text-muted-foreground dark:text-white/70" />
+                  <Select value={selectedTag} onValueChange={setSelectedTag}>
+                    <SelectTrigger className="w-full sm:w-48 dark:bg-transparent dark:text-white dark:border-none">
+                      <SelectValue placeholder="Filter by tag" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-card dark:text-foreground">
+                      <SelectItem value="all">All Tags</SelectItem>
+                      {allTags.map(tag => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
