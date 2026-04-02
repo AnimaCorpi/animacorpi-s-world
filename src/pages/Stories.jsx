@@ -194,7 +194,7 @@ export default function Stories() {
                           </div>
                         );
                       })()}
-                      {book.status !== 'not_started' && (
+                      {book.status && book.status !== 'not_started' && (
                         <div className="mt-2 text-xs font-medium text-gray-500 dark:text-muted-foreground capitalize">
                           Status: {book.status.replace('_', ' ')}
                         </div>
