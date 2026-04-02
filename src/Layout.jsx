@@ -12,10 +12,12 @@ import {
   User as UserIcon,
   Search,
   Bell,
-  ArrowLeft
+  ArrowLeft,
+  Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { UserContext } from "./components/UserContext";
 import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
@@ -45,6 +47,7 @@ export default function Layout({ children, currentPageName }) {
   const [notificationCount, setNotificationCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wallpaperOverride, setWallpaperOverride] = useState(null);
   const [footerVisible, setFooterVisible] = useState(false);
   const mainRef = useRef(null);
@@ -237,6 +240,33 @@ export default function Layout({ children, currentPageName }) {
                 <span className="hidden sm:block">{siteName}</span>
               </Link>
             </div>
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64">
+                <nav className="flex flex-col space-y-1 mt-8">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={createPageUrl(item.path)}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`nav-link px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+                        isActive(item.path)
+                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                          : 'text-gray-700 dark:text-foreground hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                      }`}
+                    >
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.name}</span>
+                    </Link>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
 
             <nav className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => (
