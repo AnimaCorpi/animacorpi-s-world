@@ -312,7 +312,7 @@ export default function Layout({ children, currentPageName }) {
                       <div className="fixed inset-0 z-[90]" onClick={closeMenu} />
                       <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-lg shadow-lg z-[100] py-1">
                         <Link
-                          to={createPageUrl("Profile")}
+                          to={`/UserProfile?id=${user.id}`}
                           onClick={closeMenu}
                           className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
                         >

@@ -53,6 +53,7 @@ export default function UserProfile() {
   const [favoritedPosts, setFavoritedPosts] = useState([]);
   const [followRecord, setFollowRecord] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [notifyThreads, setNotifyThreads] = useState(true);
@@ -84,12 +85,14 @@ export default function UserProfile() {
       if (!profileData || profileData.error) { navigate("/"); return; }
       setProfileUser(profileData);
 
-      const [followers, allThreads, favorites] = await Promise.all([
+      const [followers, following, allThreads, favorites] = await Promise.all([
         base44.entities.Follow.filter({ following_id: userId }),
+        base44.entities.Follow.filter({ follower_id: userId }),
         base44.entities.ForumThread.filter({ author_id: userId }, "-created_date", 15),
         base44.entities.PostFavorite.filter({ user_id: userId })
       ]);
       setFollowersCount(followers.length);
+      setFollowingCount(following.length);
 
       if (viewerData) {
         const myFollow = followers.find(f => f.follower_id === viewerData.id);
@@ -251,10 +254,14 @@ export default function UserProfile() {
                     <p className="text-xs text-muted-foreground cursor-pointer hover:underline">Followers</p>
                   </button>
                   <div className="text-center">
+                    <p className="font-bold text-foreground">{followingCount}</p>
+                    <p className="text-xs text-muted-foreground">Following</p>
+                  </div>
+                  <div className="text-center">
                     <p className="font-bold text-foreground">{threads.length}</p>
                     <p className="text-xs text-muted-foreground">Threads</p>
                   </div>
-                </div>
+                  </div>
               </div>
 
               <div className="flex flex-col gap-2 items-center">
