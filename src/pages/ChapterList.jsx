@@ -22,44 +22,47 @@ export default function ChapterList() {
     }).catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (user?.id && bookId) {
-      queryClient.invalidateQueries({ queryKey: ['Bookmark', 'list'] });
-    }
-  }, [user?.id, bookId, queryClient]);
-
+  // Fetch book data
   const { data: bookData, isLoading: loadingBook } = useQuery({
     queryKey: ['Book', 'list', { id: bookId }],
     queryFn: () => base44.entities.Book.filter({ id: bookId }),
     enabled: !!bookId,
   });
 
+  // Fetch chapters data
   const { data: chaptersData, isLoading: loadingChapters } = useQuery({
     queryKey: ['Chapter', 'list', { book_id: bookId, published: true }],
     queryFn: () => base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number"),
     enabled: !!bookId,
   });
 
-  const { data: bookmarksData } = useQuery({
+  // Fetch current bookmark — CRITICAL: query key must be consistent for invalidation
+  const { data: bookmarksData, isLoading: loadingBookmarks } = useQuery({
     queryKey: ['Bookmark', 'list', { book_id: bookId, user_id: user?.id }],
-    queryFn: () => base44.entities.Bookmark.filter({ user_id: user.id, book_id: bookId }),
+    queryFn: () => user?.id ? base44.entities.Bookmark.filter({ user_id: user.id, book_id: bookId }) : Promise.resolve([]),
     enabled: !!user?.id && !!bookId,
   });
 
+  // Real-time subscription — when bookmark changes, invalidate the cached query
   useEffect(() => {
     if (!user?.id || !bookId) return;
+
     const unsubscribe = base44.entities.Bookmark.subscribe((event) => {
+      // On ANY create/update/delete of bookmarks for this user and book, invalidate the query
       if (event.data?.book_id === bookId && event.data?.user_id === user.id) {
-        queryClient.invalidateQueries({ queryKey: ['Bookmark', 'list', { book_id: bookId, user_id: user.id }] });
+        queryClient.invalidateQueries({ 
+          queryKey: ['Bookmark', 'list', { book_id: bookId, user_id: user.id }] 
+        });
       }
     });
+
     return () => unsubscribe();
   }, [bookId, user?.id, queryClient]);
 
   const book = bookData?.[0] ?? null;
   const chapters = chaptersData ?? [];
   const bookmark = bookmarksData?.[0] ?? null;
-  const isLoading = loadingBook || loadingChapters || !bookmarksData;
+  const isLoading = loadingBook || loadingChapters || loadingBookmarks;
 
   if (isLoading) {
     return (
@@ -85,6 +88,7 @@ export default function ChapterList() {
     );
   }
 
+  // Determine which chapter to show as "Continue Reading"
   const bookmarkedChapter = bookmark ? chapters.find(ch => ch.id === bookmark.chapter_id) : null;
   const nextChapterToRead = bookmarkedChapter || (chapters.length > 0 ? chapters[0] : null);
 
@@ -96,7 +100,7 @@ export default function ChapterList() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Stories
           </Link>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -105,14 +109,14 @@ export default function ChapterList() {
             <div className="flex flex-col md:flex-row gap-8">
               {book.cover_image_url && (
                 <div className="w-full md:w-64 shrink-0">
-                  <img 
-                    src={book.cover_image_url} 
+                  <img
+                    src={book.cover_image_url}
                     alt={book.title}
                     className="w-full h-auto rounded-lg shadow-xl"
                   />
                 </div>
               )}
-              
+
               <div className="flex-1">
                 <div className="banner-text-container">
                   <div className="flex items-start gap-3 mb-4">
@@ -128,7 +132,7 @@ export default function ChapterList() {
                   <p className="banner-text-secondary text-lg md:text-xl mb-6">
                     {book.description}
                   </p>
-                  
+
                   {book.status && (
                     <div className="mb-6">
                       {book.status === 'completed' && (
@@ -197,7 +201,7 @@ export default function ChapterList() {
                         </div>
                         <PlayCircle className="w-6 h-6 text-purple-600 shrink-0 ml-4" />
                       </div>
-                      </CardContent>
+                    </CardContent>
                   </Card>
                 </Link>
               </motion.div>

@@ -188,7 +188,8 @@ export default function Reader() {
     if (saveScrollProgressRef.current) {
       saveScrollProgressRef.current.flush();
     }
-    setCurrentChapter(chapter);
+    
+    // Update bookmark BEFORE changing chapter to ensure immediate real-time sync
     if (user && book) {
       try {
         const bookmarks = await base44.entities.Bookmark.filter({ user_id: user.id, book_id: book.id });
@@ -201,17 +202,10 @@ export default function Reader() {
         console.error("Error updating bookmark:", error);
       }
     }
+    
+    // Change chapter and update URL after bookmark is saved
+    setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
-  };
-
-  const updateBookStatus = async (status) => {
-    if (!book) return;
-    try {
-      await base44.entities.Book.update(book.id, { status });
-      setBook(prev => ({ ...prev, status }));
-    } catch (error) {
-      console.error('Error updating book status:', error);
-    }
   };
 
   const updateBookmark = async () => {
