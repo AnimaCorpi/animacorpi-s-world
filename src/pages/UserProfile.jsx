@@ -221,7 +221,7 @@ export default function UserProfile() {
   const isOwnProfile = viewer?.id === profileUser.id;
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* Profile Header */}
