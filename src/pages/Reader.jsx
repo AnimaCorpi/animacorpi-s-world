@@ -55,6 +55,31 @@ export default function Reader() {
       }
     }
 
+    const saveScrollProgress = throttle(async () => {
+      const scrollPercentage = mainRef?.current ? (mainRef.current.scrollTop / mainRef.current.scrollHeight) * 100 : (window.scrollY / document.documentElement.scrollHeight) * 100;
+      
+      try {
+        const existingBookmarks = await base44.entities.Bookmark.filter({ 
+          user_id: user.id, 
+          book_id: book.id 
+        });
+
+        if (existingBookmarks.length > 0) {
+          await base44.entities.Bookmark.update(existingBookmarks[0].id, {
+            chapter_id: currentChapter.id,
+            progress_percentage: scrollPercentage
+          });
+        } else {
+          await base44.entities.Bookmark.create({
+            user_id: user.id,
+            book_id: book.id,
+            chapter_id: currentChapter.id,
+            progress_percentage: scrollPercentage
+          });
+        }
+      } catch (error) {
+        console.error("Error saving progress:", error);
+      }
     }, 2000);
 
     saveScrollProgressRef.current = saveScrollProgress;
