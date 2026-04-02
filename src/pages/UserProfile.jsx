@@ -33,6 +33,7 @@ export default function UserProfile() {
   const [followersCount, setFollowersCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [notifyThreads, setNotifyThreads] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function UserProfile() {
       if (viewerData) {
         const myFollow = followers.find(f => f.follower_id === viewerData.id);
         setFollowRecord(myFollow || null);
+        if (myFollow) setNotifyThreads(myFollow.notify_forum_threads !== false);
       }
 
       // Age-gate NSFW content
@@ -81,7 +83,8 @@ export default function UserProfile() {
   // Temporarily apply this user's wallpaper; revert on unmount
   useEffect(() => {
     if (!profileUser) return;
-    const img = profileUser.theme_preferences?.background_image ?? null;
+    // Use their background image if set, otherwise dispatch empty string to show default (not viewer's own wallpaper)
+    const img = profileUser.theme_preferences?.background_image || "";
     window.dispatchEvent(new CustomEvent("wallpaper-override", { detail: { image: img } }));
     return () => {
       window.dispatchEvent(new CustomEvent("wallpaper-override", { detail: { image: null } }));
@@ -99,7 +102,8 @@ export default function UserProfile() {
       } else {
         const created = await base44.entities.Follow.create({
           follower_id: viewer.id,
-          following_id: profileUser.id
+          following_id: profileUser.id,
+          notify_forum_threads: notifyThreads
         });
         setFollowRecord(created);
         setFollowersCount(c => c + 1);
@@ -108,6 +112,18 @@ export default function UserProfile() {
       console.error("Error toggling follow:", error);
     }
     setIsFollowLoading(false);
+  };
+
+  const handleNotifyToggle = async () => {
+    if (!followRecord) return;
+    const newVal = !notifyThreads;
+    setNotifyThreads(newVal);
+    try {
+      await base44.entities.Follow.update(followRecord.id, { notify_forum_threads: newVal });
+    } catch (error) {
+      console.error("Error updating notification preference:", error);
+      setNotifyThreads(!newVal);
+    }
   };
 
   if (isLoading) {
@@ -161,11 +177,35 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
-                {!isOwnProfile && profileUser.role === 'admin' && (
+              <div className="flex flex-col gap-2 items-center">
+                {isOwnProfile ? (
                   <Link to={createPageUrl("Profile")}>
                     <Button variant="outline" className="w-full">Edit Profile</Button>
                   </Link>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleFollow}
+                      disabled={isFollowLoading}
+                      variant={followRecord ? "secondary" : "default"}
+                      className={followRecord ? "" : "bg-purple-500 hover:bg-purple-600 text-white"}
+                    >
+                      {followRecord ? <><UserCheck className="w-4 h-4 mr-1" />Following</> : <><UserPlus className="w-4 h-4 mr-1" />Follow</>}
+                    </Button>
+                    {followRecord && (
+                      <button
+                        onClick={handleNotifyToggle}
+                        className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                          notifyThreads
+                            ? 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
+                            : 'bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200'
+                        }`}
+                        title="Toggle forum thread email notifications"
+                      >
+                        {notifyThreads ? '🔔 Notify new threads' : '🔕 Muted threads'}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -189,7 +229,7 @@ export default function UserProfile() {
             ) : (
               <div className="space-y-3">
                 {threads.map(thread => (
-                  <Link key={thread.id} to={createPageUrl(`ForumThread?id=${thread.id}`)}>
+                  <Link key={thread.id} to={`/ForumThread?id=${thread.id}`}>
                     <div className="p-4 border border-border rounded-lg hover:bg-accent transition-colors">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">

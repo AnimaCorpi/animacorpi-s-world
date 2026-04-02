@@ -9,10 +9,21 @@ Deno.serve(async (req) => {
     if (!data || event?.type !== 'create') return Response.json({ ok: true });
 
     const entityName = event?.entity_name;
-    let creatorId, notifTitle, notifMessage, actionUrl, notifType;
+    let creatorId, notifTitle, notifMessage, actionUrl, notifType, isForumThread = false;
 
-    if (entityName === 'Post') {
-      // Find the user record by email (created_by is email)
+    if (entityName === 'ForumThread') {
+      const users = await base44.asServiceRole.entities.User.filter({ id: data.author_id });
+      const creator = users[0];
+      if (!creator) return Response.json({ ok: true });
+      creatorId = creator.id;
+      isForumThread = true;
+
+      notifTitle = `New forum thread by ${creator.username || creator.full_name}`;
+      notifMessage = `${creator.username || creator.full_name} created a new thread: "${data.title}"`;
+      actionUrl = `/ForumThread?id=${data.id}`;
+      notifType = 'forum_reply';
+
+    } else if (entityName === 'Post') {
       const users = await base44.asServiceRole.entities.User.filter({ email: data.created_by });
       const creator = users[0];
       if (!creator) return Response.json({ ok: true });
@@ -47,7 +58,14 @@ Deno.serve(async (req) => {
     const follows = await base44.asServiceRole.entities.Follow.filter({ following_id: creatorId });
     if (!follows.length) return Response.json({ ok: true, notified: 0 });
 
-    const notifications = follows.map(f => ({
+    // For forum threads, only notify followers who have notify_forum_threads enabled
+    const eligibleFollows = isForumThread
+      ? follows.filter(f => f.notify_forum_threads !== false)
+      : follows;
+
+    if (!eligibleFollows.length) return Response.json({ ok: true, notified: 0 });
+
+    const notifications = eligibleFollows.map(f => ({
       user_id: f.follower_id,
       type: notifType,
       title: notifTitle,

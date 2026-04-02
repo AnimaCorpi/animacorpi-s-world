@@ -28,7 +28,7 @@ export default function BottomTabBar({ taskbarColor, user }) {
   };
 
   return (
-    <nav className="bottom-tab-bar flex lg:hidden border-t border-border bg-background shrink-0">
+    <nav className="bottom-tab-bar flex md:hidden border-t border-border bg-background shrink-0">
       {tabs.map((tab) => {
         const active = isActive(tab);
         return (

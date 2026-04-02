@@ -9,6 +9,11 @@
     "following_id": {
       "type": "string",
       "description": "ID of the user being followed"
+    },
+    "notify_forum_threads": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to receive email notification when this user creates a new forum thread"
     }
   },
   "required": [
