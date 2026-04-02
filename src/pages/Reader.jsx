@@ -66,19 +66,44 @@ export default function Reader() {
   useEffect(() => {
     if (!mainRef?.current || !currentChapter) return;
 
-    setTimeout(() => {
-      if (restoreScrollRef.current && restoreScrollPositionRef.current > 0) {
-        // Restore scroll position when continuing reading
-        const scrollPosition = (mainRef.current.scrollHeight * restoreScrollPositionRef.current) / 100;
-        mainRef.current.scrollTo(0, scrollPosition);
-        restoreScrollRef.current = false;
-        restoreScrollPositionRef.current = 0;
-      } else if (scrollToTopRef.current) {
-        // Scroll to top when navigating to a new chapter
+    if (restoreScrollRef.current && restoreScrollPositionRef.current > 0) {
+      // Wait for scrollHeight to stabilize before restoring scroll position
+      let lastScrollHeight = 0;
+      let stableCount = 0;
+      const maxAttempts = 100;
+      let attempts = 0;
+
+      const checkAndRestore = () => {
+        if (!mainRef?.current) return;
+        
+        const currentScrollHeight = mainRef.current.scrollHeight;
+        
+        if (currentScrollHeight > 0 && currentScrollHeight === lastScrollHeight) {
+          stableCount++;
+        } else {
+          stableCount = 0;
+        }
+        
+        lastScrollHeight = currentScrollHeight;
+        attempts++;
+
+        if (stableCount >= 2 || attempts >= maxAttempts) {
+          const scrollPosition = (mainRef.current.scrollHeight * restoreScrollPositionRef.current) / 100;
+          mainRef.current.scrollTo(0, scrollPosition);
+          restoreScrollRef.current = false;
+          restoreScrollPositionRef.current = 0;
+        } else {
+          requestAnimationFrame(checkAndRestore);
+        }
+      };
+
+      checkAndRestore();
+    } else if (scrollToTopRef.current) {
+      if (mainRef.current) {
         mainRef.current.scrollTo(0, 0);
         scrollToTopRef.current = false;
       }
-    }, 150);
+    }
   }, [currentChapter, mainRef]);
 
   // Set up scroll position save when chapter loads
