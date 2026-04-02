@@ -35,7 +35,8 @@ export default function GifPicker({ onSelect, onClose }) {
   };
 
   return (
-    <div className="absolute z-50 bottom-full mb-2 left-0 w-full sm:w-96 bg-popover border border-border rounded-xl shadow-xl p-3">
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-start sm:absolute sm:inset-auto sm:bottom-full sm:mb-2 sm:left-0 sm:w-96" onClick={onClose}>
+    <div className="w-full sm:w-auto bg-popover border border-border rounded-t-2xl sm:rounded-xl shadow-xl p-3 max-h-[70vh] sm:max-h-none flex flex-col" onClick={e => e.stopPropagation()}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold text-foreground">Search GIFs</span>
         <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
@@ -57,7 +58,7 @@ export default function GifPicker({ onSelect, onClose }) {
           <div className="w-6 h-6 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-1 max-h-60 overflow-y-auto">
+        <div className="grid grid-cols-3 gap-1 overflow-y-auto flex-1" style={{maxHeight: '50vh'}}>
           {gifs.map((gif) => {
             const url = gif.media?.[0]?.tinygif?.url || gif.media?.[0]?.gif?.url;
             if (!url) return null;
@@ -74,6 +75,7 @@ export default function GifPicker({ onSelect, onClose }) {
         </div>
       )}
       <p className="text-[10px] text-muted-foreground mt-2 text-center">Powered by Tenor</p>
+    </div>
     </div>
   );
 }
