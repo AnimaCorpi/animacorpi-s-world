@@ -30,8 +30,10 @@ export default function Reader() {
   useEffect(() => {
     if (scrollToTopRef.current) {
       requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-        scrollToTopRef.current = false;
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          scrollToTopRef.current = false;
+        });
       });
     }
   }, [currentChapter]);
@@ -149,6 +151,7 @@ export default function Reader() {
 
   const navigateToChapter = (chapter) => {
     scrollToTopRef.current = true;
+    window.scrollTo(0, 0);
     setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
