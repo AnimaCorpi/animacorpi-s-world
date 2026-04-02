@@ -2,6 +2,33 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AccountDeletionModal from "../components/AccountDeletionModal";
 import ProfileActivity from "../components/ProfileActivity";
+import ThemeSettings from "../components/ThemeSettings";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  User as UserIcon, 
+  Camera, 
+  Save, 
+  Bell, 
+  Palette,
+  AlertTriangle,
+  MessageSquare,
+  Calendar,
+  Mail,
+  Phone,
+  Upload,
+  Check,
+  Bookmark,
+  Trash2
+} from "lucide-react";
+import { format } from "date-fns";
+import { Link, useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 export default function ProfileSettings() {
   const [user, setUser] = useState(null);
@@ -35,6 +62,7 @@ export default function ProfileSettings() {
   const [uploadingBackground, setUploadingBackground] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
