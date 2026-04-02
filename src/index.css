@@ -39,12 +39,29 @@ button, a, [role="button"], label {
 }
 .dark .banner-text {
   color: hsl(var(--foreground));
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.5);
 }
 .banner-text-secondary {
   color: #4b5563;
 }
 .dark .banner-text-secondary {
   color: hsl(var(--muted-foreground));
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.5);
+}
+
+/* Dark mode — ensure all text has a subtle shadow for legibility on custom backgrounds */
+.dark body,
+.dark p,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark span,
+.dark a,
+.dark label {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 /* Bottom tab bar — normal flow in flex column layout */
