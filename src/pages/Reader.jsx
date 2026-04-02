@@ -19,6 +19,8 @@ export default function Reader() {
   const [isLoading, setIsLoading] = useState(true);
   const [readingMode, setReadingMode] = useState('light');
   const scrollToTopRef = useRef(false);
+  const restoreScrollRef = useRef(false);
+  const restoreScrollPositionRef = useRef(0);
   const saveScrollProgressRef = useRef(null);
 
   // Helper function to save/update user bookmark
@@ -60,14 +62,23 @@ export default function Reader() {
     }
   }, []);
 
-  // Scroll to top when chapter changes
+  // Scroll to top when navigating, or restore scroll when continuing reading
   useEffect(() => {
-    if (scrollToTopRef.current && mainRef?.current) {
-      setTimeout(() => {
+    if (!mainRef?.current || !currentChapter) return;
+
+    setTimeout(() => {
+      if (restoreScrollRef.current && restoreScrollPositionRef.current > 0) {
+        // Restore scroll position when continuing reading
+        const scrollPosition = (mainRef.current.scrollHeight * restoreScrollPositionRef.current) / 100;
+        mainRef.current.scrollTo(0, scrollPosition);
+        restoreScrollRef.current = false;
+        restoreScrollPositionRef.current = 0;
+      } else if (scrollToTopRef.current) {
+        // Scroll to top when navigating to a new chapter
         mainRef.current.scrollTo(0, 0);
         scrollToTopRef.current = false;
-      }, 0);
-    }
+      }
+    }, 150);
   }, [currentChapter, mainRef]);
 
   // Set up scroll position save when chapter loads
@@ -154,21 +165,17 @@ export default function Reader() {
 
         // Set the current chapter
         if (initialChapter) {
+          // If restoring from bookmark (not from URL), prepare to restore scroll position
+          if (!urlChapterId && initialProgressPercentage > 0) {
+            restoreScrollRef.current = true;
+            restoreScrollPositionRef.current = initialProgressPercentage;
+          }
+
           setCurrentChapter(initialChapter);
 
           // IMMEDIATELY create or update the bookmark
           if (userData?.id) {
             await saveUserBookmark(initialChapter.id, initialProgressPercentage);
-          }
-
-          // Restore scroll position if one exists
-          if (initialProgressPercentage > 0) {
-            setTimeout(() => {
-              if (mainRef?.current) {
-                const scrollPosition = (mainRef.current.scrollHeight * initialProgressPercentage) / 100;
-                mainRef.current.scrollTo(0, scrollPosition);
-              }
-            }, 100);
           }
         }
       }
