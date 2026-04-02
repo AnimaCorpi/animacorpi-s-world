@@ -5,7 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Eye, EyeOff, CheckCircle, Clock } from "lucide-react";
-import ProgressBar from "../components/ProgressBar";
+
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -175,25 +175,9 @@ export default function Stories() {
                         {book.description}
                       </p>
                       {(() => {
-                        const bookmark = bookmarks.find(b => b.book_id === book.id);
                         const statusIcon = book.status === 'completed' ? (<CheckCircle className="w-4 h-4 text-green-500 mr-2" />) : book.status === 'in_progress' ? (<Clock className="w-4 h-4 text-blue-500 mr-2" />) : null;
                         return (
-                          <div className="space-y-3">
-                            {bookmark && (
-                              <ProgressBar
-                                percentage={bookmark.progress_percentage}
-                                label="Your Progress"
-                                className="mb-3"
-                              />
-                            )}
-                            <div className="flex items-center gap-2 text-purple-600 font-medium">
-                              {statusIcon}
-                              <BookOpen className="w-4 h-4" />
-                              Read Now
-                            </div>
-                          </div>
-                        );
-                      })()}
+                          <div className="flex items-center gap-2 text-purple-600 font-medium">}
                       {book.status && book.status !== 'not_started' && (
                         <div className="mt-2 text-xs font-medium text-gray-500 dark:text-muted-foreground capitalize">
                           Status: {book.status.replace('_', ' ')}

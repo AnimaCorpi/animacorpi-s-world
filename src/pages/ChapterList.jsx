@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, PlayCircle, CheckCircle, Clock } from "lucide-react";
-import ProgressBar from "../components/ProgressBar";
+
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
@@ -177,11 +177,6 @@ export default function ChapterList() {
                                 Currently Reading
                               </Badge>
                             )}
-                            {chapters.length > 0 && (
-                              <span className="text-xs text-muted-foreground ml-auto">
-                                {Math.round(((chapter.chapter_number) / chapters.length) * 100)}%
-                              </span>
-                            )}
                           </div>
                           <h3 className="text-xl font-semibold text-gray-900 dark:text-foreground">
                             {chapter.title}
@@ -189,7 +184,7 @@ export default function ChapterList() {
                         </div>
                         <PlayCircle className="w-6 h-6 text-purple-600 shrink-0 ml-4" />
                       </div>
-                    </CardContent>
+                      </CardContent>
                   </Card>
                 </Link>
               </motion.div>
