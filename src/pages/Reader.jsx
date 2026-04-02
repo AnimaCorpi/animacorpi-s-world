@@ -164,9 +164,21 @@ export default function Reader() {
     }
   };
 
-  const navigateToChapter = (chapter) => {
+  const navigateToChapter = async (chapter) => {
     scrollToTopRef.current = true;
     setCurrentChapter(chapter);
+    if (user && book) {
+      try {
+        const bookmarks = await base44.entities.Bookmark.filter({ user_id: user.id, book_id: book.id });
+        if (bookmarks.length > 0) {
+          await base44.entities.Bookmark.update(bookmarks[0].id, { chapter_id: chapter.id, progress_percentage: 0 });
+        } else {
+          await base44.entities.Bookmark.create({ user_id: user.id, book_id: book.id, chapter_id: chapter.id, progress_percentage: 0 });
+        }
+      } catch (error) {
+        console.error("Error updating bookmark:", error);
+      }
+    }
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
   };
 
@@ -192,6 +204,16 @@ export default function Reader() {
   const getNextChapter = () => {
     const currentIndex = getCurrentChapterIndex();
     return currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
+  };
+
+  const handleNextChapter = () => {
+    const next = getNextChapter();
+    if (next) navigateToChapter(next);
+  };
+
+  const handlePreviousChapter = () => {
+    const prev = getPreviousChapter();
+    if (prev) navigateToChapter(prev);
   };
 
   if (isLoading) {
@@ -277,7 +299,7 @@ export default function Reader() {
               <Button 
                 variant="outline" 
                 className="w-full sm:w-auto"
-                onClick={() => navigateToChapter(previousChapter)}
+                onClick={handlePreviousChapter}
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 Previous Chapter
@@ -287,7 +309,7 @@ export default function Reader() {
             {nextChapter ? (
               <Button 
                 className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                onClick={() => navigateToChapter(nextChapter)}
+                onClick={handleNextChapter}
               >
                 Next Chapter
                 <ChevronRight className="w-4 h-4 ml-2" />
