@@ -14,6 +14,7 @@ export default function Reader() {
   const [currentChapter, setCurrentChapter] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -25,6 +26,13 @@ export default function Reader() {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (shouldScrollToTop) {
+      window.scrollTo(0, 0);
+      setShouldScrollToTop(false);
+    }
+  }, [currentChapter, shouldScrollToTop]);
 
   useEffect(() => {
     if (!currentChapter || !user || !book) return;
@@ -115,8 +123,7 @@ export default function Reader() {
   const navigateToChapter = (chapter) => {
     setCurrentChapter(chapter);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
-    // Scroll to top after next render
-    setTimeout(() => window.scrollTo(0, 0), 0);
+    setShouldScrollToTop(true);
   };
 
   const getCurrentChapterIndex = () => {
