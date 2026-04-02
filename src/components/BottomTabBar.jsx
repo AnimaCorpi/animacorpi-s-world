@@ -34,7 +34,7 @@ export default function BottomTabBar({ taskbarColor, user }) {
         return (
           <Link
             key={tab.name}
-            to={tab.rootMatch ? "/" : createPageUrl(tab.path)}
+            to={tab.name === "Profile" && user?.id ? `/UserProfile?id=${user.id}` : (tab.rootMatch ? "/" : createPageUrl(tab.path))}
             aria-label={tab.label}
             aria-current={active ? "page" : undefined}
             className="flex flex-col items-center justify-center flex-1 gap-0.5 select-none min-h-[72px] px-1"

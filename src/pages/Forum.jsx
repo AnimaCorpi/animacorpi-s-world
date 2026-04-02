@@ -224,22 +224,22 @@ export default function Forum() {
 
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search discussions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-full"
                 />
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 w-full sm:w-auto">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={selectedTag} onValueChange={setSelectedTag}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-full sm:w-48">
                     <SelectValue placeholder="Filter by tag" />
                   </SelectTrigger>
                   <SelectContent>
@@ -250,22 +250,9 @@ export default function Forum() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            {user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowNSFW(!showNSFW)}
-                  className="flex items-center"
-                >
-                  {showNSFW ? <Eye className="w-4 h-4 mr-2" /> : <EyeOff className="w-4 h-4 mr-2" />}
-                  {showNSFW ? "Hide NSFW" : "Show NSFW"}
-                </Button>
               </div>
-            )}
-          </div>
+
+              {user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
 
           <div className="space-y-4">
             {filteredThreads.map((thread) => (
