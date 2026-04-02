@@ -22,7 +22,7 @@ export default function AnnouncementBanner() {
         if (!list.length) return;
         const a = list[0];
         if (a.expires_at && new Date(a.expires_at) < new Date()) return;
-        const dismissed = JSON.parse(sessionStorage.getItem(DISMISSED_KEY) || "[]");
+        const dismissed = JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]");
         if (dismissed.includes(a.id)) return;
         setAnnouncement(a);
       } catch {}
@@ -31,8 +31,8 @@ export default function AnnouncementBanner() {
 
   const dismiss = () => {
     if (!announcement) return;
-    const dismissed = JSON.parse(sessionStorage.getItem(DISMISSED_KEY) || "[]");
-    sessionStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed, announcement.id]));
+    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]");
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed, announcement.id]));
     setVisible(false);
   };
 
