@@ -72,11 +72,18 @@ export default function Layout({ children, currentPageName }) {
   }, [currentPageName]);
 
   useEffect(() => {
-    if (user) {
-      loadNotificationCount();
-      const interval = setInterval(loadNotificationCount, 30000);
-      return () => clearInterval(interval);
-    }
+    if (!user) return;
+    loadNotificationCount();
+    // Real-time: subscribe to new notifications for this user
+    const unsubscribe = base44.entities.Notification.subscribe((event) => {
+      if (event.type === 'create' && event.data?.user_id === user.id && !event.data?.read) {
+        setNotificationCount(c => c + 1);
+      } else if ((event.type === 'update' || event.type === 'delete') && event.data?.user_id === user.id) {
+        // Re-fetch on update/delete to stay accurate
+        loadNotificationCount();
+      }
+    });
+    return () => unsubscribe();
   }, [user]);
 
   const loadUserAndSettings = async () => {
