@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,13 +35,14 @@ export default function UserProfile() {
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [notifyThreads, setNotifyThreads] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const userId = params.get("id");
-    if (!userId) { navigate("/"); return; }
+    if (!userId) return;
     loadData(userId);
-  }, [window.location.search]);
+  }, [location.search]);
 
   const loadData = async (userId) => {
     setIsLoading(true);
