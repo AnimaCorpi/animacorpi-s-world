@@ -49,6 +49,16 @@ button, a, [role="button"], label {
   text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.5);
 }
 
+/* Banner transparent background with blur effect */
+.banner-transparent {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.dark .banner-transparent {
+  background: rgba(0, 0, 0, 0.3);
+}
+
 /* Dark mode — ensure all text has a subtle shadow for legibility on custom backgrounds */
 .dark body,
 .dark p,
