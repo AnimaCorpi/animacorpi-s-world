@@ -282,6 +282,100 @@ export default function Layout({ children, currentPageName }) {
             </nav>
 
             <div className="flex items-center space-x-3">
+              <form onSubmit={handleSearch} className="relative hidden lg:block" role="search">
+                <Input
+                  type="search"
+                  placeholder="Search posts..."
+                  className="pl-10 h-9 w-48 text-foreground bg-background"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search posts"
+                />
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${themePrefs.transparent_banners ? 'text-white/70' : 'text-gray-400'}`} aria-hidden="true" />
+              </form>
+
+              <ThemeToggle />
+
+              {user && (
+                <Link to={createPageUrl("Notifications")} className="relative" aria-label={`Notifications${notificationCount > 0 ? `, ${notificationCount} unread` : ''}`}>
+                  <div className={`relative p-2 rounded-lg transition-colors hover:bg-black/10 ${
+                    themePrefs.transparent_banners ? 'text-white' : 'text-gray-600 dark:text-foreground'
+                  }`}>
+                    <Bell className="w-5 h-5" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              )}
+            
+              {user ? (
+                <div className="relative" ref={menuRef}>
+                  <button
+                    onClick={handleMenuToggle}
+                    className={`flex items-center space-x-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors ${themePrefs.transparent_banners ? 'text-white' : ''}`}
+                  >
+                    {user.avatar_url ? (
+                      <img src={user.avatar_url} alt="Profile" className="w-8 h-8 rounded-full object-cover" />
+                    ) : (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                        style={{ backgroundColor: themePrefs.taskbar_color }}
+                      >
+                        {user.username?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className={`hidden sm:block text-sm font-medium ${themePrefs.transparent_banners ? 'banner-text-secondary' : 'text-gray-800 dark:text-foreground'}`}>
+                      {user.username}
+                    </span>
+                  </button>
+                  {menuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-[90]" onClick={closeMenu} />
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-lg shadow-lg z-[100] py-1">
+                        <Link
+                          to={`/UserProfile?id=${user.id}`}
+                          onClick={closeMenu}
+                          className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                        >
+                          <UserIcon className="w-4 h-4 mr-2" />
+                          Profile
+                        </Link>
+                        {isAdmin && (
+                          <Link
+                            to={createPageUrl("Admin")}
+                            onClick={closeMenu}
+                            className="flex items-center px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                          >
+                            <Settings className="w-4 h-4 mr-2" />
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => { closeMenu(); handleLogout(); }}
+                          className="flex items-center w-full px-3 py-2 text-sm text-popover-foreground hover:bg-accent transition-colors"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  onClick={() => base44.auth.redirectToLogin()}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
 
       <AnnouncementBanner />
       <main ref={mainRef} className={`flex-1 overflow-y-auto transition-colors duration-300 ${effectiveBgImage && !themePrefs.transparent_banners ? 'relative' : ''}`}>
