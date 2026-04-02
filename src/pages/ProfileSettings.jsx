@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { User } from "@/entities/User";
 import AccountDeletionModal from "../components/AccountDeletionModal";
 import ThemeSettings from "../components/ThemeSettings";
-import { BackgroundImage } from "@/entities/BackgroundImage";
-import { ForumThread } from "@/entities/ForumThread";
-import { UploadFile } from "@/integrations/Core";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -80,7 +76,7 @@ export default function ProfileSettings() {
 
   const loadUserData = async () => {
     try {
-      const userData = await User.me();
+      const userData = await base44.auth.me();
       setUser(userData);
       setProfileData({
         username: userData.username || "",
@@ -116,9 +112,9 @@ export default function ProfileSettings() {
       });
 
       const [threads, bookmarks, backgrounds, replies] = await Promise.all([
-        ForumThread.filter({ author_id: userData.id }, "-created_date"),
+        base44.entities.ForumThread.filter({ author_id: userData.id }, "-created_date"),
         base44.entities.ForumBookmark.filter({ user_id: userData.id }, "-created_date"),
-        BackgroundImage.filter({ active: true }),
+        base44.entities.BackgroundImage.filter({ active: true }),
         base44.entities.ForumComment.filter({ author_id: userData.id }, "-created_date", 10)
       ]);
       setUserThreads(threads);
@@ -141,7 +137,7 @@ export default function ProfileSettings() {
 
     setUploadingAvatar(true);
     try {
-      const { file_url } = await UploadFile({ file });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setProfileData(prev => ({ ...prev, avatar_url: file_url }));
       setMessage("Avatar uploaded successfully!");
       setError("");
@@ -159,7 +155,7 @@ export default function ProfileSettings() {
 
     setUploadingBackground(true);
     try {
-      const { file_url } = await UploadFile({ file });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setProfileData(prev => ({
         ...prev,
         theme_preferences: {
@@ -190,7 +186,7 @@ export default function ProfileSettings() {
           return;
         }
 
-        const existingUsers = await User.filter({ username: profileData.username.toLowerCase() });
+        const existingUsers = await base44.entities.User.filter({ username: profileData.username.toLowerCase() });
         if (existingUsers.some(u => u.id !== user.id)) {
           setError("Username already taken. Please choose another.");
           setIsSaving(false);
@@ -219,7 +215,7 @@ export default function ProfileSettings() {
         }
       };
 
-      await User.updateMyUserData(updateData);
+      await base44.auth.updateMe(updateData);
 
       setMessage("Profile updated successfully! Page will reload to apply theme changes.");
       
@@ -621,9 +617,7 @@ export default function ProfileSettings() {
                               {format(new Date(thread.created_date), "MMM d, yyyy")}
                             </div>
                           </div>
-                          {thread.is_nsfw && (
-                            <Badge variant="destructive" className="ml-4">NSFW</Badge>
-                          )}
+                          {thread.is_nsfw && <Badge variant="destructive" className="ml-4">NSFW</Badge>}
                         </div>
                       </div>
                     </Link>
