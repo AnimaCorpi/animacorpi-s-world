@@ -17,6 +17,13 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
+function safeFormat(date, fmt) {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return format(d, fmt);
+}
+
 function getAge(birthdate) {
   if (!birthdate) return null;
   const today = new Date();
@@ -174,7 +181,7 @@ export default function UserProfile() {
                 <p className="text-muted-foreground">@{profileUser.username}</p>
                 <div className="flex items-center justify-center sm:justify-start gap-1 text-sm text-muted-foreground mt-1">
                   <Calendar className="w-4 h-4" />
-                  <span>Joined {format(new Date(profileUser.created_date), "MMMM yyyy")}</span>
+                  <span>Joined {safeFormat(profileUser.created_date, "MMMM yyyy")}</span>
                 </div>
                 <div className="flex items-center justify-center sm:justify-start gap-6 mt-3">
                   <div className="text-center">
@@ -245,7 +252,7 @@ export default function UserProfile() {
                           <Badge className="bg-purple-100 text-purple-700 border border-purple-200 capitalize text-xs mb-1">{post.category}</Badge>
                           <h3 className="font-semibold text-foreground truncate">{post.title}</h3>
                           <span className="text-xs text-muted-foreground">
-                            {format(new Date(post.created_date), "MMM d, yyyy")}
+                            {safeFormat(post.created_date, "MMM d, yyyy")}
                           </span>
                         </div>
                       </div>
@@ -283,7 +290,7 @@ export default function UserProfile() {
                             {thread.content.replace(/<[^>]*>/g, '').substring(0, 120)}
                           </p>
                           <span className="text-xs text-muted-foreground mt-1 block">
-                            {format(new Date(thread.created_date), "MMM d, yyyy")}
+                            {safeFormat(thread.created_date, "MMM d, yyyy")}
                           </span>
                         </div>
                         {thread.is_nsfw && <Badge variant="destructive" className="shrink-0">NSFW</Badge>}
