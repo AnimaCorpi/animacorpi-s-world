@@ -178,13 +178,15 @@ export default function Home() {
                 className="card-hover bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:border-border">
                 
                 {post.image_url &&
-                <div className="aspect-video overflow-hidden">
+                <Link to={createPageUrl(`Post?id=${post.id}`)}>
+                <div className="aspect-video overflow-hidden hover:opacity-90 transition-opacity cursor-pointer">
                     <img
                     src={post.image_url}
                     alt={post.title}
                     className="w-full h-full object-contain" />
                   
                   </div>
+                </Link>
                 }
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
@@ -196,9 +198,11 @@ export default function Home() {
                       {format(new Date(post.created_date), "MMM d, yyyy")}
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-foreground mb-3 line-clamp-2">
-                    {post.title}
-                  </h3>
+                  <Link to={createPageUrl(`Post?id=${post.id}`)} className="block hover:text-purple-600 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-foreground mb-3 line-clamp-2">
+                      {post.title}
+                    </h3>
+                  </Link>
                   <p className="text-gray-600 dark:text-muted-foreground mb-4 line-clamp-3">
                     {post.excerpt || stripHtmlTags(post.content).substring(0, 150) + "..."}
                   </p>
