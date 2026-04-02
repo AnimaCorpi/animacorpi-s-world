@@ -201,7 +201,7 @@ export default function Forum() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen">
+      <div>
         <section className="banner-transparent py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="banner-text-container">

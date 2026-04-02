@@ -13,7 +13,7 @@ export default function BottomTabBar({ taskbarColor, user }) {
     { name: "Home", path: "Home", icon: Home, label: "Home", rootMatch: true },
     { name: "Stories", path: "Stories", icon: BookOpen, label: "Stories" },
     { name: "Forum", path: "Forum", icon: MessageSquare, label: "Forum" },
-    { name: "Profile", path: "Profile", icon: UserIcon, label: "Profile" },
+    { name: "Profile", path: "UserProfile", icon: UserIcon, label: "Profile" },
   ];
 
   const adminTab = { name: "Admin", path: "Admin", icon: Settings, label: "Admin" };
