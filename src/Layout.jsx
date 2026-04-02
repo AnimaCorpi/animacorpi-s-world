@@ -206,7 +206,7 @@ export default function Layout({ children, currentPageName }) {
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           themePrefs.transparent_banners ? 'banner-transparent border-b border-white/20' : 'dark:bg-gray-900/98 bg-background/95 border-b border-border/50'
         }`}
-        style={themePrefs.transparent_banners ? {} : { backgroundColor: `${themePrefs.taskbar_color}20` }}
+
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
