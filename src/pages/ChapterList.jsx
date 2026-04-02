@@ -69,6 +69,7 @@ export default function ChapterList() {
   }
 
   const bookmarkedChapter = bookmark ? chapters.find(ch => ch.id === bookmark.chapter_id) : null;
+  const nextChapterToRead = bookmarkedChapter || (chapters.length > 0 ? chapters[0] : null);
 
   return (
     <div className="min-h-screen">
@@ -111,7 +112,7 @@ export default function ChapterList() {
                     {book.description}
                   </p>
                   
-                  {bookmark && book.status && (
+                  {book.status && (
                     <div className="mb-6">
                       {book.status === 'completed' && (
                         <div className="mt-3 flex items-center text-green-600 font-medium text-sm">
@@ -127,9 +128,9 @@ export default function ChapterList() {
                       )}
                     </div>
                   )}
-                  
-                  {bookmarkedChapter && (
-                    <Link to={createPageUrl(`Reader?bookid=${book.id}&chapterid=${bookmarkedChapter.id}`)}>
+
+                  {nextChapterToRead && (
+                    <Link to={createPageUrl(`Reader?bookid=${book.id}&chapterid=${nextChapterToRead.id}`)}>
                       <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 mb-4">
                         <PlayCircle className="w-4 h-4 mr-2" />
                         Continue Reading: {bookmarkedChapter.title}
