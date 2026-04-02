@@ -266,14 +266,16 @@ export default function Layout({ children, currentPageName }) {
 
               {user && (
                 <Link to={createPageUrl("Notifications")} className="relative" aria-label={`Notifications${notificationCount > 0 ? `, ${notificationCount} unread` : ''}`}>
-                  <Button variant="ghost" size="sm" className="relative p-2" tabIndex={-1} aria-hidden="true">
-                    <Bell className={`w-5 h-5 ${themePrefs.transparent_banners ? 'text-white' : 'text-gray-600'}`} />
+                  <div className={`relative p-2 rounded-lg transition-colors hover:bg-black/10 ${
+                    themePrefs.transparent_banners ? 'text-white' : 'text-gray-600 dark:text-foreground'
+                  }`}>
+                    <Bell className="w-5 h-5" />
                     {notificationCount > 0 && (
-                      <span className="notification-badge" aria-hidden="true">
+                      <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
                         {notificationCount > 99 ? '99+' : notificationCount}
                       </span>
                     )}
-                  </Button>
+                  </div>
                 </Link>
               )}
             
