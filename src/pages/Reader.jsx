@@ -114,8 +114,9 @@ export default function Reader() {
 
   const navigateToChapter = (chapter) => {
     setCurrentChapter(chapter);
-    window.scrollTo(0, 0);
     window.history.pushState({}, '', createPageUrl(`Reader?bookid=${book.id}&chapterid=${chapter.id}`));
+    // Scroll to top after next render
+    setTimeout(() => window.scrollTo(0, 0), 0);
   };
 
   const getCurrentChapterIndex = () => {
