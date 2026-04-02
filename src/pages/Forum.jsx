@@ -43,7 +43,6 @@ export default function Forum() {
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState([]);
 
-
   // Derived state - no separate auth fetch needed, user comes from Layout context
   const needsRegistration = user && (!user.username || !user.birthdate);
 
@@ -250,21 +249,124 @@ export default function Forum() {
                   </SelectContent>
                 </Select>
               </div>
-              </div>
 
               {user && !needsRegistration && (user.role === 'admin' || calculateAge(user.birthdate) >= 18) && (
-              <div className="flex items-center space-x-2">
-               <Button
-                 variant="outline"
-                 size="sm"
-                 onClick={() => setShowNSFW(!showNSFW)}
-                 className="flex items-center"
-               >
-                 {showNSFW ? <Eye className="w-4 h-4 mr-2" /> : <EyeOff className="w-4 h-4 mr-2" />}
-                 {showNSFW ? "Hide NSFW" : "Show NSFW"}
-               </Button>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowNSFW(!showNSFW)}
+                    className="flex items-center"
+                  >
+                    {showNSFW ? <Eye className="w-4 h-4 mr-2" /> : <EyeOff className="w-4 h-4 mr-2" />}
+                    {showNSFW ? "Hide NSFW" : "Show NSFW"}
+                  </Button>
+                </div>
               )}
-              </div>
+            </div>
+          </div>
 
-              <div className="space-y-4">
+          <div className="space-y-4">
+            {filteredThreads.map((thread) => (
+              <Card key={thread.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2 flex-wrap">
+                        <Link 
+                          to={createPageUrl(`ForumThread?id=${thread.id}`)}
+                          className="text-xl font-semibold text-foreground hover:text-purple-600 transition-colors"
+                        >
+                          {thread.title}
+                        </Link>
+                        {(user?.role === 'admin' || thread.author_id === user?.id) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 p-1 h-auto"
+                            onClick={(e) => handleDeleteThread(e, thread.id)}
+                            aria-label="Delete thread"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {thread.is_nsfw && (
+                          <Badge variant="destructive" className="text-xs">NSFW</Badge>
+                        )}
+                        {thread.locked && (
+                          <Badge variant="outline" className="text-xs flex items-center">
+                            <Lock className="w-3 h-3 mr-1" />Locked
+                          </Badge>
+                        )}
+                        {thread.image_url && (
+                          <Badge variant="outline" className="text-xs flex items-center">
+                            <ImageIcon className="w-3 h-3 mr-1" />Image
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <p className="text-muted-foreground mb-3 line-clamp-2">
+                        {thread.content.substring(0, 200).replace(/<[^>]*>/g, '')}...
+                      </p>
+                      
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          <div className="flex items-center">
+                            <UserIcon className="w-4 h-4 mr-1" />
+                            <Link to={createPageUrl(`UserProfile?id=${thread.author_id}`)} className="hover:text-purple-600 hover:underline" onClick={e => e.stopPropagation()}>@{getAuthorDisplay(thread)}</Link>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            {format(new Date(thread.created_date), "MMM d, yyyy")}
+                          </div>
+                          <ReactionButton contentId={thread.id} contentType="thread" user={user} />
+                        </div>
+                        
+                        {thread.tags && thread.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {thread.tags.slice(0, 3).map((tag, index) => (
+                              <Badge 
+                                key={index} 
+                                variant="outline" 
+                                className="text-xs cursor-pointer hover:bg-purple-50"
+                                onClick={() => setSelectedTag(tag)}
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                            {thread.tags.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{thread.tags.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {filteredThreads.length === 0 && (
+            <div className="text-center py-16">
+              <MessageSquare className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">No Discussions Found</h3>
+              <p className="text-muted-foreground mb-6">
+                {searchTerm || selectedTag !== "all" 
+                  ? "Try adjusting your search or filters."
+                  : "Be the first to start a conversation!"
+                }
+              </p>
+              <Button onClick={handleStartDiscussion} className="bg-purple-500 hover:bg-purple-600">
+                <Plus className="w-4 h-4 mr-2" />
+                Start a Discussion
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
