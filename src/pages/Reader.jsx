@@ -38,6 +38,28 @@ export default function Reader() {
   const saveUserBookmark = async (chapterId, progressPercentage = 0) => {
     if (!user || !book) return;
     try {
+      const bookmarks = await base44.entities.Bookmark.filter({
+        user_id: user.id,
+        book_id: book.id
+      });
+
+      if (bookmarks.length > 0) {
+        await base44.entities.Bookmark.update(bookmarks[0].id, {
+          chapter_id: chapterId,
+          progress_percentage: progressPercentage
+        });
+      } else {
+        await base44.entities.Bookmark.create({
+          user_id: user.id,
+          book_id: book.id,
+          chapter_id: chapterId,
+          progress_percentage: progressPercentage
+        });
+      }
+    } catch (error) {
+      console.error('Error saving bookmark:', error);
+    }
+  };
 
   // Load book and chapter data on mount
   useEffect(() => {
