@@ -94,64 +94,81 @@ export default function Reader() {
       const urlParams = new URLSearchParams(window.location.search);
       const urlChapterId = urlParams.get('chapterid');
       
+      // Authenticate user FIRST
+      let userData = null;
+      try {
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (isAuthenticated) {
+          userData = await base44.auth.me();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.log("User not authenticated");
+      }
+      
       const [bookData, chaptersData] = await Promise.all([
         base44.entities.Book.filter({ id: bookId }),
         base44.entities.Chapter.filter({ book_id: bookId, published: true }, "chapter_number")
       ]);
 
       if (bookData.length > 0) {
-        setBook(bookData[0]);
+        const book = bookData[0];
+        setBook(book);
         setChapters(chaptersData);
 
-        // If chapterid in URL, use that chapter
+        // Determine which chapter to load: URL > bookmark > first chapter
+        let initialChapter = null;
+        let initialProgressPercentage = 0;
+
+        // 1. Check for chapter ID in URL
         if (urlChapterId) {
           const urlChapter = chaptersData.find(ch => ch.id === urlChapterId);
           if (urlChapter) {
-            setCurrentChapter(urlChapter);
-            setIsLoading(false);
-            return;
+            initialChapter = urlChapter;
           }
         }
 
-        // Check if user is authenticated
-        try {
-          const isAuthenticated = await base44.auth.isAuthenticated();
-          if (isAuthenticated) {
-            const userData = await base44.auth.me();
-            setUser(userData);
-            
-            // Get user's bookmark for this book
-            const bookmarks = await base44.entities.Bookmark.filter({ 
-              user_id: userData.id, 
-              book_id: bookId 
+        // 2. If no URL chapter, check for user's bookmark
+        if (!initialChapter && userData?.id) {
+          try {
+            const bookmarks = await base44.entities.Bookmark.filter({
+              user_id: userData.id,
+              book_id: bookId
             });
-
             if (bookmarks.length > 0 && bookmarks[0].chapter_id) {
               const bookmarkedChapter = chaptersData.find(ch => ch.id === bookmarks[0].chapter_id);
               if (bookmarkedChapter) {
-                // Load bookmarked chapter and restore scroll position
-                setCurrentChapter(bookmarkedChapter);
-                setTimeout(() => {
-                  if (mainRef?.current) {
-                    const scrollPosition = (mainRef.current.scrollHeight * bookmarks[0].progress_percentage) / 100;
-                    mainRef.current.scrollTo(0, scrollPosition);
-                  }
-                }, 100);
-                setIsLoading(false);
-                return;
+                initialChapter = bookmarkedChapter;
+                initialProgressPercentage = bookmarks[0].progress_percentage || 0;
               }
             }
+          } catch (error) {
+            console.error('Error fetching bookmark:', error);
           }
-        } catch (error) {
-          console.log("User not authenticated");
         }
 
-        // Default to first chapter
-        if (chaptersData.length > 0) {
-          setCurrentChapter(chaptersData[0]);
-          // Update bookmark to track this chapter
-          if (isAuthenticated) {
-            await saveUserBookmark(chaptersData[0].id, 0);
+        // 3. Default to first chapter
+        if (!initialChapter && chaptersData.length > 0) {
+          initialChapter = chaptersData[0];
+        }
+
+        // Set the current chapter
+        if (initialChapter) {
+          setCurrentChapter(initialChapter);
+
+          // IMMEDIATELY create or update the bookmark
+          if (userData?.id) {
+            await saveUserBookmark(initialChapter.id, initialProgressPercentage);
+          }
+
+          // Restore scroll position if one exists
+          if (initialProgressPercentage > 0) {
+            setTimeout(() => {
+              if (mainRef?.current) {
+                const scrollPosition = (mainRef.current.scrollHeight * initialProgressPercentage) / 100;
+                mainRef.current.scrollTo(0, scrollPosition);
+              }
+            }, 100);
           }
         }
       }
