@@ -293,9 +293,9 @@ export default function PostPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold text-gray-800 dark:text-foreground">
+                        <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-semibold text-gray-800 dark:text-foreground hover:text-purple-600 hover:underline">
                           @{comment.author_username || 'User'}
-                        </p>
+                        </Link>
                         <p className="text-sm text-gray-500 dark:text-muted-foreground mb-1">
                           {format(new Date(comment.created_date), "MMM d, yyyy 'at' h:mm a")}
                         </p>

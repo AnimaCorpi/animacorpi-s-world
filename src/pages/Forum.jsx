@@ -314,7 +314,7 @@ export default function Forum() {
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                           <div className="flex items-center">
                             <UserIcon className="w-4 h-4 mr-1" />
-                            @{getAuthorDisplay(thread)}
+                            <Link to={createPageUrl(`UserProfile?id=${thread.author_id}`)} className="hover:text-purple-600 hover:underline" onClick={e => e.stopPropagation()}>@{getAuthorDisplay(thread)}</Link>
                           </div>
                           <div className="flex items-center">
                             <Clock className="w-4 h-4 mr-1" />

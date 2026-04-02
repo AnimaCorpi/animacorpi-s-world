@@ -275,7 +275,7 @@ export default function ForumThreadPage() {
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-muted-foreground">
                   <div className="flex items-center">
                     <UserIcon className="w-4 h-4 mr-1" />
-                    @{getAuthorDisplay(thread)}
+                    <Link to={createPageUrl(`UserProfile?id=${thread.author_id}`)} className="hover:text-purple-600 hover:underline">@{getAuthorDisplay(thread)}</Link>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
@@ -425,7 +425,7 @@ export default function ForumThreadPage() {
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center space-x-2">
                       <UserIcon className="w-4 h-4" />
-                      <span className="font-medium">@{getAuthorDisplay(comment)}</span>
+                      <Link to={createPageUrl(`UserProfile?id=${comment.author_id}`)} className="font-medium hover:text-purple-600 hover:underline">@{getAuthorDisplay(comment)}</Link>
                               <span className="text-sm text-gray-500 dark:text-muted-foreground">
                         {format(new Date(comment.created_date), "MMM d, h:mm a")}
                       </span>
@@ -471,7 +471,7 @@ export default function ForumThreadPage() {
                         <div className="flex justify-between items-start mb-1">
                           <div className="flex items-center space-x-2">
                             <UserIcon className="w-3 h-3" />
-                            <span className="font-medium text-sm">@{getAuthorDisplay(reply)}</span>
+                            <Link to={createPageUrl(`UserProfile?id=${reply.author_id}`)} className="font-medium text-sm hover:text-purple-600 hover:underline">@{getAuthorDisplay(reply)}</Link>
                             <span className="text-xs text-gray-500 dark:text-muted-foreground">
                               {format(new Date(reply.created_date), "MMM d, h:mm a")}
                             </span>
