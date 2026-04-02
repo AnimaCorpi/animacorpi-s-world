@@ -101,15 +101,15 @@ export default function Artwork() {
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                      <Badge className="bg-pink-100 text-pink-700 border border-pink-200">
-                        🎨 Artwork
-                      </Badge>
-                      {post.pinned && (
-                        <Badge className="bg-purple-50 text-purple-500 border border-purple-200 flex items-center gap-1 text-xs">
-                          <Pin className="w-3 h-3" /> Pinned
+                        <Badge className="bg-pink-100 text-pink-700 border border-pink-200">
+                          🎨 Artwork
                         </Badge>
-                      )}
-                    </div>
+                        {post.pinned && (
+                          <Badge className="bg-purple-50 text-purple-500 border border-purple-200 flex items-center gap-1 text-xs">
+                            <Pin className="w-3 h-3" /> Pinned
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center text-sm text-gray-500 dark:text-muted-foreground">
                         <Calendar className="w-4 h-4 mr-1" />
                         {format(new Date(post.created_date), "MMM d, yyyy")}
