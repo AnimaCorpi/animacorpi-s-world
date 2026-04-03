@@ -12,6 +12,7 @@ import UserAvatar from "../components/UserAvatar";
 import KarmaBadge from "../components/KarmaBadge";
 import GifPicker from "../components/GifPicker";
 import { getUserAvatars } from "@/functions/getUserAvatars";
+import { deletePostComment } from "@/functions/deletePostComment";
 import { format } from "date-fns";
 
 export default function PostPage() {
@@ -178,7 +179,7 @@ export default function PostPage() {
   const handleDeleteComment = async (commentId) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
     try {
-      await base44.entities.PostComment.delete(commentId);
+      await deletePostComment({ commentId });
       await loadCommentsAndReactions();
     } catch (error) {
       console.error("Error deleting comment:", error);
