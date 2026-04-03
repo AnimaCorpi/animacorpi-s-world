@@ -94,38 +94,20 @@ export default function Layout({ children, currentPageName }) {
     try {
       const isAuthenticated = await base44.auth.isAuthenticated();
       if (isAuthenticated) {
-        try {
-          const userData = await base44.auth.me();
-          setUser(userData);
-          if (userData?.theme_preferences) {
-            setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
-          }
-        } catch (meError) {
-          // isAuthenticated() returned true but me() failed — likely a transient error.
-          // Retry once after 1 second before giving up.
-          console.warn("Could not fetch user details, retrying...", meError.message);
-          setTimeout(async () => {
-            try {
-              const userData = await base44.auth.me();
-              setUser(userData);
-              if (userData?.theme_preferences) {
-                setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
-              }
-            } catch {
-              setUser(null);
-            }
-          }, 1000);
+        const userData = await base44.auth.me();
+        setUser(userData);
+        if (userData?.theme_preferences) {
+          setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
         }
       } else {
         setUser(null);
       }
     } catch (error) {
-      console.error("Error checking auth status:", error.message);
       setUser(null);
     }
     loadSiteSettings();
   };
-  
+
   const loadNotificationCount = async () => {
     if (!user) return;
     try {
@@ -154,15 +136,9 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const handleLogout = async () => {
-    await base44.auth.logout('/');
-  };
-  
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(createPageUrl(`Search?q=${searchQuery.trim()}`));
-    }
+  const handleLogout = () => {
+    setUser(null);
+    base44.auth.logout('/');
   };
 
   const isAdmin = user?.role === 'admin';
