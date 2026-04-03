@@ -110,7 +110,7 @@ export default function UserManager() {
             <Users className="w-5 h-5" />
             <span>User Management</span>
           </h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Total users: {users.length} | 
             Underage: {users.filter(u => isUnderage(u.birthdate)).length} | 
             Adults: {users.filter(u => !isUnderage(u.birthdate) && u.birthdate).length}
@@ -141,8 +141,8 @@ export default function UserManager() {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                      <span className="text-purple-600 font-semibold text-lg">
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center">
+                      <span className="text-purple-600 dark:text-purple-300 font-semibold text-lg">
                         {user.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -164,13 +164,13 @@ export default function UserManager() {
                       )}
                     </div>
                     
-                    <div className="text-sm text-gray-600 space-y-1">
+                    <div className="text-sm text-muted-foreground space-y-1">
                       <p><span className="font-medium">Email:</span> {user.email}</p>
                       <p><span className="font-medium">Full Name:</span> {user.full_name || "Not provided"}</p>
                       {user.birthdate && (
                         <p>
                           <span className="font-medium">Age:</span> {calculateAge(user.birthdate)} years old
-                          <span className="text-gray-500 ml-2">
+                          <span className="text-muted-foreground ml-2">
                             (Born: {format(new Date(user.birthdate), "MMM d, yyyy")})
                           </span>
                         </p>
@@ -184,7 +184,7 @@ export default function UserManager() {
                     
                     {user.notification_preferences && (
                       <div className="mt-2">
-                        <p className="text-sm font-medium text-gray-700">Notification Preferences:</p>
+                        <p className="text-sm font-medium text-foreground">Notification Preferences:</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {user.notification_preferences.email_notifications && (
                             <Badge variant="outline" className="text-xs">Email</Badge>

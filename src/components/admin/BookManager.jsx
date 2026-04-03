@@ -372,7 +372,7 @@ export default function BookManager({ onStatsUpdate }) {
                          </Badge>
                        )}
                     </div>
-                    <p className="text-gray-600 line-clamp-2">{book.description}</p>
+                    <p className="text-muted-foreground line-clamp-2">{book.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -474,7 +474,7 @@ export default function BookManager({ onStatsUpdate }) {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
-                                  className="flex items-center justify-between p-3 bg-gray-50 rounded border"
+                                  className="flex items-center justify-between p-3 bg-muted/50 rounded border border-border"
                                 >
                                   <div className="flex items-center space-x-3 flex-1">
                                     <div {...provided.dragHandleProps}>
@@ -482,7 +482,7 @@ export default function BookManager({ onStatsUpdate }) {
                                     </div>
                                     <div>
                                       <div className="flex items-center space-x-2">
-                                        <span className="text-sm font-medium text-gray-500">Ch. {index + 1}</span>
+                                        <span className="text-sm font-medium text-muted-foreground">Ch. {index + 1}</span>
                                         <span className="font-semibold">{chapter.title}</span>
                                         {!chapter.published && <Badge variant="outline" className="text-xs">Draft</Badge>}
                                       </div>
@@ -507,7 +507,7 @@ export default function BookManager({ onStatsUpdate }) {
                   </DragDropContext>
 
                   {chapters.length === 0 && !isEditingChapter && (
-                    <p className="text-center text-gray-500 py-4">No chapters yet. Add your first chapter!</p>
+                    <p className="text-center text-muted-foreground py-4">No chapters yet. Add your first chapter!</p>
                   )}
                 </div>
               )}

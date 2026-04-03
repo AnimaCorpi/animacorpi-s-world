@@ -265,7 +265,7 @@ export default function PostManager({ onStatsUpdate }) {
                 value={formData.publish_at}
                 onChange={(e) => setFormData(prev => ({ ...prev, publish_at: e.target.value }))}
               />
-              <p className="text-xs text-gray-500 mt-1">Leave blank to publish immediately</p>
+              <p className="text-xs text-muted-foreground mt-1">Leave blank to publish immediately</p>
           </div>
 
           <div className="flex gap-3">
@@ -357,10 +357,10 @@ export default function PostManager({ onStatsUpdate }) {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2 break-words">
+                  <p className="text-sm text-muted-foreground mb-2 break-words">
                     {post.excerpt || post.content.substring(0, 100).replace(/<[^>]*>/g, '') + "..."}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Created: {format(new Date(post.created_date), "MMM d, yyyy")}
                   </p>
                 </div>

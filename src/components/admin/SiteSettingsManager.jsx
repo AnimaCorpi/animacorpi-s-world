@@ -146,7 +146,7 @@ export default function SiteSettingsManager() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">Site Settings</h3>
-        <p className="text-sm text-gray-600">Customize all aspects of your site</p>
+        <p className="text-sm text-muted-foreground">Customize all aspects of your site</p>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
@@ -402,12 +402,12 @@ export default function SiteSettingsManager() {
                     rows={15}
                     className="font-mono text-sm"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    You can use # for headings, ## for subheadings, and basic HTML formatting
+                  <p className="text-xs text-muted-foreground mt-1">
+                   You can use # for headings, ## for subheadings, and basic HTML formatting
                   </p>
-                </div>
-                
-                <Button 
+                  </div>
+
+                  <Button 
                   onClick={() => handleSave('terms')}
                   disabled={isLoading}
                   className="w-full"
@@ -436,12 +436,12 @@ export default function SiteSettingsManager() {
                     rows={15}
                     className="font-mono text-sm"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    You can use # for headings, ## for subheadings, and basic HTML formatting
+                  <p className="text-xs text-muted-foreground mt-1">
+                   You can use # for headings, ## for subheadings, and basic HTML formatting
                   </p>
-                </div>
-                
-                <Button 
+                  </div>
+
+                  <Button 
                   onClick={() => handleSave('guidelines')}
                   disabled={isLoading}
                   className="w-full"

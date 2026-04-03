@@ -176,8 +176,8 @@ export default function BackgroundManager() {
                   />
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                If no thumbnail is provided, the main image will be used
+              <p className="text-xs text-muted-foreground mt-1">
+                 If no thumbnail is provided, the main image will be used
               </p>
             </div>
 
@@ -210,7 +210,7 @@ export default function BackgroundManager() {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold">Background Images</h3>
-          <p className="text-sm text-gray-600">Manage background images that users can choose from</p>
+          <p className="text-sm text-muted-foreground">Manage background images that users can choose from</p>
         </div>
         <Button onClick={handleNew}>
           <Plus className="w-4 h-4 mr-2" />
@@ -253,8 +253,8 @@ export default function BackgroundManager() {
       {backgrounds.length === 0 && (
         <div className="text-center py-12">
           <ImageIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No Background Images</h3>
-          <p className="text-gray-500 mb-4">Add some beautiful backgrounds for users to choose from</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Background Images</h3>
+          <p className="text-muted-foreground mb-4">Add some beautiful backgrounds for users to choose from</p>
           <Button onClick={handleNew}>
             <Plus className="w-4 h-4 mr-2" />
             Add First Background

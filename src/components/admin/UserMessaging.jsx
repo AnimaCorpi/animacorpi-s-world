@@ -180,7 +180,7 @@ export default function UserMessaging() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">Messaging & Announcements</h3>
-        <p className="text-sm text-gray-600">Send messages to users or post site-wide announcements</p>
+        <p className="text-sm text-muted-foreground">Send messages to users or post site-wide announcements</p>
       </div>
 
       {statusMsg && (
@@ -250,13 +250,13 @@ export default function UserMessaging() {
                   <Label htmlFor="send-email" className="text-sm">Send as email (to users with email notifications enabled)</Label>
                 </div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg text-sm">
+              <div className="bg-muted/50 border border-border p-4 rounded-lg text-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium">Recipients:</span>
                   <Badge>{recipientCount} users ({filterType} filter)</Badge>
                 </div>
                 <div className="mb-1"><span className="font-medium">Subject:</span> {messageForm.subject || "No subject"}</div>
-                <div className="mt-1 p-2 bg-white border rounded text-gray-600 max-h-20 overflow-hidden">
+                <div className="mt-1 p-2 bg-background border border-border rounded text-muted-foreground max-h-20 overflow-hidden">
                   {messageForm.message ? messageForm.message.substring(0, 150) + (messageForm.message.length > 150 ? '...' : '') : "No message content"}
                 </div>
               </div>
@@ -285,7 +285,7 @@ export default function UserMessaging() {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="px-3 py-1 border border-gray-300 rounded text-sm"
+                    className="px-3 py-1 border border-input rounded text-sm bg-background text-foreground"
                   >
                     <option value="all">All Users</option>
                     <option value="adults">Adults (18+)</option>
@@ -301,7 +301,7 @@ export default function UserMessaging() {
             <CardContent>
               <div className="space-y-3">
                 {currentlyVisibleUsers.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={user.id} className="flex items-center justify-between p-3 border border-border rounded-lg bg-card">
                     <div className="flex items-center space-x-3">
                       <input type="checkbox"
                         checked={selectedUserIds.includes(user.id)}
@@ -318,7 +318,7 @@ export default function UserMessaging() {
                             <Badge variant="secondary" className="text-xs">No Email</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">{user.full_name}</p>
+                        <p className="text-sm text-muted-foreground">{user.full_name}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">

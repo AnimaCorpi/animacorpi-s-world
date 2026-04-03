@@ -174,7 +174,7 @@ export default function ReportManager() {
             return (
                 <div>
                     <p className="font-semibold">Thread: "{content.data.title}"</p>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                         {content.data.content.substring(0, 100).replace(/<[^>]*>/g, '')}...
                     </p>
                 </div>
@@ -183,7 +183,7 @@ export default function ReportManager() {
             return (
                 <div>
                     <p className="font-semibold">Comment</p>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                         {content.data.content.substring(0, 100)}...
                     </p>
                 </div>
@@ -215,7 +215,7 @@ export default function ReportManager() {
                         <Flag className="w-5 h-5" />
                         <span>Content Reports</span>
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                         Review and manage user-submitted reports for threads and comments.
                     </p>
                 </div>
@@ -237,7 +237,7 @@ export default function ReportManager() {
                     const isContentDeleted = content?.deleted;
                     
                     return (
-                        <Card key={report.id} className={report.status === 'resolved' ? 'bg-gray-50 opacity-75' : ''}>
+                        <Card key={report.id} className={report.status === 'resolved' ? 'bg-muted/50 opacity-75' : ''}>
                             <CardContent className="p-4">
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1 space-y-3">
@@ -274,7 +274,7 @@ export default function ReportManager() {
                                             
                                             <div>
                                                 <span className="font-semibold text-sm">Content preview:</span>
-                                                <div className="mt-1 p-3 bg-gray-100 rounded text-sm border-l-4 border-gray-300">
+                                                <div className="mt-1 p-3 bg-muted rounded text-sm border-l-4 border-border">
                                                     {renderContentPreview(report)}
                                                 </div>
                                             </div>
@@ -347,12 +347,12 @@ export default function ReportManager() {
                         <Flag className="w-5 h-5" />
                         <span>Comment Reports</span>
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                         Review and manage user-submitted reports for comments.
                     </p>
                 </div>
             </div>
-            <p className="text-sm text-gray-600">Comment reports will be displayed here.</p>
+            <p className="text-sm text-muted-foreground">Comment reports will be displayed here.</p>
             </div>
           </TabsContent>
 
