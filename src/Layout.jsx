@@ -141,6 +141,13 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.logout('/');
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(createPageUrl(`Search?q=${searchQuery.trim()}`));
+    }
+  };
+
   const isAdmin = user?.role === 'admin';
 
   const handleMenuToggle = () => setMenuOpen(prev => !prev);
