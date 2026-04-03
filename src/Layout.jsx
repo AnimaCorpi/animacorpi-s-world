@@ -155,9 +155,7 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = async () => {
-    await base44.auth.logout();
-    setUser(null);
-    window.location.href = '/';
+    await base44.auth.logout('/');
   };
   
   const handleSearch = (e) => {
