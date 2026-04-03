@@ -111,7 +111,7 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = () => {
-    logout(true);
+    logout();
   };
 
   const handleSearch = (e) => {
