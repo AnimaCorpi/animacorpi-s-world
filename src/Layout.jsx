@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { UserContext } from "./components/UserContext";
+import { useAuth } from "@/lib/AuthContext";
 import { useRef } from "react";
 import BottomTabBar from "./components/BottomTabBar";
 import ThemeToggle from "./components/ThemeToggle";
@@ -30,7 +31,7 @@ const publicPages = ["Home", "Thoughts", "Artwork", "Photography", "Stories", "B
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [siteName, setSiteName] = useState("Anamaria's World");
   const [footerSettings, setFooterSettings] = useState({
     footer_text: "© 2024 Anamaria's World. A space for creativity and connection.",
@@ -69,44 +70,17 @@ export default function Layout({ children, currentPageName }) {
     return () => window.removeEventListener('wallpaper-override', handler);
   }, []);
 
-  // No longer force redirect - users can browse as guests
-
+  // Load site settings once on mount
   useEffect(() => {
-    loadUserAndSettings();
-  }, [currentPageName]);
-
-  useEffect(() => {
-    if (!user) return;
-    loadNotificationCount();
-    // Real-time: subscribe to new notifications for this user
-    const unsubscribe = base44.entities.Notification.subscribe((event) => {
-      if (event.type === 'create' && event.data?.user_id === user.id && !event.data?.read) {
-        setNotificationCount(c => c + 1);
-      } else if ((event.type === 'update' || event.type === 'delete') && event.data?.user_id === user.id) {
-        // Re-fetch on update/delete to stay accurate
-        loadNotificationCount();
-      }
-    });
-    return () => unsubscribe();
-  }, [user]);
-
-  const loadUserAndSettings = async () => {
-    try {
-      const isAuthenticated = await base44.auth.isAuthenticated();
-      if (isAuthenticated) {
-        const userData = await base44.auth.me();
-        setUser(userData);
-        if (userData?.theme_preferences) {
-          setThemePrefs(prev => ({ ...prev, ...userData.theme_preferences }));
-        }
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      setUser(null);
-    }
     loadSiteSettings();
-  };
+  }, []);
+
+  // Apply user theme preferences whenever user changes
+  useEffect(() => {
+    if (user?.theme_preferences) {
+      setThemePrefs(prev => ({ ...prev, ...user.theme_preferences }));
+    }
+  }, [user]);
 
   const loadNotificationCount = async () => {
     if (!user) return;
@@ -137,8 +111,7 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = () => {
-    setUser(null);
-    base44.auth.logout('/');
+    logout(true);
   };
 
   const handleSearch = (e) => {
