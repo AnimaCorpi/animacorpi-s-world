@@ -127,9 +127,10 @@ export default function PostManager({ onStatsUpdate }) {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSave = (publishedState) => {
     const postData = {
       ...formData,
+      published: publishedState,
       tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
       publish_at: formData.publish_at ? new Date(formData.publish_at).toISOString() : null
     };
@@ -256,8 +257,7 @@ export default function PostManager({ onStatsUpdate }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            <div>
+          <div>
               <Label htmlFor="publish_at">Publish At (optional)</Label>
               <Input
                 id="publish_at"
@@ -266,23 +266,27 @@ export default function PostManager({ onStatsUpdate }) {
                 onChange={(e) => setFormData(prev => ({ ...prev, publish_at: e.target.value }))}
               />
               <p className="text-xs text-gray-500 mt-1">Leave blank to publish immediately</p>
-            </div>
-            <div className="flex items-center space-x-2 pt-6">
-              <input
-                type="checkbox"
-                id="published"
-                checked={formData.published}
-                onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
-                className="w-4 h-4"
-              />
-              <Label htmlFor="published">Published</Label>
-            </div>
           </div>
 
-          <Button onClick={handleSave} disabled={saveMutation.isPending || !formData.title || !formData.content}>
-            <Save className="w-4 h-4 mr-2" />
-            {saveMutation.isPending ? "Saving..." : "Save Post"}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => handleSave(false)}
+              disabled={saveMutation.isPending || !formData.title || !formData.content}
+              className="flex-1 border-gray-400 text-gray-700 hover:bg-gray-100"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saveMutation.isPending ? "Saving..." : "Save as Draft"}
+            </Button>
+            <Button
+              onClick={() => handleSave(true)}
+              disabled={saveMutation.isPending || !formData.title || !formData.content}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saveMutation.isPending ? "Publishing..." : "Publish Now"}
+            </Button>
+          </div>
         </div>
       </div>
     );
