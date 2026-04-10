@@ -22,6 +22,26 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const unsubscribe = base44.entities.Post.subscribe((event) => {
+      const now = new Date();
+      if (event.type === 'create' && event.data?.published && (!event.data.publish_at || new Date(event.data.publish_at) <= now)) {
+        setPosts(prev => [event.data, ...prev]);
+      } else if (event.type === 'update') {
+        setPosts(prev => {
+          const exists = prev.find(p => p.id === event.id);
+          if (event.data?.published && (!event.data.publish_at || new Date(event.data.publish_at) <= now)) {
+            return exists ? prev.map(p => p.id === event.id ? event.data : p) : [event.data, ...prev];
+          }
+          return prev.filter(p => p.id !== event.id);
+        });
+      } else if (event.type === 'delete') {
+        setPosts(prev => prev.filter(p => p.id !== event.id));
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     filterPosts();
   }, [posts, selectedCategory]);
 

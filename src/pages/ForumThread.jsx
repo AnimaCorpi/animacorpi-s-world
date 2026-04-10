@@ -50,6 +50,18 @@ export default function ForumThreadPage() {
     const threadId = urlParams.get("id");
     if (threadId) {
       loadThreadData(threadId);
+
+      const unsubscribe = base44.entities.ForumComment.subscribe((event) => {
+        if (event.data?.thread_id !== threadId && event.type !== 'delete') return;
+        if (event.type === 'create' && event.data?.thread_id === threadId) {
+          setComments(prev => [...prev, event.data]);
+        } else if (event.type === 'update') {
+          setComments(prev => prev.map(c => c.id === event.id ? event.data : c));
+        } else if (event.type === 'delete') {
+          setComments(prev => prev.filter(c => c.id !== event.id));
+        }
+      });
+      return unsubscribe;
     } else {
       window.location.href = createPageUrl("Forum");
     }

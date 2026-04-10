@@ -38,14 +38,26 @@ export default function PostPage() {
     }
   }, [window.location.search]);
 
-  // Auto-refresh comments and reactions every 10 seconds when user is on the page
+  // Real-time subscriptions for comments and reactions
   useEffect(() => {
-    if (post) {
-      const interval = setInterval(() => {
-        loadCommentsAndReactions();
-      }, 10000);
-      return () => clearInterval(interval);
-    }
+    if (!post) return;
+    const unsubComment = base44.entities.PostComment.subscribe((event) => {
+      if (event.type === 'create' && event.data?.post_id === post.id) {
+        setComments(prev => [...prev, event.data]);
+      } else if (event.type === 'update' && event.data?.post_id === post.id) {
+        setComments(prev => prev.map(c => c.id === event.id ? event.data : c));
+      } else if (event.type === 'delete') {
+        setComments(prev => prev.filter(c => c.id !== event.id));
+      }
+    });
+    const unsubReaction = base44.entities.PostReaction.subscribe((event) => {
+      if (event.type === 'create' && event.data?.post_id === post.id) {
+        setReactions(prev => [...prev, event.data]);
+      } else if (event.type === 'delete') {
+        setReactions(prev => prev.filter(r => r.id !== event.id));
+      }
+    });
+    return () => { unsubComment(); unsubReaction(); };
   }, [post]);
 
   const loadPostData = async (postId) => {

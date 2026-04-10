@@ -45,6 +45,28 @@ const AnimatedPage = ({ children }) => (
   </motion.div>
 );
 
+const AdminRoute = ({ children }) => {
+  const { user, isLoadingAuth } = useAuth();
+  if (isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-purple-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  if (!user || user.role !== 'admin') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-foreground mb-2">Access Denied</h2>
+          <p className="text-gray-500 dark:text-muted-foreground">You don't have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+};
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
   const location = useLocation();
@@ -74,12 +96,16 @@ const AuthenticatedApp = () => {
     }>
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <LayoutWrapper currentPageName={mainPageKey}>
-            <AnimatedPage><MainPage /></AnimatedPage>
-          </LayoutWrapper>
-        } />
-        {Object.entries(Pages).map(([path, Page]) => (
+        {(() => { const AdminPage = Pages['Admin']; return AdminPage ? (
+          <Route path="/Admin" element={
+            <LayoutWrapper currentPageName="Admin">
+              <AdminRoute>
+                <AnimatedPage><AdminPage /></AnimatedPage>
+              </AdminRoute>
+            </LayoutWrapper>
+          } />
+        ) : null; })()}
+        {Object.entries(Pages).filter(([path]) => path !== 'Admin').map(([path, Page]) => (
           <Route
             key={path}
             path={`/${path}`}

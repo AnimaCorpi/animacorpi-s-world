@@ -30,6 +30,23 @@ export default function Notifications() {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    let userId;
+    base44.auth.me().then(u => {
+      userId = u?.id;
+    });
+    const unsubscribe = base44.entities.Notification.subscribe((event) => {
+      if (event.type === 'create' && event.data?.user_id === userId) {
+        setNotifications(prev => [event.data, ...prev]);
+      } else if (event.type === 'update') {
+        setNotifications(prev => prev.map(n => n.id === event.id ? event.data : n));
+      } else if (event.type === 'delete') {
+        setNotifications(prev => prev.filter(n => n.id !== event.id));
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   const markAsRead = async (notificationId) => {
     await base44.entities.Notification.update(notificationId, { read: true });
     setNotifications(prev =>
