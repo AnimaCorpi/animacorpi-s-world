@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+const Home = React.lazy(() => import('@/pages/Home'));
 const ChapterList = React.lazy(() => import('@/pages/ChapterList'));
 const UserProfile = React.lazy(() => import('@/pages/UserProfile'));
 const ProfileSettings = React.lazy(() => import('@/pages/ProfileSettings'));
@@ -105,6 +106,14 @@ const AuthenticatedApp = () => {
             </LayoutWrapper>
           } />
         ) : null; })()}
+        <Route
+          path="/"
+          element={
+            <LayoutWrapper currentPageName="Home">
+              <AnimatedPage><Home /></AnimatedPage>
+            </LayoutWrapper>
+          }
+        />
         {Object.entries(Pages).filter(([path]) => path !== 'Admin').map(([path, Page]) => (
           <Route
             key={path}
