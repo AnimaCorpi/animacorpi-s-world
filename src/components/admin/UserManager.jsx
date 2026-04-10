@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/entities/User";
-import { ForumThread } from "@/entities/ForumThread";
-import { ForumComment } from "@/entities/ForumComment";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +23,7 @@ export default function UserManager() {
 
   const loadUsers = async () => {
     try {
-      const userData = await User.list("-created_date");
+      const userData = await base44.entities.User.list("-created_date");
       setUsers(userData);
     } catch (error) {
       console.error("Error loading users:", error);
@@ -71,19 +69,19 @@ export default function UserManager() {
 
     try {
       // Delete user's forum threads and comments
-      const userThreads = await ForumThread.filter({ author_id: userId });
-      const userComments = await ForumComment.filter({ author_id: userId });
+      const userThreads = await base44.entities.ForumThread.filter({ author_id: userId });
+      const userComments = await base44.entities.ForumComment.filter({ author_id: userId });
       
       for (const thread of userThreads) {
-        await ForumThread.delete(thread.id);
+        await base44.entities.ForumThread.delete(thread.id);
       }
       
       for (const comment of userComments) {
-        await ForumComment.delete(comment.id);
+        await base44.entities.ForumComment.delete(comment.id);
       }
       
       // Delete the user
-      await User.delete(userId);
+      await base44.entities.User.delete(userId);
       
       loadUsers();
     } catch (error) {
