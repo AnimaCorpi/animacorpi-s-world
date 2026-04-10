@@ -362,6 +362,13 @@ export default function Reader() {
           <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto"></div>
         </header>
 
+        {currentChapter.author_notes && (
+          <div className="mb-8 p-6 border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded">
+            <h3 className="font-bold text-lg text-purple-900 dark:text-purple-300 mb-2">Author's Notes</h3>
+            <p className="text-purple-800 dark:text-purple-200 whitespace-pre-wrap">{currentChapter.author_notes}</p>
+          </div>
+        )}
+
         <div 
           className={`prose prose-lg max-w-none prose-headings:font-bold prose-p:leading-relaxed prose-a:text-purple-600 prose-strong:font-bold ${
             readingMode === 'light'
@@ -377,12 +384,6 @@ export default function Reader() {
           dangerouslySetInnerHTML={{ __html: currentChapter.content }}
         />
 
-        {currentChapter.author_notes && (
-          <div className="mt-12 p-6 border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded">
-            <h3 className="font-bold text-lg text-purple-900 dark:text-purple-300 mb-2">Author's Notes</h3>
-            <p className="text-purple-800 dark:text-purple-200 whitespace-pre-wrap">{currentChapter.author_notes}</p>
-          </div>
-        )}
 
         <div className="mt-16 pt-8 border-t border-border">
           <div className="flex items-center mb-6">
