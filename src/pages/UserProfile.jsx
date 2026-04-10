@@ -28,6 +28,7 @@ import KarmaBadge from "../components/KarmaBadge";
 import FollowersListModal from "../components/FollowersListModal";
 import ReportUserModal from "../components/ReportUserModal";
 import { format } from "date-fns";
+import { useAuth } from "@/lib/AuthContext";
 
 function safeFormat(date, fmt) {
   if (!date) return "";
@@ -47,6 +48,7 @@ function getAge(birthdate) {
 }
 
 export default function UserProfile() {
+  const { user: authUser } = useAuth();
   const [profileUser, setProfileUser] = useState(null);
   const [viewer, setViewer] = useState(null);
   const [threads, setThreads] = useState([]);
@@ -69,17 +71,14 @@ export default function UserProfile() {
     const userId = params.get("id");
     if (!userId) return;
     loadData(userId);
-  }, [location.search]);
+  }, [location.search, authUser?.id]);
 
   const loadData = async (userId) => {
     setIsLoading(true);
     try {
-      const isAuth = await base44.auth.isAuthenticated();
-      let viewerData = null;
-      if (isAuth) {
-        viewerData = await base44.auth.me();
-        setViewer(viewerData);
-      }
+      // Use authUser from context so viewer always reflects the current authenticated user
+      let viewerData = authUser || null;
+      setViewer(viewerData);
 
       const profileRes = await getUserProfile({ userId });
       const profileData = profileRes.data;

@@ -17,6 +17,17 @@ export const AuthProvider = ({ children }) => {
     checkAppState();
   }, []);
 
+  // Listen for platform "act-as-user" token changes
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === 'auth-user-changed' || event.data?.type === 'act-as-user') {
+        checkUserAuth();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const checkAppState = async () => {
     try {
       setIsLoadingPublicSettings(true);
@@ -110,6 +121,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    await checkUserAuth();
+  };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -131,7 +146,8 @@ export const AuthProvider = ({ children }) => {
       appPublicSettings,
       logout,
       navigateToLogin,
-      checkAppState
+      checkAppState,
+      refreshUser
     }}>
       {children}
     </AuthContext.Provider>
