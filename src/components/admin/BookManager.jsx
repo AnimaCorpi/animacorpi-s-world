@@ -48,7 +48,8 @@ export default function BookManager({ onStatsUpdate }) {
     content: '',
     author_notes: '',
     chapter_number: 1,
-    published: true
+    published: true,
+    publish_at: ''
   });
   const [uploadingCover, setUploadingCover] = useState(false);
   const [alert, setAlert] = useState(null);
@@ -96,12 +97,16 @@ export default function BookManager({ onStatsUpdate }) {
   const handleChapterSubmit = async (e) => {
     e.preventDefault();
     try {
+      const chapterData = {
+        ...chapterForm,
+        publish_at: chapterForm.publish_at ? new Date(chapterForm.publish_at).toISOString() : null
+      };
       if (editingChapter) {
-        await base44.entities.Chapter.update(editingChapter.id, chapterForm);
+        await base44.entities.Chapter.update(editingChapter.id, chapterData);
         showAlert("Chapter updated successfully!", "success");
       } else {
         await base44.entities.Chapter.create({
-          ...chapterForm,
+          ...chapterData,
           book_id: expandedBook
         });
         showAlert("Chapter created successfully!", "success");
@@ -173,7 +178,8 @@ export default function BookManager({ onStatsUpdate }) {
       content: chapter.content,
       author_notes: chapter.author_notes || '',
       chapter_number: chapter.chapter_number,
-      published: chapter.published
+      published: chapter.published,
+      publish_at: chapter.publish_at ? chapter.publish_at.substring(0, 16) : ''
     });
     setIsEditingChapter(true);
   };
@@ -198,7 +204,8 @@ export default function BookManager({ onStatsUpdate }) {
       content: '',
       author_notes: '',
       chapter_number: chapters.length + 1,
-      published: true
+      published: true,
+      publish_at: ''
     });
     setEditingChapter(null);
     setIsEditingChapter(false);
@@ -444,21 +451,38 @@ export default function BookManager({ onStatsUpdate }) {
                           </div>
 
                           <div className="flex items-center space-x-2">
-                            <Switch
-                              checked={chapterForm.published}
-                              onCheckedChange={(checked) => setChapterForm({ ...chapterForm, published: checked })}
-                            />
-                            <Label>Published</Label>
-                          </div>
+                             <Switch
+                               checked={chapterForm.published}
+                               onCheckedChange={(checked) => setChapterForm({ ...chapterForm, published: checked })}
+                             />
+                             <Label>Published</Label>
+                           </div>
 
-                          <div className="flex gap-2">
-                            <Button type="submit">
-                              {editingChapter ? 'Update Chapter' : 'Create Chapter'}
-                            </Button>
-                            <Button type="button" variant="outline" onClick={resetChapterForm}>
-                              Cancel
-                            </Button>
-                          </div>
+                           <div>
+                             <Label>Schedule Publish At (optional)</Label>
+                             <input
+                               type="datetime-local"
+                               value={chapterForm.publish_at}
+                               onChange={(e) => setChapterForm({ ...chapterForm, publish_at: e.target.value })}
+                               className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm"
+                             />
+                             <p className="text-xs text-muted-foreground mt-1">Leave blank to publish immediately</p>
+                           </div>
+
+                           <div className="flex gap-2">
+                             <Button type="button" variant="outline"
+                               onClick={() => { setChapterForm(p => ({...p, published: false})); }}
+                               className="text-gray-900 dark:text-gray-100 font-semibold border-gray-400"
+                             >
+                               Save as Draft
+                             </Button>
+                             <Button type="submit">
+                               {editingChapter ? 'Update Chapter' : 'Publish Chapter'}
+                             </Button>
+                             <Button type="button" variant="outline" onClick={resetChapterForm}>
+                               Cancel
+                             </Button>
+                           </div>
                         </form>
                       </CardContent>
                     </Card>

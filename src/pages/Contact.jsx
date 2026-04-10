@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/entities/User";
-import { SiteSettings } from "@/entities/SiteSettings";
-import { SendEmail } from "@/integrations/Core";
+import { base44 } from "@/api/base44Client";
+import { submitContact } from "@/functions/submitContact";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,25 +28,23 @@ export default function Contact() {
 
   const loadData = async () => {
     try {
-      const [settingsData] = await Promise.all([
-        SiteSettings.filter({ page: "contact" })
-      ]);
-      
+      const settingsData = await base44.entities.SiteSettings.filter({ page: "contact" });
       setSettings(settingsData[0] || {
         tagline: "Let's Connect",
         message: "I'd love to hear from you. Send me a message anytime!"
       });
 
-      try {
-        const userData = await User.me();
-        setUser(userData);
-        setFormData(prev => ({
-          ...prev,
-          name: userData.full_name || `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-          email: userData.email || userData.notification_email || ""
-        }));
-      } catch (error) {
-        setUser(null);
+      const isAuth = await base44.auth.isAuthenticated();
+      if (isAuth) {
+        try {
+          const userData = await base44.auth.me();
+          setUser(userData);
+          setFormData(prev => ({
+            ...prev,
+            name: userData.full_name || "",
+            email: userData.notification_email || userData.email || ""
+          }));
+        } catch {}
       }
     } catch (error) {
       console.error("Error loading contact data:", error);
@@ -74,36 +71,9 @@ export default function Contact() {
     }
 
     try {
-      // Get all admin users to send the contact message to
-      const admins = await User.filter({ role: 'admin' });
-      
-      if (admins.length === 0) {
-        setError("Unable to send message. Please try again later.");
-        setIsSending(false);
-        return;
-      }
-
-      // Send email to all admins
-      for (const admin of admins) {
-        await SendEmail({
-          to: admin.email,
-          subject: `Contact Form Message from ${formData.name}`,
-          body: `New contact form submission:
-
-Name: ${formData.name}
-Email: ${formData.email}
-
-Message:
-${formData.message}
-
----
-Sent from the contact form on ${window.location.origin}`
-        });
-      }
-
+      await submitContact({ name: formData.name, email: formData.email, message: formData.message });
       setMessage("Thank you for your message! I'll get back to you within 36 hours.");
       setFormData(prev => ({ ...prev, message: "" }));
-      
     } catch (error) {
       console.error("Error sending message:", error);
       setError("Failed to send message. Please try again.");

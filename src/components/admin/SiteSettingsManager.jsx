@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { SiteSettings } from "@/entities/SiteSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -393,19 +395,15 @@ export default function SiteSettingsManager() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="terms-content">Terms Content</Label>
-                  <Textarea
-                    id="terms-content"
-                    value={settings.terms.content}
-                    onChange={(e) => updatePageSetting('terms', 'content', e.target.value)}
-                    placeholder="Enter your terms of service content (supports basic HTML and markdown)"
-                    rows={15}
-                    className="font-mono text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                   You can use # for headings, ## for subheadings, and basic HTML formatting
-                  </p>
-                  </div>
+                 <Label htmlFor="terms-content">Terms Content</Label>
+                 <div style={{ minHeight: '300px', marginBottom: '50px' }}>
+                   <ReactQuill
+                     value={settings.terms.content}
+                     onChange={(val) => updatePageSetting('terms', 'content', val)}
+                     style={{ height: '300px' }}
+                   />
+                 </div>
+                 </div>
 
                   <Button 
                   onClick={() => handleSave('terms')}
@@ -427,19 +425,15 @@ export default function SiteSettingsManager() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="guidelines-content">Guidelines Content</Label>
-                  <Textarea
-                    id="guidelines-content"
-                    value={settings.guidelines.content}
-                    onChange={(e) => updatePageSetting('guidelines', 'content', e.target.value)}
-                    placeholder="Enter your community guidelines content (supports basic HTML and markdown)"
-                    rows={15}
-                    className="font-mono text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                   You can use # for headings, ## for subheadings, and basic HTML formatting
-                  </p>
-                  </div>
+                 <Label htmlFor="guidelines-content">Guidelines Content</Label>
+                 <div style={{ minHeight: '300px', marginBottom: '50px' }}>
+                   <ReactQuill
+                     value={settings.guidelines.content}
+                     onChange={(val) => updatePageSetting('guidelines', 'content', val)}
+                     style={{ height: '300px' }}
+                   />
+                 </div>
+                 </div>
 
                   <Button 
                   onClick={() => handleSave('guidelines')}

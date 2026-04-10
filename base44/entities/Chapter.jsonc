@@ -26,6 +26,11 @@
       "type": "boolean",
       "default": true,
       "description": "Whether chapter is published"
+    },
+    "publish_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled date and time for publishing"
     }
   },
   "required": [

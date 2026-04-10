@@ -273,7 +273,7 @@ export default function PostManager({ onStatsUpdate }) {
               variant="outline"
               onClick={() => handleSave(false)}
               disabled={saveMutation.isPending || !formData.title || !formData.content}
-              className="flex-1 border-gray-400 text-gray-700 hover:bg-gray-100"
+              className="flex-1 border-gray-400 text-gray-900 dark:text-gray-100 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Save className="w-4 h-4 mr-2" />
               {saveMutation.isPending ? "Saving..." : "Save as Draft"}
