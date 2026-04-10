@@ -34,18 +34,7 @@ export default function Contact() {
         message: "I'd love to hear from you. Send me a message anytime!"
       });
 
-      const isAuth = await base44.auth.isAuthenticated();
-      if (isAuth) {
-        try {
-          const userData = await base44.auth.me();
-          setUser(userData);
-          setFormData(prev => ({
-            ...prev,
-            name: userData.full_name || "",
-            email: userData.notification_email || userData.email || ""
-          }));
-        } catch {}
-      }
+
     } catch (error) {
       console.error("Error loading contact data:", error);
     }
