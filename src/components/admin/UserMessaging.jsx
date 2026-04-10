@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Users, Mail, MessageSquare, Check, Plus, Trash2, Eye, EyeOff, Megaphone } from "lucide-react";
+import { Send, Users, Mail, MessageSquare, Check, Plus, Trash2, Eye, EyeOff, Megaphone, Search } from "lucide-react";
 import { format } from "date-fns";
 
 const TYPE_STYLES = {
@@ -24,6 +24,7 @@ export default function UserMessaging() {
   const [allUsers, setAllUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [filterType, setFilterType] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [messageForm, setMessageForm] = useState({
     subject: "",
     message: "",
@@ -68,12 +69,20 @@ export default function UserMessaging() {
   };
 
   const getFilteredUsers = () => {
+    let users = allUsers;
     switch (filterType) {
-      case "adults": return allUsers.filter(u => calculateAge(u.birthdate) >= 18);
-      case "minors": return allUsers.filter(u => u.birthdate && calculateAge(u.birthdate) < 18);
-      case "selected": return allUsers.filter(u => selectedUserIds.includes(u.id));
-      default: return allUsers;
+      case "adults": users = allUsers.filter(u => calculateAge(u.birthdate) >= 18); break;
+      case "minors": users = allUsers.filter(u => u.birthdate && calculateAge(u.birthdate) < 18); break;
+      default: break;
     }
+    return users;
+  };
+
+  const getVisibleManualUsers = () => {
+    const q = searchQuery.toLowerCase();
+    return allUsers.filter(u =>
+      !q || (u.username?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q))
+    );
   };
 
   const handleUserSelection = (userId) => {
@@ -82,12 +91,17 @@ export default function UserMessaging() {
     );
   };
 
-  const handleSelectAllFiltered = () => {
-    const filteredIds = getFilteredUsers().map(u => u.id);
-    const allSelected = filteredIds.every(id => selectedUserIds.includes(id));
+  const handleSelectAllVisible = () => {
+    const visibleIds = getVisibleManualUsers().map(u => u.id);
+    const allSelected = visibleIds.every(id => selectedUserIds.includes(id));
     setSelectedUserIds(prev =>
-      allSelected ? prev.filter(id => !filteredIds.includes(id)) : [...new Set([...prev, ...filteredIds])]
+      allSelected ? prev.filter(id => !visibleIds.includes(id)) : [...new Set([...prev, ...visibleIds])]
     );
+  };
+
+  const getRecipients = () => {
+    if (filterType === "selected") return allUsers.filter(u => selectedUserIds.includes(u.id));
+    return getFilteredUsers();
   };
 
   const handleSendMessage = async () => {
@@ -95,10 +109,7 @@ export default function UserMessaging() {
       setError("Please fill in both subject and message fields.");
       return;
     }
-    const recipients = filterType === "selected"
-      ? allUsers.filter(u => selectedUserIds.includes(u.id))
-      : getFilteredUsers();
-
+    const recipients = getRecipients();
     if (recipients.length === 0) {
       setError("No users match the selected criteria.");
       return;
@@ -142,6 +153,7 @@ export default function UserMessaging() {
     setMessageForm({ subject: "", message: "", sendEmail: true, sendNotification: true });
     setSelectedUserIds([]);
     setFilterType("all");
+    setSearchQuery("");
     setIsLoading(false);
   };
 
@@ -170,11 +182,8 @@ export default function UserMessaging() {
     await loadAnnouncements();
   };
 
-  const recipientCount = filterType === "selected"
-    ? allUsers.filter(u => selectedUserIds.includes(u.id)).length
-    : getFilteredUsers().length;
-
-  const currentlyVisibleUsers = getFilteredUsers();
+  const recipients = getRecipients();
+  const visibleManualUsers = getVisibleManualUsers();
 
   return (
     <div className="space-y-6">
@@ -196,143 +205,150 @@ export default function UserMessaging() {
       )}
 
       <Tabs defaultValue="compose" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="compose">Compose</TabsTrigger>
-          <TabsTrigger value="recipients">Recipients ({recipientCount})</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="compose">Message Blast</TabsTrigger>
           <TabsTrigger value="announcements">Announcements</TabsTrigger>
         </TabsList>
 
-        {/* COMPOSE TAB */}
+        {/* MESSAGE BLAST TAB — single unified form */}
         <TabsContent value="compose">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <MessageSquare className="w-5 h-5" />
-                <span>Compose Message</span>
+                <span>Compose & Send</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="subject">Subject</Label>
-                <Input
-                  id="subject"
-                  value={messageForm.subject}
-                  onChange={(e) => setMessageForm(prev => ({ ...prev, subject: e.target.value }))}
-                  placeholder="Message subject..."
-                  maxLength={200}
-                />
+
+              {/* Message Content */}
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    value={messageForm.subject}
+                    onChange={(e) => setMessageForm(prev => ({ ...prev, subject: e.target.value }))}
+                    placeholder="Message subject..."
+                    maxLength={200}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
+                    value={messageForm.message}
+                    onChange={(e) => setMessageForm(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Your message to the community..."
+                    rows={6}
+                    className="resize-none"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="message">Message</Label>
-                <Textarea
-                  id="message"
-                  value={messageForm.message}
-                  onChange={(e) => setMessageForm(prev => ({ ...prev, message: e.target.value }))}
-                  placeholder="Your message to the community..."
-                  rows={8}
-                  className="resize-none"
-                />
+
+              {/* Recipient Selection */}
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2"><Users className="w-4 h-4" /> Recipients</Label>
+                <select
+                  value={filterType}
+                  onChange={(e) => { setFilterType(e.target.value); setSelectedUserIds([]); }}
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground"
+                >
+                  <option value="all">All Users</option>
+                  <option value="adults">Adults (18+)</option>
+                  <option value="minors">Minors (&lt;18)</option>
+                  <option value="selected">Manually Select Users</option>
+                </select>
+
+                {/* Manual user picker — only shown when "selected" */}
+                {filterType === "selected" && (
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="p-3 border-b border-border bg-muted/30 flex items-center gap-2 flex-wrap">
+                      <div className="relative flex-1 min-w-[180px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search users..."
+                          className="pl-9 h-8"
+                        />
+                      </div>
+                      <Button variant="outline" size="sm" onClick={handleSelectAllVisible}>
+                        {visibleManualUsers.every(u => selectedUserIds.includes(u.id)) ? "Deselect All" : "Select All"}
+                      </Button>
+                      {selectedUserIds.length > 0 && (
+                        <Badge className="bg-purple-100 text-purple-700">{selectedUserIds.length} selected</Badge>
+                      )}
+                    </div>
+                    <div className="max-h-60 overflow-y-auto divide-y divide-border">
+                      {visibleManualUsers.map((user) => (
+                        <label key={user.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedUserIds.includes(user.id)}
+                            onChange={() => handleUserSelection(user.id)}
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <span className="font-medium text-sm">@{user.username}</span>
+                            {user.full_name && <span className="text-xs text-muted-foreground ml-2">{user.full_name}</span>}
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {user.notification_preferences?.email_notifications !== false && (
+                              <Mail className="w-3.5 h-3.5 text-green-500" title="Email enabled" />
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {user.birthdate ? `${calculateAge(user.birthdate)}y` : "N/A"}
+                            </Badge>
+                          </div>
+                        </label>
+                      ))}
+                      {visibleManualUsers.length === 0 && (
+                        <p className="text-center py-6 text-sm text-muted-foreground">No users found.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Delivery Options */}
               <div className="space-y-3">
                 <Label>Delivery Options</Label>
                 <div className="flex items-center space-x-2">
                   <input type="checkbox" id="send-notification"
                     checked={messageForm.sendNotification}
                     onChange={(e) => setMessageForm(prev => ({ ...prev, sendNotification: e.target.checked }))}
+                    className="w-4 h-4"
                   />
-                  <Label htmlFor="send-notification" className="text-sm">Send as in-app notification</Label>
+                  <Label htmlFor="send-notification" className="text-sm font-normal">Send as in-app notification</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <input type="checkbox" id="send-email"
                     checked={messageForm.sendEmail}
                     onChange={(e) => setMessageForm(prev => ({ ...prev, sendEmail: e.target.checked }))}
+                    className="w-4 h-4"
                   />
-                  <Label htmlFor="send-email" className="text-sm">Send as email (to users with email notifications enabled)</Label>
+                  <Label htmlFor="send-email" className="text-sm font-normal">Send as email (respects user email preferences)</Label>
                 </div>
               </div>
-              <div className="bg-muted/50 border border-border p-4 rounded-lg text-sm">
-                <div className="flex items-center justify-between mb-2">
+
+              {/* Summary + Send */}
+              <div className="bg-muted/50 border border-border p-4 rounded-lg text-sm space-y-1">
+                <div className="flex items-center justify-between">
                   <span className="font-medium">Recipients:</span>
-                  <Badge>{recipientCount} users ({filterType} filter)</Badge>
+                  <Badge>{recipients.length} user{recipients.length !== 1 ? 's' : ''}</Badge>
                 </div>
-                <div className="mb-1"><span className="font-medium">Subject:</span> {messageForm.subject || "No subject"}</div>
-                <div className="mt-1 p-2 bg-background border border-border rounded text-muted-foreground max-h-20 overflow-hidden">
-                  {messageForm.message ? messageForm.message.substring(0, 150) + (messageForm.message.length > 150 ? '...' : '') : "No message content"}
-                </div>
+                <div><span className="font-medium">Subject:</span> {messageForm.subject || <span className="text-muted-foreground">No subject</span>}</div>
               </div>
+
               <Button
                 onClick={handleSendMessage}
-                disabled={isLoading || !messageForm.subject || !messageForm.message || recipientCount === 0}
+                disabled={isLoading || !messageForm.subject || !messageForm.message || recipients.length === 0}
                 className="w-full bg-purple-500 hover:bg-purple-600"
               >
                 <Send className="w-4 h-4 mr-2" />
-                {isLoading ? "Sending..." : `Send Message to ${recipientCount} Users`}
+                {isLoading ? "Sending..." : `Send to ${recipients.length} User${recipients.length !== 1 ? 's' : ''}`}
               </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* RECIPIENTS TAB */}
-        <TabsContent value="recipients">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between flex-wrap gap-2">
-                <span className="flex items-center space-x-2">
-                  <Users className="w-5 h-5" />
-                  <span>Select Recipients</span>
-                </span>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="px-3 py-1 border border-input rounded text-sm bg-background text-foreground"
-                  >
-                    <option value="all">All Users</option>
-                    <option value="adults">Adults (18+)</option>
-                    <option value="minors">Minors (&lt;18)</option>
-                    <option value="selected">Manually Selected</option>
-                  </select>
-                  <Button variant="outline" size="sm" onClick={handleSelectAllFiltered}>
-                    Select/Deselect All
-                  </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {currentlyVisibleUsers.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-3 border border-border rounded-lg bg-card">
-                    <div className="flex items-center space-x-3">
-                      <input type="checkbox"
-                        checked={selectedUserIds.includes(user.id)}
-                        onChange={() => handleUserSelection(user.id)}
-                        className="w-4 h-4"
-                      />
-                      <div>
-                        <div className="flex items-center space-x-2 flex-wrap gap-1">
-                          <span className="font-medium">@{user.username}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {user.birthdate ? `${calculateAge(user.birthdate)} yrs` : "Age N/A"}
-                          </Badge>
-                          {user.notification_preferences?.email_notifications === false && (
-                            <Badge variant="secondary" className="text-xs">No Email</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">{user.full_name}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {user.notification_preferences?.email_notifications !== false && (
-                        <Mail className="w-4 h-4 text-green-500" title="Email enabled" />
-                      )}
-                      <MessageSquare className="w-4 h-4 text-blue-500" title="In-app notifications" />
-                    </div>
-                  </div>
-                ))}
-                {currentlyVisibleUsers.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">No users match the selected criteria.</div>
-                )}
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -340,7 +356,6 @@ export default function UserMessaging() {
         {/* ANNOUNCEMENTS TAB */}
         <TabsContent value="announcements">
           <div className="space-y-6">
-            {/* Create form */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -387,7 +402,6 @@ export default function UserMessaging() {
               </CardContent>
             </Card>
 
-            {/* List */}
             {annLoading ? (
               <p className="text-muted-foreground text-sm">Loading...</p>
             ) : announcements.length === 0 ? (

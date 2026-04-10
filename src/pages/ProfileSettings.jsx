@@ -20,7 +20,6 @@ import {
   MessageSquare,
   Calendar,
   Mail,
-  Phone,
   Upload,
   Check,
   Bookmark,
@@ -41,14 +40,12 @@ export default function ProfileSettings() {
     avatar_url: "",
     notification_preferences: {
       email_notifications: true,
-      sms_notifications: false,
       forum_replies: true,
       new_stories: true,
       admin_messages: true,
       chapter_updates: true
     },
     notification_email: "",
-    phone_number: "",
     theme_preferences: {
       background_color: "#fef7ff",
       taskbar_color: "#e879f9",
@@ -85,21 +82,18 @@ export default function ProfileSettings() {
         avatar_url: userData.avatar_url || "",
         notification_preferences: userData.notification_preferences ? {
           email_notifications: userData.notification_preferences.email_notifications ?? true,
-          sms_notifications: userData.notification_preferences.sms_notifications ?? false,
           forum_replies: userData.notification_preferences.forum_replies ?? true,
           new_stories: userData.notification_preferences.new_stories ?? true,
           admin_messages: userData.notification_preferences.admin_messages ?? true,
           chapter_updates: userData.notification_preferences.chapter_updates ?? true
         } : {
           email_notifications: true,
-          sms_notifications: false,
           forum_replies: true,
           new_stories: true,
           admin_messages: true,
           chapter_updates: true
         },
         notification_email: userData.notification_email || userData.email,
-        phone_number: userData.phone_number || "",
         theme_preferences: userData.theme_preferences ? {
           background_color: userData.theme_preferences.background_color ?? "#fef7ff",
           taskbar_color: userData.theme_preferences.taskbar_color ?? "#e879f9",
@@ -197,14 +191,12 @@ export default function ProfileSettings() {
         avatar_url: profileData.avatar_url,
         notification_preferences: {
           email_notifications: profileData.notification_preferences.email_notifications,
-          sms_notifications: profileData.notification_preferences.sms_notifications,
           forum_replies: profileData.notification_preferences.forum_replies,
           new_stories: profileData.notification_preferences.new_stories,
           admin_messages: profileData.notification_preferences.admin_messages !== false,
           chapter_updates: profileData.notification_preferences.chapter_updates !== false,
         },
         notification_email: profileData.notification_email,
-        phone_number: profileData.phone_number,
         theme_preferences: {
           background_color: profileData.theme_preferences.background_color,
           taskbar_color: profileData.theme_preferences.taskbar_color,
@@ -392,20 +384,6 @@ export default function ProfileSettings() {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="phone-number">Phone Number (for SMS)</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="phone-number"
-                      type="tel"
-                      value={profileData.phone_number}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, phone_number: e.target.value }))}
-                      placeholder="+1 (555) 123-4567"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
 
                 <div className="space-y-4">
                   <h3 className="font-medium">Notification Types</h3>
@@ -430,24 +408,6 @@ export default function ProfileSettings() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">SMS Notifications</p>
-                        <p className="text-sm text-gray-600 dark:text-muted-foreground">Receive notifications via text message</p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={profileData.notification_preferences.sms_notifications}
-                        onChange={(e) => setProfileData(prev => ({
-                          ...prev,
-                          notification_preferences: {
-                            ...prev.notification_preferences,
-                            sms_notifications: e.target.checked
-                          }
-                        }))}
-                        className="w-4 h-4"
-                      />
-                    </div>
 
                     <div className="flex items-center justify-between">
                       <div>
