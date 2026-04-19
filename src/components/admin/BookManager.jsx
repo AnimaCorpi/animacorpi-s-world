@@ -56,6 +56,28 @@ export default function BookManager({ onStatsUpdate }) {
 
   useEffect(() => {
     loadBooks();
+
+    const unsubBook = base44.entities.Book.subscribe((event) => {
+      if (event.type === 'create' && event.data) {
+        setBooks(prev => [...prev, event.data].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0)));
+      } else if (event.type === 'update' && event.data) {
+        setBooks(prev => prev.map(b => b.id === event.id ? event.data : b));
+      } else if (event.type === 'delete') {
+        setBooks(prev => prev.filter(b => b.id !== event.id));
+      }
+    });
+
+    const unsubChapter = base44.entities.Chapter.subscribe((event) => {
+      if (event.type === 'create' && event.data) {
+        setChapters(prev => [...prev, event.data].sort((a, b) => (a.chapter_number ?? 0) - (b.chapter_number ?? 0)));
+      } else if (event.type === 'update' && event.data) {
+        setChapters(prev => prev.map(c => c.id === event.id ? event.data : c));
+      } else if (event.type === 'delete') {
+        setChapters(prev => prev.filter(c => c.id !== event.id));
+      }
+    });
+
+    return () => { unsubBook(); unsubChapter(); };
   }, []);
 
   const loadBooks = async () => {
@@ -88,7 +110,7 @@ export default function BookManager({ onStatsUpdate }) {
         showAlert("Book created successfully!", "success");
       }
       resetBookForm();
-      loadBooks();
+      // subscription handles the UI update
     } catch (error) {
       showAlert("Error saving book: " + error.message, "error");
     }
@@ -112,7 +134,7 @@ export default function BookManager({ onStatsUpdate }) {
         showAlert("Chapter created successfully!", "success");
       }
       resetChapterForm();
-      loadChapters(expandedBook);
+      // subscription handles the UI update
     } catch (error) {
       showAlert("Error saving chapter: " + error.message, "error");
     }
@@ -125,7 +147,7 @@ export default function BookManager({ onStatsUpdate }) {
       await Promise.all(bookChapters.map(ch => base44.entities.Chapter.delete(ch.id)));
       await base44.entities.Book.delete(bookId);
       showAlert("Book deleted successfully!", "success");
-      loadBooks();
+      // subscription handles the UI update
     } catch (error) {
       showAlert("Error deleting book: " + error.message, "error");
     }
@@ -136,7 +158,7 @@ export default function BookManager({ onStatsUpdate }) {
     try {
       await base44.entities.Chapter.delete(chapterId);
       showAlert("Chapter deleted successfully!", "success");
-      loadChapters(expandedBook);
+      // subscription handles the UI update
     } catch (error) {
       showAlert("Error deleting chapter: " + error.message, "error");
     }

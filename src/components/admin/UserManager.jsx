@@ -15,6 +15,17 @@ export default function UserManager() {
 
   useEffect(() => {
     loadUsers();
+
+    const unsubscribe = base44.entities.User.subscribe((event) => {
+      if (event.type === 'create' && event.data) {
+        setUsers(prev => [event.data, ...prev]);
+      } else if (event.type === 'update' && event.data) {
+        setUsers(prev => prev.map(u => u.id === event.id ? event.data : u));
+      } else if (event.type === 'delete') {
+        setUsers(prev => prev.filter(u => u.id !== event.id));
+      }
+    });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -82,8 +93,7 @@ export default function UserManager() {
       
       // Delete the user
       await base44.entities.User.delete(userId);
-      
-      loadUsers();
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error deleting user:", error);
     }

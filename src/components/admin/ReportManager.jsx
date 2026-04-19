@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { base44 } from "@/api/base44Client";
 import { Report } from "@/entities/Report";
 import { ForumThread } from "@/entities/ForumThread";
 import { ForumComment } from "@/entities/ForumComment";
@@ -26,6 +27,17 @@ export default function ReportManager() {
 
     useEffect(() => {
         loadReportsAndData();
+
+        const unsubscribe = base44.entities.Report.subscribe((event) => {
+          if (event.type === 'create' && event.data) {
+            setReports(prev => [event.data, ...prev]);
+          } else if (event.type === 'update' && event.data) {
+            setReports(prev => prev.map(r => r.id === event.id ? event.data : r));
+          } else if (event.type === 'delete') {
+            setReports(prev => prev.filter(r => r.id !== event.id));
+          }
+        });
+        return unsubscribe;
     }, []);
 
     const loadReportsAndData = async () => {
@@ -112,7 +124,7 @@ export default function ReportManager() {
     const handleResolve = async (reportId) => {
         try {
             await Report.update(reportId, { status: 'resolved' });
-            loadReportsAndData();
+            // subscription handles the UI update
         } catch (error) {
             console.error("Error resolving report:", error);
         }

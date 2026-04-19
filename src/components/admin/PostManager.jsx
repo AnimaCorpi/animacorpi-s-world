@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { UploadFile } from "@/integrations/Core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -33,6 +33,13 @@ export default function PostManager({ onStatsUpdate }) {
     queryKey: ['Post', 'list'],
     queryFn: () => base44.entities.Post.list("-created_date"),
   });
+
+  useEffect(() => {
+    const unsubscribe = base44.entities.Post.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ['Post'] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   const pinnedPosts = posts
     .filter(p => p.pinned)

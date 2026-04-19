@@ -30,6 +30,14 @@ export default function Admin() {
   const [adminReady, setAdminReady] = useState(false);
   useEffect(() => {
     checkAdminAccess();
+
+    const unsubs = [
+      base44.entities.Post.subscribe(() => refetchStats()),
+      base44.entities.Book.subscribe(() => refetchStats()),
+      base44.entities.Chapter.subscribe(() => refetchStats()),
+      base44.entities.User.subscribe(() => refetchStats()),
+    ];
+    return () => unsubs.forEach(u => u());
   }, []);
 
   const { data: statsData, refetch: refetchStats } = useQuery({
