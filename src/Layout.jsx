@@ -75,6 +75,8 @@ export default function Layout({ children, currentPageName }) {
     loadSiteSettings();
   }, []);
 
+  // Notification count is loaded via the subscription useEffect below (depends on user)
+
   // Apply user theme preferences whenever user changes
   useEffect(() => {
     if (user?.theme_preferences) {
@@ -91,6 +93,23 @@ export default function Layout({ children, currentPageName }) {
       console.error("Error loading notification count:", error);
     }
   };
+
+  useEffect(() => {
+    if (!user) return;
+    loadNotificationCount();
+    const unsubscribe = base44.entities.Notification.subscribe((event) => {
+      if (event.type === 'create' && event.data?.user_id === user.id && !event.data?.read) {
+        setNotificationCount(prev => prev + 1);
+      } else if (event.type === 'update' && event.data?.user_id === user.id) {
+        // If marked as read, decrement
+        if (event.data?.read) setNotificationCount(prev => Math.max(0, prev - 1));
+      } else if (event.type === 'delete') {
+        // Conservatively refresh count on delete
+        loadNotificationCount();
+      }
+    });
+    return unsubscribe;
+  }, [user?.id]);
 
   const loadSiteSettings = async () => {
     try {

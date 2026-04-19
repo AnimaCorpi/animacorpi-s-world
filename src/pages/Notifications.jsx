@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Check, Trash2, MessageSquare, BookOpen, User as UserIcon, Calendar } from "lucide-react";
+import { Bell, Check, Trash2, MessageSquare, BookOpen, User as UserIcon, Calendar, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
@@ -70,7 +70,8 @@ export default function Notifications() {
       chapter_update: <BookOpen className="w-5 h-5 text-blue-500" aria-hidden="true" />,
       forum_reply: <MessageSquare className="w-5 h-5 text-green-500" aria-hidden="true" />,
       admin_message: <UserIcon className="w-5 h-5 text-purple-500" aria-hidden="true" />,
-      story_update: <BookOpen className="w-5 h-5 text-orange-500" aria-hidden="true" />
+      story_update: <BookOpen className="w-5 h-5 text-orange-500" aria-hidden="true" />,
+      post_reaction: <Heart className="w-5 h-5 text-pink-500" aria-hidden="true" />
     };
     return icons[type] || <Bell className="w-5 h-5 text-gray-500" aria-hidden="true" />;
   };
@@ -80,7 +81,8 @@ export default function Notifications() {
       chapter_update: "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800",
       forum_reply: "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800",
       admin_message: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800",
-      story_update: "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800"
+      story_update: "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800",
+      post_reaction: "bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800"
     };
     return colors[type] || "bg-gray-50 dark:bg-muted border-gray-200 dark:border-border";
   };
