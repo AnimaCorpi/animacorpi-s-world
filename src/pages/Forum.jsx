@@ -48,6 +48,17 @@ export default function Forum() {
 
   useEffect(() => {
     loadData();
+
+    const unsubscribe = base44.entities.ForumThread.subscribe((event) => {
+      if (event.type === 'create' && event.data) {
+        setThreads(prev => [event.data, ...prev]);
+      } else if (event.type === 'update' && event.data) {
+        setThreads(prev => prev.map(t => t.id === event.id ? event.data : t));
+      } else if (event.type === 'delete') {
+        setThreads(prev => prev.filter(t => t.id !== event.id));
+      }
+    });
+    return unsubscribe;
   }, []);
 
   // Update NSFW visibility whenever user changes
@@ -142,7 +153,7 @@ export default function Forum() {
 
   const handleThreadCreated = () => {
     setShowCreateForm(false);
-    loadData();
+    // subscription handles adding the new thread to the list
   };
 
   const canCreateNSFW = () => {
@@ -159,7 +170,7 @@ export default function Forum() {
     if (!confirm("Are you sure you want to delete this discussion?")) return;
     try {
       await base44.entities.ForumThread.delete(threadId);
-      loadData();
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error deleting thread:", error);
       alert("Failed to delete discussion. Please try again.");

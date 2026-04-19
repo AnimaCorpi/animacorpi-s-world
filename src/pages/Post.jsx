@@ -156,7 +156,7 @@ export default function PostPage() {
       });
       setNewComment("");
       setCommentGif("");
-      await loadCommentsAndReactions();
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error submitting comment:", error);
     } finally {
@@ -167,9 +167,6 @@ export default function PostPage() {
   const handleReaction = async () => {
     if (!user) return;
 
-    // The existing reaction check was by created_by (email), but the new reaction creation uses user_id.
-    // It's safer to check by user_id if that's what's consistently used in PostReaction entity.
-    // Assuming created_by in PostReaction matches user.email based on existing code.
     const existingReaction = reactions.find(r => r.created_by === user.email); 
     try {
       if (existingReaction) {
@@ -181,18 +178,17 @@ export default function PostPage() {
           emoji: '❤️'
         });
       }
-      await loadCommentsAndReactions();
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error handling reaction:", error);
     }
   };
 
-  // New function to handle comment deletion
   const handleDeleteComment = async (commentId) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
     try {
       await deletePostComment({ commentId });
-      await loadCommentsAndReactions();
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error deleting comment:", error);
       alert("Failed to delete comment. Please try again.");

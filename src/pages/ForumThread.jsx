@@ -161,9 +161,7 @@ export default function ForumThreadPage() {
       setNewComment("");
       setCommentGif("");
       setReplyingTo(null);
-      
-      const updatedComments = await base44.entities.ForumComment.filter({ thread_id: thread.id }, "created_date");
-      setComments(updatedComments);
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error creating comment:", error);
       setError("Failed to post comment. Please try again.");
@@ -203,8 +201,7 @@ export default function ForumThreadPage() {
     if (!confirm("Are you sure you want to delete this comment?")) return;
     try {
       await base44.entities.ForumComment.delete(commentId);
-      const updatedComments = await base44.entities.ForumComment.filter({ thread_id: thread.id }, "created_date");
-      setComments(updatedComments);
+      // subscription handles the UI update
     } catch (error) {
       console.error("Error deleting comment:", error);
       setError("Failed to delete comment. Please try again.");
