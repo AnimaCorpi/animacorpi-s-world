@@ -467,7 +467,7 @@ export default function ForumThreadPage() {
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {user && !thread.locked && (
+                      {user && user.username && !thread.locked && (
                         <Button
                           variant="ghost"
                           size="sm"

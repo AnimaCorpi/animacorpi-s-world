@@ -334,7 +334,7 @@ export default function PostPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {user ? (
+            {user && user.username ? (
               <form onSubmit={handleCommentSubmit} className="space-y-4 mb-8">
                 <Textarea
                   value={newComment}
@@ -363,6 +363,11 @@ export default function PostPage() {
                   </Button>
                 </div>
               </form>
+            ) : user && !user.username ? (
+              <div className="text-center mb-8 p-4 bg-gray-100 dark:bg-muted rounded-lg">
+                <p className="text-gray-600 dark:text-muted-foreground mb-3">Complete your profile to leave a comment.</p>
+                <button onClick={() => window.location.href = createPageUrl("Registration")} className="text-purple-600 font-semibold hover:underline">Complete Registration</button>
+              </div>
             ) : (
               <div className="text-center mb-8 p-4 bg-gray-100 dark:bg-muted rounded-lg">
                 <p>
