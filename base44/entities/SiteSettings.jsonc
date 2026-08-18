@@ -1,0 +1,54 @@
+{
+  "name": "SiteSettings",
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "string",
+      "enum": [
+        "home",
+        "stories",
+        "forum",
+        "contact",
+        "footer",
+        "thoughts",
+        "artwork",
+        "photography",
+        "site_name",
+        "terms",
+        "guidelines"
+      ],
+      "description": "Page these settings apply to"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Page tagline"
+    },
+    "message": {
+      "type": "string",
+      "description": "Page welcome message"
+    },
+    "instagram_url": {
+      "type": "string",
+      "description": "Instagram profile URL"
+    },
+    "linkedin_url": {
+      "type": "string",
+      "description": "LinkedIn profile URL"
+    },
+    "footer_text": {
+      "type": "string",
+      "description": "Custom footer text"
+    },
+    "site_name": {
+      "type": "string",
+      "description": "Site name displayed in header"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full page content for terms/guidelines"
+    }
+  },
+  "required": [
+    "page"
+  ]
+}

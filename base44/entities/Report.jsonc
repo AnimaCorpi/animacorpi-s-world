@@ -1,0 +1,41 @@
+{
+  "name": "Report",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "ID of the reported item (thread or comment)"
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "thread",
+        "comment"
+      ],
+      "description": "The type of content being reported"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason provided by the user for the report"
+    },
+    "reporter_id": {
+      "type": "string",
+      "description": "The ID of the user who made the report"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "resolved"
+      ],
+      "default": "pending",
+      "description": "The current status of the report"
+    }
+  },
+  "required": [
+    "item_id",
+    "item_type",
+    "reason",
+    "reporter_id"
+  ]
+}

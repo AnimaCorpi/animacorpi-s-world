@@ -1,0 +1,27 @@
+{
+  "name": "Bookmark",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of user who bookmarked"
+    },
+    "book_id": {
+      "type": "string",
+      "description": "ID of bookmarked book"
+    },
+    "chapter_id": {
+      "type": "string",
+      "description": "ID of current chapter"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Reading progress percentage"
+    }
+  },
+  "required": [
+    "user_id",
+    "book_id"
+  ]
+}
